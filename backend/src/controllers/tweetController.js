@@ -9,43 +9,47 @@ const Notification = require('../models/Notification');
 // @access  Private
 const createTweet = async (req, res) => {
   try {
+    // Run validation
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: errors.array()
+        errors: errors.array(),
       });
     }
 
-    const { content, media } = req.body;
+    const { content } = req.body;
+    const author = req.user._id;
+
+    // Uploaded media URLs from Cloudinary
+    const mediaUrls = req.files?.map(file => file.path) || [];
 
     const tweet = await Tweet.create({
       content,
-      author: req.user.id,
-      media: media || []
+      author,
+      media: mediaUrls,
     });
 
     await tweet.populate('author', 'name username profilePic');
 
-    // Emit socket event for real-time updates
+    // Emit socket event
     if (req.io) {
       req.io.emit('new_tweet', tweet);
     }
 
     res.status(201).json({
       success: true,
-      data: tweet
+      data: tweet,
     });
   } catch (error) {
     console.error('Create tweet error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
     });
   }
-};
-
+}
 // @desc    Get all tweets
 // @route   GET /api/tweets
 // @access  Public

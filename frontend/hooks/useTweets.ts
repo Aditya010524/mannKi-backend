@@ -191,31 +191,30 @@ export const useTweets = () => {
     }
   };
 
-  const createTweet = async (content: string, media?: string[]) => {
-    if (!user) return null;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await apiService.post<Tweet>(API_ENDPOINTS.CREATE_TWEET, {
-        content,
-        media,
-      });
-      
-      if (response.success && response.data) {
-        return response.data;
-      } else {
-        throw new Error(response.error || 'Failed to create tweet');
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create tweet';
-      setError(errorMessage);
-      return null;
-    } finally {
-      setIsLoading(false);
+const createTweet = async (formData: FormData) => {
+  if (!user) return null;
+
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const response = await apiService.postForm<Tweet>(API_ENDPOINTS.CREATE_TWEET, formData);
+
+    if (response.success && response.data) {
+      return response.data;
+    } else {
+      throw new Error(response.error || 'Failed to create tweet');
     }
-  };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to create tweet';
+    setError(errorMessage);
+    return null;
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
 
   const searchTweets = async (query: string, page = 1, limit = 20) => {
     setIsLoading(true);

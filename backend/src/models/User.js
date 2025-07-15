@@ -56,11 +56,13 @@ const userSchema = new mongoose.Schema({
   },
   followers: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: []
   }],
   following: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: []
   }],
   isVerified: {
     type: Boolean,
@@ -80,17 +82,14 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for better performance
+// Index for performance
 userSchema.index({ username: 1 });
 userSchema.index({ email: 1 });
 userSchema.index({ name: 'text', username: 'text', bio: 'text' });
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
-    next();
-  }
-  
+  if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
@@ -100,17 +99,17 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Get follower count
+// Safe virtuals (no undefined error)
 userSchema.virtual('followerCount').get(function() {
-  return this.followers.length;
+  return (this.followers || []).length;
 });
 
-// Get following count
 userSchema.virtual('followingCount').get(function() {
-  return this.following.length;
+  return (this.following || []).length;
 });
 
-// Ensure virtual fields are serialized
+// Ensure virtuals are serialized
 userSchema.set('toJSON', { virtuals: true });
+userSchema.set('toObject', { virtuals: true }); // Also add this if you're using `.toObject()`
 
 module.exports = mongoose.model('User', userSchema);

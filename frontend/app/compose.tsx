@@ -19,38 +19,55 @@ export default function ComposeScreen() {
     router.back();
   };
   
-  const handleTweet = async () => {
-    if (!user || !tweetText.trim()) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      const newTweet = await createTweet(tweetText, media.length > 0 ? media : undefined);
-      if (newTweet) {
-        if (Platform.OS !== 'web') {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-        router.replace('/(tabs)');
-      }
-    } catch (error) {
-      console.error('Failed to create tweet:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-  
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+const handleTweet = async () => {
+  if (!user || !tweetText.trim()) return;
+
+  setIsSubmitting(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('content', tweetText);
+
+    media.forEach((uri, index) => {
+      const fileName = uri.split('/').pop() || `image-${index}.jpg`;
+      const fileType = fileName.split('.').pop();
+
+      formData.append('media', {
+        uri,
+        name: fileName,
+        type: `image/${fileType}`,
+      } as any); // casting for React Native
     });
-    
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setMedia([...media, result.assets[0].uri]);
+
+    const newTweet = await createTweet(formData);
+    if (newTweet) {
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      router.replace('/(tabs)');
     }
-  };
+  } catch (error) {
+    console.error('Failed to create tweet:', error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+  
+const pickImage = async () => {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+
+  if (!result.canceled && result.assets && result.assets.length > 0) {
+    setMedia([...media, result.assets[0].uri]); // only keep uri
+  }
+};
+
   
   const removeImage = (index: number) => {
     const newMedia = [...media];

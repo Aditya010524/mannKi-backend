@@ -1,5 +1,8 @@
 const express = require('express');
 const { body } = require('express-validator');
+const upload = require('../middleware/uploadMedia');
+
+
 const {
   createTweet,
   getTweets,
@@ -27,7 +30,7 @@ const commentValidation = [
 ];
 
 // Routes
-router.post('/', protect, createTweetValidation, createTweet);
+router.post('/', protect, upload.array('media'), createTweetValidation, createTweet);
 router.get('/', optional, getTweets);
 router.get('/feed', protect, getHomeFeed);
 router.get('/trending', getTrendingHashtags);
