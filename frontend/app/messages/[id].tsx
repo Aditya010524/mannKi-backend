@@ -1,85 +1,145 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  SafeAreaView,
+  Keyboard
+} from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Send } from 'lucide-react-native';
 import { useMessages } from '@/hooks/useMessages';
 import { useAuth } from '@/hooks/useAuth';
 import { colors } from '@/constants/colors';
 import { Message } from '@/types';
-import { getUserById } from '@/mocks/users';
 import { formatMessageDate } from '@/utils/formatDate';
+import socketService from '@/services/socket';
+import TypingIndicator from '@/components/TypingIndicator';
 
 export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
-  const { fetchMessages, sendMessage, isLoading } = useMessages();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const {
+    fetchMessages,
+    sendMessage,
+    messages,
+    isLoading
+  } = useMessages();
+
   const [messageText, setMessageText] = useState('');
-  const [otherUser, setOtherUser] = useState(getUserById(id));
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [receiverId, setReceiverId] = useState<string | null>(null);
+  const [isReceiverTyping, setIsReceiverTyping] = useState(false);
+  const typingTimeoutRef = useRef<number | null>(null);
   const flatListRef = useRef<FlatList>(null);
-  
-  const loadMessages = async () => {
-    if (!user || !id) return;
-    
-    const chatMessages = await fetchMessages(id);
-    setMessages(chatMessages);
-  };
-  
+
   useEffect(() => {
     if (user && id) {
-      loadMessages();
-      
-      // Set up interval to check for new messages
-      const interval = setInterval(loadMessages, 5000);
-      
-      return () => clearInterval(interval);
+      fetchMessages(id).then((fetchedMessages: Message[]) => {
+        const firstMessage = fetchedMessages[0];
+        if (!firstMessage) return;
+
+        const { sender, recipient } = firstMessage;
+        const receiver = sender.id === user.id ? recipient : sender;
+
+        setReceiverId(receiver.id);
+      });
     }
   }, [user, id]);
-  
-  const handleSendMessage = async () => {
-    if (!user || !otherUser || !messageText.trim()) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      const newMessage = await sendMessage(otherUser.id, messageText);
-      if (newMessage) {
-        setMessages([...messages, newMessage]);
-        setMessageText('');
-        
-        // Scroll to bottom
-        setTimeout(() => {
-          flatListRef.current?.scrollToEnd({ animated: true });
-        }, 100);
+
+  useEffect(() => {
+    socketService.onUserTyping(({ userId }) => {
+      if (userId === receiverId) {
+        setIsReceiverTyping(true);
       }
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    } finally {
-      setIsSubmitting(false);
+    });
+
+    socketService.onUserStopTyping(({ userId }) => {
+      if (userId === receiverId) {
+        setIsReceiverTyping(false);
+      }
+    });
+
+    return () => {
+      socketService.off('user_typing');
+      socketService.off('user_stop_typing');
+    };
+  }, [receiverId]);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => {
+      showSub.remove();
+    };
+  }, []);
+
+const handleSendMessage = async () => {
+  if (!user || !id || !messageText.trim() || !receiverId) return;
+
+  setIsSubmitting(true);
+
+  const textToSend = messageText; // Capture before clearing
+  setMessageText(''); // Clear input immediately
+
+  try {
+    const newMessage = await sendMessage(receiverId, textToSend);
+    if (newMessage) {
+      socketService.stopTyping(id);
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  } catch (error) {
+    console.error('Failed to send message:', error);
+    setMessageText(textToSend); // Rollback in case of error
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+  const handleTyping = (text: string) => {
+    setMessageText(text);
+
+    if (user && id) {
+      socketService.startTyping(id);
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      typingTimeoutRef.current = setTimeout(() => {
+        socketService.stopTyping(id);
+      }, 1500);
     }
   };
-  
+
   const renderMessage = ({ item }: { item: Message }) => {
     const isCurrentUser = item.sender.id === user?.id;
-    
+
     return (
-      <View
-        style={[
-          styles.messageContainer,
-          isCurrentUser ? styles.sentMessage : styles.receivedMessage,
-        ]}
-      >
+      <View style={[
+        styles.messageContainer,
+        isCurrentUser ? styles.sentMessage : styles.receivedMessage
+      ]}>
         {!isCurrentUser && (
           <Image source={{ uri: item.sender.profilePic }} style={styles.avatar} />
         )}
-        
-        <View
-          style={[
-            styles.messageBubble,
-            isCurrentUser ? styles.sentBubble : styles.receivedBubble,
-          ]}
-        >
+
+        <View style={[
+          styles.messageBubble,
+          isCurrentUser ? styles.sentBubble : styles.receivedBubble
+        ]}>
           <Text style={[
             styles.messageText,
             isCurrentUser ? styles.sentMessageText : styles.receivedMessageText
@@ -96,68 +156,84 @@ export default function ChatScreen() {
       </View>
     );
   };
-  
-  if (!user || !otherUser) {
+
+  if (!user) {
     return (
       <View style={styles.loadingContainer}>
         <Text>Loading conversation...</Text>
       </View>
     );
   }
-  
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
-    >
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderMessage}
-        contentContainerStyle={styles.messagesList}
-        onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No messages yet</Text>
-            <Text style={styles.emptySubtext}>
-              Send a message to start the conversation.
-            </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 80}
+      >
+        <View style={styles.innerContainer}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={(item) => item.id}
+            renderItem={renderMessage}
+            contentContainerStyle={[styles.messagesList, { paddingBottom: 120 }]}
+            onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No messages yet</Text>
+                <Text style={styles.emptySubtext}>
+                  Send a message to start the conversation.
+                </Text>
+              </View>
+            }
+          />
+
+          {isReceiverTyping && (
+            <View style={{ paddingLeft: 16, marginBottom: 4 }}>
+              <TypingIndicator />
+            </View>
+          )}
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Type a message..."
+              placeholderTextColor={colors.secondaryText}
+              value={messageText}
+              onChangeText={handleTyping}
+              multiline
+            />
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                (!messageText.trim() || isSubmitting) && styles.disabledButton,
+              ]}
+              onPress={handleSendMessage}
+              disabled={!messageText.trim() || isSubmitting}
+            >
+              <Send size={20} color={colors.background} />
+            </TouchableOpacity>
           </View>
-        }
-      />
-      
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Type a message..."
-          placeholderTextColor={colors.secondaryText}
-          value={messageText}
-          onChangeText={setMessageText}
-          multiline
-        />
-        
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            (!messageText.trim() || isSubmitting) && styles.disabledButton,
-          ]}
-          onPress={handleSendMessage}
-          disabled={!messageText.trim() || isSubmitting}
-        >
-          <Send size={20} color={colors.background} />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  container: {
+    flex: 1,
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
   loadingContainer: {
     flex: 1,
@@ -226,7 +302,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: '700' as const,
+    fontWeight: '700',
     color: colors.text,
     marginBottom: 8,
   },

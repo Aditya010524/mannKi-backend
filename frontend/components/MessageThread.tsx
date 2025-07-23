@@ -12,39 +12,40 @@ interface MessageThreadProps {
 
 export const MessageThread: React.FC<MessageThreadProps> = ({ conversation }) => {
   const { user } = useAuth();
-  
+
   if (!user) return null;
-  
+
   const otherUser = conversation.participants.find(p => p.id !== user.id)!;
-  
+
   const navigateToChat = () => {
-    router.push(`/messages/${otherUser.id}`);
+    // ✅ Use conversation.id instead of otherUser.id
+    router.push(`/messages/${conversation.id}`);
   };
-  
+
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToChat}>
       <Image source={{ uri: otherUser.profilePic }} style={styles.avatar} />
-      
+
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.name}>{otherUser.name}</Text>
           <Text style={styles.username}>@{otherUser.username}</Text>
           <Text style={styles.time}>{formatMessageDate(conversation.lastMessage.createdAt)}</Text>
         </View>
-        
+
         <View style={styles.messageRow}>
-          <Text 
+          <Text
             style={[
-              styles.message, 
-              !conversation.lastMessage.read && 
-              conversation.lastMessage.recipient.id === user.id && 
-              styles.unreadMessage
-            ]} 
+              styles.message,
+              !conversation.lastMessage.read &&
+                conversation.lastMessage.recipient.id === user.id &&
+                styles.unreadMessage,
+            ]}
             numberOfLines={2}
           >
             {conversation.lastMessage.content}
           </Text>
-          
+
           {conversation.unreadCount > 0 && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>{conversation.unreadCount}</Text>

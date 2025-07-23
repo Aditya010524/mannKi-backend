@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
+import React, { useState } from 'react';
 import { ArrowLeft, Camera } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,28 +19,67 @@ export default function EditProfileScreen() {
   const [coverPhoto, setCoverPhoto] = useState(user?.coverPhoto || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const handleSave = async () => {
-    if (!user) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      await updateUser({
-        name,
-        bio,
-        location,
-        website,
-        profilePic,
-        coverPhoto,
-      });
-      
-      router.back();
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-    } finally {
-      setIsSubmitting(false);
+const handleSave = async () => {
+  if (!user) return;
+
+  setIsSubmitting(true);
+
+  try {
+    const formData = new FormData();
+
+    formData.append("name", name);
+    formData.append("bio", bio);
+    formData.append("location", location);
+    formData.append("website", website);
+
+    // ✅ Use state directly instead of formData.get()
+    if (profilePic && profilePic !== user.profilePic) {
+      const fileName = profilePic.split('/').pop();
+      const fileType = fileName?.split('.').pop();
+      const profilePicFile = {
+        uri: profilePic,
+        name: fileName || 'profile.jpg',
+        type: `image/${fileType || 'jpeg'}`,
+      };
+
+      formData.append("profilePic", profilePicFile as any);
+
+      console.log("📷 profilePic:");
+      console.log("   • uri:", profilePicFile.uri);
+      console.log("   • name:", profilePicFile.name);
+      console.log("   • type:", profilePicFile.type);
+    } else {
+      console.log("📷 profilePic: not available");
     }
-  };
+
+    if (coverPhoto && coverPhoto !== user.coverPhoto) {
+      const fileName = coverPhoto.split('/').pop();
+      const fileType = fileName?.split('.').pop();
+      const coverPhotoFile = {
+        uri: coverPhoto,
+        name: fileName || 'cover.jpg',
+        type: `image/${fileType || 'jpeg'}`,
+      };
+
+      formData.append("coverPhoto", coverPhotoFile as any);
+
+      console.log("📷 coverPhoto:");
+      console.log("   • uri:", coverPhotoFile.uri);
+      console.log("   • name:", coverPhotoFile.name);
+      console.log("   • type:", coverPhotoFile.type);
+    } else {
+      console.log("📷 coverPhoto: not available");
+    }
+
+    await updateUser(formData);
+    router.back();
+  } catch (error) {
+    console.error("❌ Failed to update profile:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
   
   const pickProfileImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({

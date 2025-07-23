@@ -1,6 +1,8 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const cloudinary = require('../config/cloudinary');
+
 
 // @desc    Get current user profile
 // @route   GET /api/users/profile
@@ -27,6 +29,8 @@ const getProfile = async (req, res) => {
 // @desc    Update user profile
 // @route   PUT /api/users/profile
 // @access  Private
+
+
 const updateProfile = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -38,20 +42,27 @@ const updateProfile = async (req, res) => {
       });
     }
 
-    const { name, bio, location, website, profilePic, coverPhoto } = req.body;
+    const { name, bio, location, website } = req.body;
 
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      {
-        ...(name && { name }),
-        ...(bio !== undefined && { bio }),
-        ...(location !== undefined && { location }),
-        ...(website !== undefined && { website }),
-        ...(profilePic && { profilePic }),
-        ...(coverPhoto && { coverPhoto })
-      },
-      { new: true, runValidators: true }
-    );
+    const updateData = {
+      ...(name && { name }),
+      ...(bio !== undefined && { bio }),
+      ...(location !== undefined && { location }),
+      ...(website !== undefined && { website })
+    };
+
+    if (req.files?.profilePic?.[0]) {
+      updateData.profilePic = req.files.profilePic[0].path;
+    }
+
+    if (req.files?.coverPhoto?.[0]) {
+      updateData.coverPhoto = req.files.coverPhoto[0].path;
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, updateData, {
+      new: true,
+      runValidators: true
+    });
 
     res.json({
       success: true,
@@ -65,6 +76,7 @@ const updateProfile = async (req, res) => {
     });
   }
 };
+
 
 // @desc    Get user by username
 // @route   GET /api/users/profile/:username

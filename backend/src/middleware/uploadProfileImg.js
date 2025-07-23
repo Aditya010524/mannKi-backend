@@ -1,14 +1,13 @@
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const cloudinary = require('../config/cloudinary'); // custom Cloudinary config
+const cloudinary = require('../config/cloudinary'); // your Cloudinary instance
 
-// Storage setup
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'twitter_media',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'svg'],
-    resource_type: 'auto', // allows both images and videos
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+    resource_type: 'image',
   },
 });
 

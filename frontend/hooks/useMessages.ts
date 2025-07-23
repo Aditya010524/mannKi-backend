@@ -89,7 +89,6 @@ export const useMessages = () => {
     
     setIsLoading(true);
     setError(null);
-    
     try {
       const response = await apiService.get<Message[]>(`${API_ENDPOINTS.MESSAGES}/${conversationId}`, {
         page,
@@ -118,7 +117,7 @@ export const useMessages = () => {
     }
   };
 
-  const sendMessage = async (recipientId: string, content: string): Promise<Message | null> => {
+  const sendMessage = async (receiverId: string, content: string): Promise<Message | null> => {
     if (!user) return null;
     
     setIsLoading(true);
@@ -126,7 +125,7 @@ export const useMessages = () => {
     
     try {
       const response = await apiService.post<Message>(API_ENDPOINTS.SEND_MESSAGE, {
-        recipientId,
+        recipientId :receiverId,
         content,
       });
       

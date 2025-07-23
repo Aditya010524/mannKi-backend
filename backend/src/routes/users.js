@@ -1,5 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
+const upload = require('../middleware/uploadProfileImg');
+
 const {
   getProfile,
   updateProfile,
@@ -24,7 +26,15 @@ const updateProfileValidation = [
 
 // Routes
 router.get('/profile', protect, getProfile);
-router.put('/profile', protect, updateProfileValidation, updateProfile);
+router.put(
+  '/profile',protect,
+  upload.fields([
+    { name: 'profilePic', maxCount: 1 },
+    { name: 'coverPhoto', maxCount: 1 },
+  ]),
+  updateProfile
+);
+
 router.get('/profile/:username', optional, getUserByUsername);
 router.get('/search', searchUsers);
 router.post('/follow/:userId', protect, followUser);

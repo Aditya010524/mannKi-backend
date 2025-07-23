@@ -14,7 +14,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   signup: (userData: SignupData) => Promise<void>;
   logout: () => Promise<void>;
-  updateUser: (userData: Partial<User>) => Promise<void>;
+  updateUser: (formData: FormData) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
@@ -187,11 +187,12 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
     }
   };
 
-  const updateUser = async (userData: Partial<User>) => {
+  const updateUser = async (formData: FormData) => {
     if (!user) return;
     
     try {
-      const response = await apiService.put<any>(API_ENDPOINTS.UPDATE_PROFILE, userData);
+      const response = await apiService.putForm<any>(API_ENDPOINTS.UPDATE_PROFILE, formData);
+;
       
       if (response.success && response.data) {
         // Transform backend user data to frontend format

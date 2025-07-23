@@ -14,6 +14,7 @@ export default function MessagesScreen() {
   
   const loadConversations = async () => {
     const userConversations = await fetchConversations();
+    console.log('Fetched Conversations:', userConversations);
     setConversations(userConversations);
   };
   

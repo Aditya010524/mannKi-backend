@@ -188,6 +188,7 @@
 // export const apiService = new ApiService();
 // export default apiService;
 
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API_BASE_URL from '@/config/api';
 
@@ -396,6 +397,34 @@ class ApiService {
     };
   }
 }
+
+async putForm<T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> {
+  try {
+    const token = await this.getAuthToken();
+
+
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method: 'PUT',
+      headers, // ✅ Let browser/native set boundary Content-Type
+      body: formData,
+    });
+
+    return this.handleResponse<T>(response);
+  } catch (error) {
+    console.error('❌ Error while uploading form:', error);
+    return {
+      success: false,
+      error: 'Form submission failed',
+    };
+  }
+}
+
+
 
 }
 
