@@ -175,7 +175,7 @@ export default function ExploreScreen() {
           <SearchIcon size={20} color={colors.secondaryText} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search Twitter"
+            placeholder="Search MANN KI"
             placeholderTextColor={colors.secondaryText}
             value={searchQuery}
             onChangeText={handleSearch}

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Real-Time Twitter Clone App",
+    "name": "MANN",
     "slug": "real-time-twitter-clone-app-pd3qj9a",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,7 +31,7 @@
       [
         "expo-router",
         {
-          "origin": "https://rork.com/"
+          "origin": ""
         }
       ]
     ],

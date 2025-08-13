@@ -49,7 +49,7 @@ export default function LoginScreen() {
           <Twitter size={40} color={colors.primary} />
         </View>
         
-        <Text style={styles.title}>Log in to Twitter</Text>
+        <Text style={styles.title}>Log in to Mann</Text>
         
         <View style={styles.form}>
           <Input

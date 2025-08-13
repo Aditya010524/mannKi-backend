@@ -124,7 +124,7 @@ export const useTweets = () => {
       const response = await apiService.post<{
         tweet: Tweet;
         liked: boolean;
-      }>(`${API_ENDPOINTS.LIKE_TWEET}/${tweetId}`);
+      }>(`${API_ENDPOINTS.LIKE_TWEET}/${tweetId}/like`);
       
       if (response.success && response.data) {
         return response.data.tweet;
@@ -150,7 +150,7 @@ export const useTweets = () => {
       const response = await apiService.post<{
         tweet: Tweet;
         retweeted: boolean;
-      }>(`${API_ENDPOINTS.RETWEET}/${tweetId}`);
+      }>(`${API_ENDPOINTS.RETWEET}/${tweetId}/retweet`);
       
       if (response.success && response.data) {
         return response.data.tweet;
@@ -173,7 +173,7 @@ export const useTweets = () => {
     setError(null);
     
     try {
-      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.COMMENT}/${tweetId}`, {
+      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.COMMENT}/${tweetId}/comment`, {
         content,
       });
       

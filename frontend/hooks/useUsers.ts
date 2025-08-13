@@ -55,59 +55,67 @@ export const useUsers = () => {
     }
   };
 
-  const followUser = async (userId: string) => {
-    if (!currentUser) return false;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await apiService.post(`${API_ENDPOINTS.FOLLOW}/${userId}`);
-      
-      if (response.success) {
-        // Update current user's following list
-        await updateUser({
-          following: [...currentUser.following, userId],
-        });
-        return true;
-      } else {
-        throw new Error(response.error || 'Failed to follow user');
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to follow user';
-      setError(errorMessage);
-      return false;
-    } finally {
-      setIsLoading(false);
+const followUser = async (userId: string) => {
+  if (!currentUser) return false;
+
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const response = await apiService.post(`${API_ENDPOINTS.FOLLOW}/${userId}`);
+
+    if (response.success) {
+      // Create FormData with updated following list
+      const formData = new FormData();
+      const updatedFollowing = [...currentUser.following, userId];
+      formData.append('following', JSON.stringify(updatedFollowing));
+
+      await updateUser(formData);
+      return true;
+    } else {
+      throw new Error(response.error || 'Failed to follow user');
     }
-  };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to follow user';
+    setError(errorMessage);
+    return false;
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const unfollowUser = async (userId: string) => {
-    if (!currentUser) return false;
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await apiService.post(`${API_ENDPOINTS.UNFOLLOW}/${userId}`);
-      
-      if (response.success) {
-        // Update current user's following list
-        await updateUser({
-          following: currentUser.following.filter(id => id !== userId),
-        });
-        return true;
-      } else {
-        throw new Error(response.error || 'Failed to unfollow user');
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to unfollow user';
-      setError(errorMessage);
-      return false;
-    } finally {
-      setIsLoading(false);
+  if (!currentUser) return false;
+
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const response = await apiService.post(`${API_ENDPOINTS.UNFOLLOW}/${userId}`);
+
+    if (response.success) {
+      // Construct FormData to send updated following list
+      const updatedFollowing = currentUser.following.filter(id => id !== userId);
+      const formData = new FormData();
+      formData.append('following', JSON.stringify(updatedFollowing));
+
+      // Call updateUser with FormData
+      await updateUser(formData);
+
+      return true;
+    } else {
+      throw new Error(response.error || 'Failed to unfollow user');
     }
-  };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to unfollow user';
+    setError(errorMessage);
+    return false;
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const getFollowers = async (userId: string, page = 1, limit = 20) => {
     setIsLoading(true);
