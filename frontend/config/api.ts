@@ -1,5 +1,4 @@
-
-const API_BASE_URL = 'http://192.168.141.208:3000/api' // Development - Backend server
+const API_BASE_URL = 'http://192.168.101.96:3000/api' // Development - Backend server
  ; // Production - Replace with your deployed backend URL
 
 export const API_ENDPOINTS = {
