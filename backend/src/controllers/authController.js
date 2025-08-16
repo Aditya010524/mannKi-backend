@@ -54,6 +54,7 @@ const register = async (req, res) => {
       email,
       password,
       bio: `Hi, I'm ${name}!`
+      profilePic: process.env.DEFAULT_PROFILE_URL,
     });
 
     // Generate tokens
