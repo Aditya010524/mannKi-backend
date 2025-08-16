@@ -8,6 +8,8 @@ import { Tweet, Comment } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/utils/formatDate';
 import { Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function TweetDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -57,7 +59,8 @@ export default function TweetDetailScreen() {
   }
   
   return (
-    <KeyboardAvoidingView
+    <SafeAreaView style={styles.main_container} edges={['bottom']}>
+      <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
@@ -94,9 +97,9 @@ export default function TweetDetailScreen() {
             </View>
           </View>
           
-          <View style={styles.actionsContainer}>
+          {/* <View style={styles.actionsContainer}>
             <TweetComponent tweet={tweet} onRefresh={loadTweet} />
-          </View>
+          </View> */}
         </View>
         
         <View style={styles.commentsContainer}>
@@ -150,10 +153,15 @@ export default function TweetDetailScreen() {
         </View>
       )}
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  main_container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,

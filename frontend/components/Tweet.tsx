@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTweets } from '@/hooks/useTweets';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
+import Grid from '@/components/Grid'
 
 interface TweetProps {
   tweet: TweetType;
@@ -86,8 +87,9 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
         
         <Text style={styles.tweetText}>{tweet.content}</Text>
         
+    
         {tweet.media && tweet.media.length > 0 && (
-          <Image source={{ uri: tweet.media[0] }} style={styles.media} />
+          <Grid photos={tweet.media} />
         )}
         
         <View style={styles.actions}>
@@ -189,12 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     color: colors.text,
   },
-  media: {
-    width: '100%',
-    height: 200,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
+
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -39,7 +39,6 @@ export default function SignupScreen() {
     if (!password) newErrors.password = 'Password is required';
     else if (password.length < 6)
       newErrors.password = 'Password must be at least 6 characters';
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -51,6 +50,7 @@ const handleSignup = async () => {
 
   try {
     await signup({ name, username, email, password });
+   
   } catch (error: any) {
     const fieldErrors: typeof errors = {};
 

@@ -86,8 +86,8 @@ export default function ProfileScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <TweetComponent tweet={item} onRefresh={() => loadTweets(user.id)} />}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} /> 
+         }
         ListHeaderComponent={
           <>
             <ProfileHeader

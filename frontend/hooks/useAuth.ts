@@ -79,10 +79,10 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         token: string;
         refreshToken: string;
       }>(API_ENDPOINTS.LOGIN, { email, password });
-      
+
       if (response.success && response.data) {
         const { user: userData, token, refreshToken } = response.data;
-        
+
         // Transform backend user data to frontend format
         const transformedUser: User = {
           id: userData._id || userData.id,
@@ -97,13 +97,13 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
           website: userData.website || '',
           createdAt: userData.createdAt || new Date().toISOString(),
         };
-        
+
         await AsyncStorage.multiSet([
           ['authToken', token],
           ['refreshToken', refreshToken],
           ['user', JSON.stringify(transformedUser)],
         ]);
-        
+
         setUser(transformedUser);
         await socketService.connect();
         router.replace('/(tabs)');
@@ -126,10 +126,10 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         token: string;
         refreshToken: string;
       }>(API_ENDPOINTS.REGISTER, userData);
-      
+
       if (response.success && response.data) {
         const { user: newUserData, token, refreshToken } = response.data;
-        
+
         // Transform backend user data to frontend format
         const transformedUser: User = {
           id: newUserData._id || newUserData.id,
@@ -144,13 +144,13 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
           website: newUserData.website || '',
           createdAt: newUserData.createdAt || new Date().toISOString(),
         };
-        
+
         await AsyncStorage.multiSet([
           ['authToken', token],
           ['refreshToken', refreshToken],
           ['user', JSON.stringify(transformedUser)],
         ]);
-        
+
         setUser(transformedUser);
         await socketService.connect();
         router.replace('/(tabs)');
@@ -158,8 +158,18 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         throw new Error(response.message || 'Signup failed');
       }
     } catch (error: any) {
-      console.error('Signup error:', error);
-      throw new Error(error.message || 'Signup failed');
+      if (error.response) {
+        // Server responded with an error status
+        console.error('Signup error response:', error.response.data);
+      } else if (error.request) {
+        // Request made but no response received
+        console.error('Signup error request (no response):', error.request);
+      } else {
+        // Something else happened
+        console.error('Signup error message:', error.message);
+      }
+
+      throw new Error(error.response?.data?.message || error.message || 'Signup failed');
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +180,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
     try {
       // Call logout endpoint
       await apiService.post(API_ENDPOINTS.LOGOUT);
-      
+
       socketService.disconnect();
       await AsyncStorage.multiRemove(['authToken', 'refreshToken', 'user']);
       setUser(null);
@@ -189,11 +199,11 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
 
   const updateUser = async (formData: FormData) => {
     if (!user) return;
-    
+
     try {
       const response = await apiService.putForm<any>(API_ENDPOINTS.UPDATE_PROFILE, formData);
-;
-      
+      ;
+
       if (response.success && response.data) {
         // Transform backend user data to frontend format
         const updatedUserData = response.data;
@@ -210,7 +220,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
           website: updatedUserData.website || '',
           createdAt: updatedUserData.createdAt || new Date().toISOString(),
         };
-        
+
         await AsyncStorage.setItem('user', JSON.stringify(transformedUser));
         setUser(transformedUser);
       } else {
@@ -225,7 +235,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const forgotPassword = async (email: string) => {
     try {
       const response = await apiService.post(API_ENDPOINTS.FORGOT_PASSWORD, { email });
-      
+
       if (!response.success) {
         throw new Error(response.message || 'Failed to send reset email');
       }
@@ -238,7 +248,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const resetPassword = async (token: string, password: string) => {
     try {
       const response = await apiService.post(API_ENDPOINTS.RESET_PASSWORD, { token, password });
-      
+
       if (!response.success) {
         throw new Error(response.message || 'Failed to reset password');
       }
@@ -254,7 +264,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         currentPassword,
         newPassword,
       });
-      
+
       if (!response.success) {
         throw new Error(response.message || 'Failed to change password');
       }

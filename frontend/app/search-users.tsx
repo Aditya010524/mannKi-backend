@@ -7,6 +7,7 @@ import { colors } from '@/constants/colors';
 import { User } from '@/types';
 import { useUsers } from '@/hooks/useUsers';
 
+
 export default function SearchUsersScreen() {
   const { searchUsers } = useUsers();
   const [searchQuery, setSearchQuery] = useState('');

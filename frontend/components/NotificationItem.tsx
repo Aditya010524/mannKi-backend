@@ -1,4 +1,4 @@
-    import React from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Heart, MessageCircle, Repeat, User as UserIcon } from 'lucide-react-native';

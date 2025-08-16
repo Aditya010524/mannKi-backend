@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { X, Image as ImageIcon } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
@@ -54,17 +54,25 @@ const handleTweet = async () => {
 };
 
 
+
   
 const pickImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
+    allowsMultipleSelection: true,
+    selectionLimit: 4,
     aspect: [4, 3],
     quality: 1,
   });
 
   if (!result.canceled && result.assets && result.assets.length > 0) {
-    setMedia([...media, result.assets[0].uri]); // only keep uri
+      // Extract all selected image URIs
+    const uris = result.assets.map(asset => asset.uri);
+
+    // Update state with all new images (spread old + new)
+    setMedia([...media, ...uris]);
+
   }
 };
 

@@ -1,32 +1,97 @@
 import { StatusBar } from "expo-status-bar";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+} from "react-native";
+import { ArrowLeft } from "lucide-react-native";
 
-export default function ModalScreen() {
+const { width, height } = Dimensions.get("window");
+
+export default function ModalScreen({ photos, showModal , setshowModal }: any) {
+  const [CurrentIndex, setCurrentIndex] = useState(0)
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      <View style={styles.separator} />
-      <Text>This is an example modal. You can edit it in app/modal.tsx.</Text>
+    <Modal transparent={true} visible={showModal} animationType="slide">
+      <View style={styles.container}>
+        {/* Back Button */}
+        <TouchableOpacity style={styles.closeBtn} onPress={() => setshowModal(false)}>
+          <ArrowLeft size={28} color="#fff" />
+        </TouchableOpacity>
 
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
-    </View>
+        {/* Horizontal FlatList */}
+        <FlatList
+          data={photos}
+          horizontal
+          pagingEnabled
+           onMomentumScrollEnd={(e) => {
+            const index = Math.round(
+              e.nativeEvent.contentOffset.x / width
+            );
+            setCurrentIndex(index);
+          }}
+          renderItem={({ item }) => (
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: item }}
+                style={styles.image}
+                resizeMode="contain"
+              />
+            </View>
+          )}
+          keyExtractor={(_, index) => index.toString()}
+        />
+
+        {/* Footer / Counter */}
+        <View style={styles.footer}>
+          <Text style={styles.counter}>{CurrentIndex + 1} / {photos.length}</Text>
+        </View>
+
+        <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    backgroundColor: "black",
+  },
+  closeBtn: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    padding: 8,
+    borderRadius: 20,
+  },
+  imageContainer: {
+    width,
+    height,
     justifyContent: "center",
+    alignItems: "center",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  image: {
+    width,
+    height: "80%",
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  footer: {
+    position: "absolute",
+    bottom: 30,
+    width: "100%",
+    alignItems: "center",
+  },
+  counter: {
+    color: "white",
+    fontSize: 16,
   },
 });
