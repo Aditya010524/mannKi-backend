@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Button, FlatList } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { Tweet as TweetComponent } from '@/components/Tweet';
 import { useTweets } from '@/hooks/useTweets';
 import { colors } from '@/constants/colors';
-import { Tweet, Comment } from '@/types';
+import { Tweet,  } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/utils/formatDate';
 import { Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Heart } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+import { Comment } from '@/components/Comments';
 
 
 export default function TweetDetailScreen() {
@@ -18,6 +21,10 @@ export default function TweetDetailScreen() {
   const [tweet, setTweet] = useState<Tweet | null>(null);
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+  // dummy data state
+  const [DummyComments, setDummyComments] = useState<Comment[]>([]);
   
   const loadTweet = async () => {
     if (!id) return;
@@ -25,11 +32,30 @@ export default function TweetDetailScreen() {
     const tweetData = await fetchTweetById(id);
     if (tweetData) {
       setTweet(tweetData);
+     
     }
   };
+   const fetchDummyComments = async () => {
+  try {
+    const res = await fetch("https://dummyjson.com/c/ce05-96e8-4d0a-b686");
+    if (!res) throw new Error("Failed to fetch data");
+
+    const data = await res.json();
+   const dummyData = data.data
+    setDummyComments(dummyData);
+   
+    console.log("Dummy response is :", dummyData);
+    return data;
+  } catch (error) {
+    console.error("Error fetching dummy comments:", error);
+    return [];
+  }
+};
   
   useEffect(() => {
     loadTweet();
+    fetchDummyComments();
+    
   }, [id]);
   
   const handleAddComment = async () => {
@@ -42,6 +68,9 @@ export default function TweetDetailScreen() {
       if (updatedTweet) {
         setTweet(updatedTweet);
         setCommentText('');
+            //  console.log('and tweet is from this component', tweet);
+            //  console.log('and tweet.comment from this component is', tweet.comments);
+            //  console.log('tweet lenth is',tweet.comments.length);
       }
     } catch (error) {
       console.error('Failed to add comment:', error);
@@ -57,7 +86,9 @@ export default function TweetDetailScreen() {
       </View>
     );
   }
-  
+
+
+
   return (
     <SafeAreaView style={styles.main_container} edges={['bottom']}>
       <KeyboardAvoidingView
@@ -104,8 +135,34 @@ export default function TweetDetailScreen() {
         
         <View style={styles.commentsContainer}>
           <Text style={styles.commentsTitle}>Comments</Text>
+
+          {/* {tweet.comments.length === 0 ? (
+  <Text style={styles.noCommentsText}>No comments yet. Be the first to comment!</Text>
+) : (
+  tweet.comments.map((comment) => (
+    <Comment key={comment.id} comment={comment} />
+  ))
+)} */}
+
+       {DummyComments.comments.length === 0 ? (
+  <Text style={styles.noCommentsText}>
+    No comments yet. Be the first to comment!
+  </Text>
+) : (
+  <FlatList
+    data={DummyComments.comments}
+    keyExtractor={(item) => item._id?.toString() || Math.random().toString()}
+    renderItem={({ item }) => <Comment comment={item} />}
+    showsVerticalScrollIndicator={false}
+    nestedScrollEnabled = {true}
+    
+  />
+)}
+
+          {/* Uncomment this section if you want to use the original tweet comments instead of dummy data */}
           
-          {tweet.comments.length === 0 ? (
+          
+          {/* {tweet.comments.length === 0 ? (
             <Text style={styles.noCommentsText}>No comments yet. Be the first to comment!</Text>
           ) : (
             tweet.comments.map((comment) => (
@@ -120,10 +177,38 @@ export default function TweetDetailScreen() {
                   </View>
                   
                   <Text style={styles.commentText}>{comment.content}</Text>
+                  <TouchableOpacity>
+                    <Text style={styles.replyText}>Reply</Text>
+                  </TouchableOpacity>
                 </View>
+                  <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
+            <Heart 
+              size={18} 
+              fill={isLiked ? colors.danger : 'transparent'} 
+              color={isLiked ? colors.danger : colors.lightGray} 
+            />
+            {likeCount > 0 && (
+              <Text 
+                style={[
+                  styles.actionText, 
+                  isLiked && { color: colors.danger }
+                ]}
+              >
+                {likeCount}
+              </Text>
+            )} 
+            
+          </TouchableOpacity>
               </View>
-            ))
-          )}
+            )
+          ))} */}
+
+          {/* {DummyComments.map((comment)=> (
+            <View>
+              <Text>{comment.content}</Text>
+            </View>
+          ))} */}
+            
         </View>
       </ScrollView>
       
@@ -140,10 +225,13 @@ export default function TweetDetailScreen() {
             multiline
           />
           
+    {/* <Button title='press me' onPress={fetchDummyComments}/>
+    <Button title='know prop' onPress={()=>console.log(DummyComments[0]._id)}/> */}
+          
           <TouchableOpacity
             style={[
               styles.sendButton,
-              (!commentText.trim() || isSubmitting) && styles.disabledButton,
+              (!commentText.trim() || isSubmitting) && styles.disabledButton,``
             ]}
             onPress={handleAddComment}
             disabled={!commentText.trim() || isSubmitting}
@@ -331,5 +419,20 @@ const styles = StyleSheet.create({
     color: colors.background,
     fontWeight: '700' as const,
     fontSize: 14,
+  },
+   actionButton: {
+    
+    alignItems: 'center',
+  },
+  actionText: {
+    marginLeft: 4,
+    fontSize: 14,
+    color: colors.secondaryText,
+  },
+  replyText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '500' as const,
+    marginTop: 4,
   },
 });

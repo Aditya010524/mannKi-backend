@@ -25,7 +25,8 @@
       "package": "app.rork.real-time-twitter-clone-app-pd3qj9a"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       [

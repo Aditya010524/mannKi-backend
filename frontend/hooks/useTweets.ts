@@ -99,6 +99,8 @@ export const useTweets = () => {
     
     try {
       const response = await apiService.get<Tweet>(`${API_ENDPOINTS.TWEET_DETAIL}/${tweetId}`);
+      console.log("fetchTweetById raw response:", response);
+      console.log("fetchTweetById response.data:", response.data);
       
       if (response.success && response.data) {
         return response.data;
@@ -176,6 +178,8 @@ export const useTweets = () => {
       const response = await apiService.post<Tweet>(`${API_ENDPOINTS.COMMENT}/${tweetId}/comment`, {
         content,
       });
+      console.log("addComment raw response:", response);
+console.log("addComment response.data:", response.data);
       
       if (response.success && response.data) {
         return response.data;

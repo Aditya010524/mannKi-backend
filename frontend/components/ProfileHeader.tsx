@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { MapPin, Link, Calendar } from "lucide-react-native";
+import { MapPin, Link, Calendar} from "lucide-react-native";
 import { User } from "@/types";
 import { useUsers } from "@/hooks/useUsers";
 import { colors } from "@/constants/colors";
 import { useAuth } from "@/hooks/useAuth";
+import { router } from "expo-router";
 
 interface ProfileHeaderProps {
   user: User;
@@ -55,15 +56,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: user.coverPhoto }} style={styles.coverPhoto} />
+    <View className="bg-background" >
+      <Image source={{ uri: user.coverPhoto }} className="w-full h-[150px]" />
 
-      <View style={styles.profileSection}>
-        <Image source={{ uri: user.profilePic }} style={styles.profilePic} />
+      <View className="flex-row justify-between px-4 mt-[-40px]">
+        <Image source={{ uri: user.profilePic }} className="w-[80px] h-[80px] rounded-full border-1 border-background" />
 
         {isCurrentUser ? (
           <TouchableOpacity style={styles.editButton} onPress={onEditProfile}>
-            <Text style={styles.editButtonText}>Edit profile</Text>
+            <Text className="text-text font-bold">Edit profile</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -82,13 +83,13 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         )}
       </View>
 
-      <View style={styles.userInfo}>
-        <Text style={styles.name}>{user.name}</Text>
-        <Text style={styles.username}>@{user.username}</Text>
+      <View className="p-5">
+        <Text className="text-text font-bold text-2xl">{user.name}</Text>
+        <Text className="text-secondaryText text-md my-1">@{user.username}</Text>
 
-        <Text style={styles.bio}>{user.bio}</Text>
+        <Text className="text-Text text-lg my-1">{user.bio}</Text>
 
-        <View style={styles.details}>
+        <View className="mb-3">
           {user.location && (
             <View style={styles.detailItem}>
               <MapPin size={16} color={colors.secondaryText} />
@@ -105,24 +106,27 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             </View>
           )}
 
-          <View style={styles.detailItem}>
+          <View className="flex-row items-center mb-1" >
             <Calendar size={16} color={colors.secondaryText} />
-            <Text style={styles.detailText}>{formatDate(user.createdAt)}</Text>
+            <Text className="text-secondaryText text-md">{formatDate(user.createdAt)}</Text>
           </View>
         </View>
 
-        <View style={styles.stats}>
+        <View className="flex-row border-t border-border pt-3">
           <TouchableOpacity
-            style={styles.statItem}
-            onPress={() => console.log()}
+           className="mr-5 flex-row"
+           onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
+        
           >
-            <Text style={styles.statValue}>{user.following.length}</Text>
-            <Text style={styles.statLabel}>Following</Text>
+            <Text className="text-text font-bold mr-1">{user.following.length}</Text>
+            <Text className="text-secondaryText">Following</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.statItem}>
-            <Text style={styles.statValue}>{user.followers.length}</Text>
-            <Text style={styles.statLabel}>Followers</Text>
+          <TouchableOpacity     onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
+          className="flex-row">
+            <Text className="text-text font-bold mr-1">{user.followers.length}</Text>
+            <Text className="text-secondaryText">Followers</Text>
+            
           </TouchableOpacity>
         </View>
       </View>
@@ -133,26 +137,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.background,
-  },
-  coverPhoto: {
-    width: "100%",
-    height: 150,
-  },
-  profileSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginTop: -40,
-  },
-  profilePic: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 4,
-    borderColor: colors.background,
-  },
+
   editButton: {
     borderWidth: 1,
     borderColor: colors.border,
@@ -186,25 +171,6 @@ const styles = StyleSheet.create({
   followingButtonText: {
     color: colors.text,
   },
-  userInfo: {
-    padding: 16,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: "700" as const,
-    color: colors.text,
-  },
-  username: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    marginBottom: 12,
-  },
-  bio: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors.text,
-    marginBottom: 12,
-  },
   details: {
     marginBottom: 12,
   },
@@ -220,23 +186,5 @@ const styles = StyleSheet.create({
   },
   link: {
     color: colors.primary,
-  },
-  stats: {
-    flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    paddingTop: 12,
-  },
-  statItem: {
-    flexDirection: "row",
-    marginRight: 20,
-  },
-  statValue: {
-    fontWeight: "700" as const,
-    color: colors.text,
-    marginRight: 4,
-  },
-  statLabel: {
-    color: colors.secondaryText,
   },
 });

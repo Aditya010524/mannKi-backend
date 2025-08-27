@@ -12,17 +12,23 @@ import {
   Dimensions,
 } from "react-native";
 import { ArrowLeft } from "lucide-react-native";
+import { ThumbsUp,  Share2 } from "lucide-react-native";
+
 
 const { width, height } = Dimensions.get("window");
 
-export default function ModalScreen({ photos, showModal , setshowModal }: any) {
-  const [CurrentIndex, setCurrentIndex] = useState(0)
+export default function ModalScreen({ photos, showModal, setshowModal }: any) {
+  const [CurrentIndex, setCurrentIndex] = useState(0);
+
 
   return (
     <Modal transparent={true} visible={showModal} animationType="slide">
       <View style={styles.container}>
         {/* Back Button */}
-        <TouchableOpacity style={styles.closeBtn} onPress={() => setshowModal(false)}>
+        <TouchableOpacity
+          style={styles.closeBtn}
+          onPress={() => setshowModal(false)}
+        >
           <ArrowLeft size={28} color="#fff" />
         </TouchableOpacity>
 
@@ -31,14 +37,12 @@ export default function ModalScreen({ photos, showModal , setshowModal }: any) {
           data={photos}
           horizontal
           pagingEnabled
-           onMomentumScrollEnd={(e) => {
-            const index = Math.round(
-              e.nativeEvent.contentOffset.x / width
-            );
+          onMomentumScrollEnd={(e) => {
+            const index = Math.round(e.nativeEvent.contentOffset.x / width);
             setCurrentIndex(index);
           }}
           renderItem={({ item }) => (
-            <View style={styles.imageContainer}>
+            <View className="justify-center items-center" >
               <Image
                 source={{ uri: item }}
                 style={styles.image}
@@ -50,11 +54,33 @@ export default function ModalScreen({ photos, showModal , setshowModal }: any) {
         />
 
         {/* Footer / Counter */}
-        <View style={styles.footer}>
-          <Text style={styles.counter}>{CurrentIndex + 1} / {photos.length}</Text>
+        <View  className="position-absolute w-full items-center">
+          <Text className="text-white text-xl" >
+            {CurrentIndex + 1} / {photos.length}
+          </Text>
         </View>
 
         <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+        <View className="flex-row justify-around p-4 border-t border-gray-700">
+          <TouchableOpacity
+            onPress={() => setisLiked(!isLiked)}
+            className="flex-row justify-center items-center gap-2 w-half h-half"
+          >
+            <Text className="text-white">{isLiked ? "Liked" : "Like"}</Text>
+
+            <ThumbsUp
+              size={20}
+              color={isLiked ? "#1DA1F2" : "white"} // stroke color
+              fill={isLiked ? "#1DA1F2" : "none"} // fill when liked
+              stroke={isLiked ? "#1DA1F2" : "white"} // border effect
+              strokeWidth={2}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-row justify-center items-center gap-2 w-half h-half">
+            <Text className="text-white">Share</Text>
+            <Share2 size={20} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
     </Modal>
   );
@@ -67,7 +93,7 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     position: "absolute",
-    top: 40,
+    top: 20,
     left: 20,
     zIndex: 10,
     backgroundColor: "rgba(0,0,0,0.6)",
@@ -75,8 +101,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   imageContainer: {
-    width,
-    height,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -86,9 +110,10 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: "absolute",
-    bottom: 30,
+    bottom: 60,
     width: "100%",
     alignItems: "center",
+  
   },
   counter: {
     color: "white",

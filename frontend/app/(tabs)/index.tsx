@@ -32,7 +32,7 @@ export default function HomeScreen() {
   };
   
   return (
-    <View style={styles.container}>
+    <View className='flex-1 bg-background'>
       <FlatList
         data={tweets}
         keyExtractor={(item) => item.id}
@@ -42,32 +42,9 @@ export default function HomeScreen() {
         }
       />
       
-      <TouchableOpacity style={styles.composeButton} onPress={navigateToCompose}>
+      <TouchableOpacity className='absolute bottom-6 right-6 items-center justify-center h-16 w-16 rounded-full bg-primary' onPress={navigateToCompose}>
         <Plus size={24} color={colors.background} />
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  composeButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-    shadowColor: colors.text,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-});

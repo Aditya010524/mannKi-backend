@@ -40,18 +40,19 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className='bg-colors.background flex-1 p-6'
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.logoContainer}>
+      <ScrollView contentContainerClassName='flex-grow justify-center' >
+        <View className='items-center mb-9'>
+        
           <Twitter size={40} color={colors.primary} />
         </View>
         
-        <Text style={styles.title}>Log in to Mann</Text>
+        <Text className='text-colors.text text-2xl font-bold mb-4 text-center'>Log in to Mann</Text>
         
-        <View style={styles.form}>
+        <View className='space-y-4 mb-6' >
           <Input
             label="Email"
             placeholder="Enter your email"
@@ -71,24 +72,26 @@ export default function LoginScreen() {
             error={errors.password}
           />
           
-          <Button
+         <View className='mt-4'>
+           <Button
             title="Log in"
             onPress={handleLogin}
             loading={isLoading}
             fullWidth
-            style={styles.loginButton}
+            
           />
+         </View>
           
           <TouchableOpacity onPress={() => router.push('/forgot-password')}>
-            <Text style={styles.forgotPassword}>Forgot password?</Text>
+            <Text className='text-primary text-center mt-4'>Forgot password?</Text>
           </TouchableOpacity>
         </View>
         
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
+        <View className='items-center' >
+          <Text className='text-secondaryText text-center'>
             Don't have an account?{' '}
             <Link href="/signup" asChild>
-              <Text style={styles.signupLink}>Sign up</Text>
+              <Text className='text-primary font-medium'>Sign up</Text>
             </Link>
           </Text>
         </View>
@@ -96,47 +99,3 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 24,
-    justifyContent: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700' as const,
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  form: {
-    marginBottom: 24,
-  },
-  loginButton: {
-    marginTop: 16,
-  },
-  forgotPassword: {
-    color: colors.primary,
-    textAlign: 'center',
-    marginTop: 16,
-  },
-  footer: {
-    alignItems: 'center',
-  },
-  footerText: {
-    color: colors.secondaryText,
-  },
-  signupLink: {
-    color: colors.primary,
-    fontWeight: '500' as const,
-  },
-});
