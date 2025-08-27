@@ -90,7 +90,7 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
         
     
         {tweet.media && tweet.media.length > 0 && (
-          <Grid photos={tweet.media} />
+          <Grid photos={tweet.media} isLiked = {isLiked} onLike = {handleLike} likeCount = {likeCount} />
         )}
         
         <View style={styles.actions}>

@@ -4,9 +4,12 @@ import ModalScreen from "@/app/modal";
 
 type GridProps = {
   photos: string[];
+  isLiked: boolean;
+  likeCount: number;
+  onLike: () => void;
 };
 
-const Grid: React.FC<GridProps> = ({ photos }) => {
+const Grid: React.FC<GridProps> = ({ photos , isLiked , onLike , likeCount}) => {
   // State to toggle modal visibility
   const [showModal, setShowModal] = useState(false);
 
@@ -94,6 +97,9 @@ const Grid: React.FC<GridProps> = ({ photos }) => {
           photos={photos}
           showModal={showModal}
           setshowModal={setShowModal}
+          isLiked={isLiked}
+          onLike={onLike}
+          likeCount={likeCount}
         />
       )}
     </>

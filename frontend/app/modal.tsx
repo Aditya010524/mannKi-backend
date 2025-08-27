@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Platform,
   StyleSheet,
@@ -12,12 +12,12 @@ import {
   Dimensions,
 } from "react-native";
 import { ArrowLeft } from "lucide-react-native";
-import { ThumbsUp,  Share2 } from "lucide-react-native";
+import { ThumbsUp,  Share2 ,Heart } from "lucide-react-native";
 
 
 const { width, height } = Dimensions.get("window");
 
-export default function ModalScreen({ photos, showModal, setshowModal }: any) {
+export default function ModalScreen({ photos, showModal, setshowModal ,isLiked, onLike , likeCount}: any) {
   const [CurrentIndex, setCurrentIndex] = useState(0);
 
 
@@ -58,12 +58,23 @@ export default function ModalScreen({ photos, showModal, setshowModal }: any) {
           <Text className="text-white text-xl" >
             {CurrentIndex + 1} / {photos.length}
           </Text>
+         
         </View>
+        {
+          likeCount !== 0 ? 
+     <View className="flex-row items-center px-4 py-2">
+  <Heart size={14} color="#ef4444" fill="#ef4444" /> 
+  <Text className="ml-2 text-gray-400 text-sm">
+    Liked by <Text className="font-medium text-white">{likeCount}</Text> {likeCount === 1 ? "person" : "people"}
+  </Text>
+</View>
+: null
+        }
 
         <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
         <View className="flex-row justify-around p-4 border-t border-gray-700">
           <TouchableOpacity
-            onPress={() => setisLiked(!isLiked)}
+           onPress={onLike}
             className="flex-row justify-center items-center gap-2 w-half h-half"
           >
             <Text className="text-white">{isLiked ? "Liked" : "Like"}</Text>
