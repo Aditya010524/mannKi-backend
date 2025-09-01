@@ -20,6 +20,11 @@ export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tweets' | 'replies' | 'media' | 'likes'>('tweets');
+
+  const activeTabstyle = "border-b-2 border-primary py-3";
+  const inactiveTabStyle = "flex-1 items-center py-3 ";
+  const inactiveTabTextStyle = "font-medium";
+  const activeTabTextStyle = "text-primary";
   
   useEffect(() => {
     if (username) {
@@ -63,16 +68,16 @@ export default function ProfileScreen() {
   
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading profile...</Text>
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-lg text-secondaryText'>Loading profile...</Text>
       </View>
     );
   }
   
   if (!user) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>User not found</Text>
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-lg text-secondaryText'>User not found</Text>
       </View>
     );
   }
@@ -80,7 +85,7 @@ export default function ProfileScreen() {
   const isCurrentUser = currentUser?.id === user.id;
   
   return (
-    <View style={styles.container}>
+    <View className='flex-1 bg-background'>
       <FlatList
         data={tweets}
         keyExtractor={(item) => item.id}
@@ -95,46 +100,46 @@ export default function ProfileScreen() {
               isCurrentUser={isCurrentUser}
             />
             
-            <View style={styles.tabsContainer}>
+            <View className='flex-row border-b border-border'>
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'tweets' && styles.activeTab]}
+                className={`${inactiveTabStyle}  ${activeTab === 'tweets' ? activeTabstyle : ''}`}
                 onPress={() => setActiveTab('tweets')}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'tweets' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${activeTab == 'tweets' ? activeTabTextStyle: ''}`}
                 >
                   Tweets
                 </Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'replies' && styles.activeTab]}
+                className={`${inactiveTabStyle} ${activeTab == 'replies'  ? activeTabstyle : ''}`}
                 onPress={() => setActiveTab('replies')}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'replies' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${activeTab == 'replies' ? activeTabTextStyle: ''}`}
                 >
                   Replies
                 </Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'media' && styles.activeTab]}
+              className={`${inactiveTabStyle}  ${activeTab === 'media' ? activeTabstyle : ''}`}
                 onPress={() => setActiveTab('media')}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'media' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${activeTab == 'media' ? activeTabTextStyle: ''}`}
                 >
                   Media
                 </Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'likes' && styles.activeTab]}
+              className={`${inactiveTabStyle}  ${activeTab === 'likes' ? activeTabstyle : ''}`}
                 onPress={() => setActiveTab('likes')}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'likes' && styles.activeTabText]}
+                   className={`${inactiveTabTextStyle} ${activeTab == 'likes' ? activeTabTextStyle: ''}`}
                 >
                   Likes
                 </Text>
@@ -143,9 +148,9 @@ export default function ProfileScreen() {
           </>
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No tweets yet</Text>
-            <Text style={styles.emptySubtext}>
+          <View className='p-6 items-center'>
+            <Text className='text-lg font-semibold mb-2'>No tweets yet</Text>
+            <Text className='text-lg font-bold text-center' >
               When {isCurrentUser ? 'you post' : `${user.name} posts`} tweets, they'll show up here.
             </Text>
           </View>
@@ -154,66 +159,3 @@ export default function ProfileScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: colors.secondaryText,
-  },
-  errorContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorText: {
-    fontSize: 18,
-    color: colors.text,
-    fontWeight: '700' as const,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500' as const,
-    color: colors.secondaryText,
-  },
-  activeTabText: {
-    color: colors.primary,
-  },
-  emptyContainer: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    textAlign: 'center',
-  },
-});

@@ -40,16 +40,16 @@ export default function SearchUsersScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View className='flex-1 bg-background'>
+      <View className='flex-row items-center p-5 border-b border-border'>
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
         
-        <View style={styles.searchInputContainer}>
+        <View className='flex-row items-center ml-4 flex-1 bg-extraLightGray rounded-full px-2 py-1'>
           <SearchIcon size={20} color={colors.secondaryText} />
           <TextInput
-            style={styles.searchInput}
+           className='ml-2 flex-1 text-text'
             placeholder="Search for people"
             placeholderTextColor={colors.secondaryText}
             value={searchQuery}
@@ -60,8 +60,8 @@ export default function SearchUsersScreen() {
       </View>
       
       {isSearching ? (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Searching...</Text>
+        <View className='p-6 items-center'>
+          <Text className='text-lg text-secondaryText'>Searching...</Text>
         </View>
       ) : (
         <FlatList
@@ -75,11 +75,11 @@ export default function SearchUsersScreen() {
             />
           )}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
+            <View className='p-6 items-center'>
               {searchQuery.trim().length > 0 ? (
-                <Text style={styles.emptyText}>No users found for "{searchQuery}"</Text>
+                <Text className='text-lg text-secondaryText'>No users found for "{searchQuery}"</Text>
               ) : (
-                <Text style={styles.emptyText}>Search for people to message</Text>
+                <Text className='text-lg text-secondaryText'>Search for people to message</Text>
               )}
             </View>
           }
@@ -88,50 +88,3 @@ export default function SearchUsersScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.extraLightGray,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    marginLeft: 12,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    fontSize: 16,
-    color: colors.text,
-  },
-  loadingContainer: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: colors.secondaryText,
-  },
-  emptyContainer: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: colors.secondaryText,
-    textAlign: 'center',
-  },
-});

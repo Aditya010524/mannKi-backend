@@ -33,132 +33,67 @@ export default function SettingsScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View className='flex-1 bg-background'>
+      <View className='flex-row items-center justify-between p-4 border-b border-border'>
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
         
-        <Text style={styles.headerTitle}>Settings</Text>
+        <Text className='text-xl font-bold text-text'>Settings</Text>
         
         <View style={{ width: 24 }} />
       </View>
       
-      <ScrollView style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
+      <ScrollView className='flex-1' >
+        <View className='border-b border-border py-4'>
+          <Text className='text-lg font-bold text-text px-4 py-2'>Account</Text>
           
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/edit-profile')}>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 'onPress={() => router.push('/edit-profile')}>
             <User size={20} color={colors.text} />
-            <Text style={styles.menuItemText}>Your account</Text>
+            <Text className='ml-5 text-lg  text-text'>Your account</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.menuItem} onPress={navigateToChangePassword}>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 ' onPress={navigateToChangePassword}>
             <Lock size={20} color={colors.text} />
-            <Text style={styles.menuItemText}>Change password</Text>
+            <Text className='ml-5 text-lg  text-text'>Change password</Text>
           </TouchableOpacity>
         </View>
         
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Settings</Text>
+        <View className='border-b border-border py-4'>
+          <Text className='text-lg font-bold text-text px-4 py-2'>Settings</Text>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 '>
             <Bell size={20} color={colors.text} />
-            <Text style={styles.menuItemText}>Notifications</Text>
+            <Text className='ml-5 text-lg  text-text'>Notifications</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 '>
             <Shield size={20} color={colors.text} />
-            <Text style={styles.menuItemText}>Privacy and safety</Text>
+            <Text className='ml-5 text-lg  text-text'>Privacy and safety</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 '>
             <Moon size={20} color={colors.text} />
-            <Text style={styles.menuItemText}>Display</Text>
+            <Text className='ml-5 text-lg  text-text'>Display</Text>
           </TouchableOpacity>
         </View>
         
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
+        <View className='border-b border-border py-4'>
+          <Text className='text-lg font-bold text-text px-4 py-2'>Support</Text>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 '>
             <HelpCircle size={20} color={colors.text} />
-            <Text style={styles.menuItemText}>Help Center</Text>
+            <Text className='ml-5 text-lg  text-text'>Help Center</Text>
           </TouchableOpacity>
         </View>
         
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <TouchableOpacity className='flex-row items-center px-4 py-3 mt-4' onPress={handleLogout}>
           <LogOut size={20} color={colors.danger} />
-          <Text style={styles.logoutText}>Log out</Text>
+          <Text className='ml-5 text-lg  text-danger'>Log out</Text>
         </TouchableOpacity>
         
-        <Text style={styles.versionText}>Twitter Clone v1.0.0</Text>
+        <Text className='text-center text-md text-secondaryText mt-4'>Twitter Clone v1.0.0</Text>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-  },
-  content: {
-    flex: 1,
-  },
-  section: {
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: colors.text,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  menuItemText: {
-    fontSize: 16,
-    color: colors.text,
-    marginLeft: 16,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    marginTop: 16,
-  },
-  logoutText: {
-    fontSize: 16,
-    color: colors.danger,
-    marginLeft: 16,
-    fontWeight: '500' as const,
-  },
-  versionText: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    textAlign: 'center',
-    marginVertical: 24,
-  },
-});

@@ -149,7 +149,11 @@ export function Comment({ comment }: Props) {
 const styles = StyleSheet.create({
   commentItem: {
     flexDirection: "row",
-    marginBottom: 16,
+   padding : 12,
+   
+  
+  
+    
   },
   commentAvatar: {
     width: 40,
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
   commentHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+   
     flexWrap: "wrap",
   },
   commentName: {

@@ -64,20 +64,20 @@ export default function ExploreScreen() {
   
   const renderTrendingHashtags = () => {
     return (
-      <View style={styles.trendingSection}>
-        <View style={styles.sectionHeader}>
+      <View className='p-4'>
+        <View className='flex-row items-center mb-4'>
           <TrendingUp size={20} color={colors.text} />
-          <Text style={styles.sectionTitle}>Trending</Text>
+          <Text className='ml-2 text-2xl font-semibold text-text'>Trending</Text>
         </View>
         
         {trendingHashtags.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={styles.trendingItem}
+             className='py-3 border-b border-border mb-1'
             onPress={() => handleSearch(item.tag)}
           >
-            <Text style={styles.trendingTag}>#{item.tag}</Text>
-            <Text style={styles.trendingCount}>{item.count} tweets</Text>
+            <Text className='text-lg font-semibold text-text'>#{item.tag}</Text>
+            <Text className='text-md text-secondaryText'>{item.count} tweets</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -91,8 +91,8 @@ export default function ExploreScreen() {
     
     if (isSearching) {
       return (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Searching...</Text>
+        <View className='p-6 items-center'>
+          <Text className='text-lg text-secondaryText'>Searching...</Text>
         </View>
       );
     }
@@ -101,36 +101,36 @@ export default function ExploreScreen() {
       return (
         <ScrollView>
           {searchResults.users.length > 0 && (
-            <View style={styles.resultSection}>
-              <Text style={styles.resultSectionTitle}>People</Text>
+            <View className="py-3">
+              <Text className="text-base font-bold text-text px-4 mb-2">People</Text>
               {searchResults.users.slice(0, 3).map((user) => (
                 <UserCard key={user.id} user={user} />
               ))}
               {searchResults.users.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('users')}>
-                  <Text style={styles.showMoreText}>Show more</Text>
+                  <Text className='text-sm text-primary px-4 py-3'>Show more</Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
           
           {searchResults.tweets.length > 0 && (
-            <View style={styles.resultSection}>
-              <Text style={styles.resultSectionTitle}>Tweets</Text>
+            <View className='p-4 border-t border-border'>
+              <Text className='text-lg font-semibold text-text'>Tweets</Text>
               {searchResults.tweets.slice(0, 3).map((tweet) => (
                 <TweetComponent key={tweet.id} tweet={tweet} />
               ))}
               {searchResults.tweets.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('tweets')}>
-                  <Text style={styles.showMoreText}>Show more</Text>
+                  <Text className='text-md text-secondaryText'>Show more</Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
           
           {searchResults.users.length === 0 && searchResults.tweets.length === 0 && (
-            <View style={styles.noResults}>
-              <Text style={styles.noResultsText}>No results found for "{searchQuery}"</Text>
+            <View className='p-6 items-center'>
+              <Text className='text-base text-secondaryText text-center'>No results found for "{searchQuery}"</Text>
             </View>
           )}
         </ScrollView>
@@ -144,8 +144,8 @@ export default function ExploreScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <UserCard user={item} />}
           ListEmptyComponent={
-            <View style={styles.noResults}>
-              <Text style={styles.noResultsText}>No users found for "{searchQuery}"</Text>
+            <View className='p-6 items-center'>
+              <Text className='text-lg text-secondaryText'>No users found for "{searchQuery}"</Text>
             </View>
           }
         />
@@ -159,8 +159,8 @@ export default function ExploreScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TweetComponent tweet={item} />}
           ListEmptyComponent={
-            <View style={styles.noResults}>
-              <Text style={styles.noResultsText}>No tweets found for "{searchQuery}"</Text>
+            <View className='p-6 items-center'>
+              <Text className='text-lg text-secondaryText'>No tweets found for "{searchQuery}"</Text>
             </View>
           }
         />
@@ -169,12 +169,12 @@ export default function ExploreScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
+    <View className='flex-1 bg-background'>
+      <View className='p-3 border-b border-border'>
+        <View className='flex-row items-center bg-extraLightGray rounded-full px-3'>
           <SearchIcon size={20} color={colors.secondaryText} />
           <TextInput
-            style={styles.searchInput}
+            className='flex-1 py-2 px-2 text-base text-text'
             placeholder="Search MANN KI"
             placeholderTextColor={colors.secondaryText}
             value={searchQuery}
@@ -184,35 +184,37 @@ export default function ExploreScreen() {
       </View>
       
       {searchQuery.trim().length > 0 && (
-        <View style={styles.tabsContainer}>
+        <View className='flex-row border-b border-border' >
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'top' && styles.activeTab]}
+          className={`flex-1 items-center py-3 ${activeTab === 'top' ? 'border-b-2 border-primary' : ''}`}
+
             onPress={() => setActiveTab('top')}
           >
             <Text
-              style={[styles.tabText, activeTab === 'top' && styles.activeTabText]}
+            className={`font-medium ${activeTab === 'top' ? 'text-primary' : 'text-secondaryText'}`}
+
             >
               Top
             </Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'users' && styles.activeTab]}
+className={`flex-1 items-center py-3 ${activeTab === 'users' ? 'border-b-2 border-primary' : ''}`}
             onPress={() => setActiveTab('users')}
           >
             <Text
-              style={[styles.tabText, activeTab === 'users' && styles.activeTabText]}
+            className={`font-medium ${activeTab === 'users' ? 'text-primary' : 'text-secondaryText'}`}
             >
               People
             </Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-            style={[styles.tab, activeTab === 'tweets' && styles.activeTab]}
+className={`flex-1 items-center py-3 ${activeTab === 'tweets' ? 'border-b-2 border-primary' : ''}`}
             onPress={() => setActiveTab('tweets')}
           >
             <Text
-              style={[styles.tabText, activeTab === 'tweets' && styles.activeTabText]}
+            className={`font-medium ${activeTab === 'tweets' ? 'text-primary' : 'text-secondaryText'}`}
             >
               Tweets
             </Text>
@@ -224,115 +226,3 @@ export default function ExploreScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  searchContainer: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.extraLightGray,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    fontSize: 16,
-    color: colors.text,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500' as const,
-    color: colors.secondaryText,
-  },
-  activeTabText: {
-    color: colors.primary,
-  },
-  loadingContainer: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: colors.secondaryText,
-  },
-  trendingSection: {
-    padding: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    marginLeft: 8,
-    color: colors.text,
-  },
-  trendingItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  trendingTag: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 4,
-  },
-  trendingCount: {
-    fontSize: 14,
-    color: colors.secondaryText,
-  },
-  resultSection: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  resultSectionTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: colors.text,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  showMoreText: {
-    fontSize: 14,
-    color: colors.primary,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  noResults: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  noResultsText: {
-    fontSize: 16,
-    color: colors.secondaryText,
-    textAlign: 'center',
-  },
-});

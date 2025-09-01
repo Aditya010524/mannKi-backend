@@ -34,11 +34,11 @@ export default function NotificationsScreen() {
   const hasUnreadNotifications = notifications.some((notification) => !notification.read);
   
   return (
-    <View style={styles.container}>
+    <View className='flex-1 bg-background'>
       {hasUnreadNotifications && (
-        <TouchableOpacity style={styles.markAllButton} onPress={handleMarkAllAsRead}>
+        <TouchableOpacity className='flex-row items-center justify-center bg-primary py-2' onPress={handleMarkAllAsRead}>
           <Check size={16} color={colors.background} />
-          <Text style={styles.markAllText}>Mark all as read</Text>
+          <Text className='ml-2 text-sm font-semibold text-background'>Mark all as read</Text>
         </TouchableOpacity>
       )}
       
@@ -52,9 +52,9 @@ export default function NotificationsScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No notifications yet</Text>
-            <Text style={styles.emptySubtext}>
+          <View className='flex-1 items-center justify-center p-6 mt-[100px]'>
+            <Text className='text-lg font-semibold text-text'>No notifications yet</Text>
+            <Text className='text-center text-secondaryText mt-2 text-md'>
               When you get notifications, they'll show up here.
             </Text>
           </View>
@@ -64,39 +64,4 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  markAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-    paddingVertical: 8,
-  },
-  markAllText: {
-    color: colors.background,
-    fontWeight: '500' as const,
-    marginLeft: 8,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-    marginTop: 100,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    textAlign: 'center',
-  },
-});
+

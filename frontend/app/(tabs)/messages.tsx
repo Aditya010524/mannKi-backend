@@ -37,11 +37,11 @@ export default function MessagesScreen() {
   };
   
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <TouchableOpacity style={styles.searchButton} onPress={navigateToSearch}>
+    <View className='flex-1 bg-background'>
+      <View className='p-3 border-b border-border'>
+        <TouchableOpacity className='flex-row items-center px-4 py-3 bg-extraLightGray rounded-full' onPress={navigateToSearch}>
           <Search size={16} color={colors.secondaryText} />
-          <Text style={styles.searchText}>Search Direct Messages</Text>
+          <Text className='ml-2 text-secondaryText text-md'>Search Direct Messages</Text>
         </TouchableOpacity>
       </View>
       
@@ -53,77 +53,18 @@ export default function MessagesScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No messages yet</Text>
-            <Text style={styles.emptySubtext}>
+          <View className='flex-1 items-center justify-center p-6 mt-[100px]'>
+            <Text className='text-2xl font-bold text-text'>No messages yet</Text>
+            <Text className='text-center text-secondaryText mt-2 items-center text-md'>
               When you send or receive messages, they'll show up here.
             </Text>
           </View>
         }
       />
       
-      <TouchableOpacity style={styles.newMessageButton} onPress={navigateToNewMessage}>
+      <TouchableOpacity className='absolute bottom-4 right-4 bg-primary rounded-full p-5' onPress={navigateToNewMessage}>
         <Edit size={24} color={colors.background} />
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  searchContainer: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  searchButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.extraLightGray,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  searchText: {
-    marginLeft: 8,
-    color: colors.secondaryText,
-    fontSize: 14,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-    marginTop: 100,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    textAlign: 'center',
-  },
-  newMessageButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 5,
-    shadowColor: colors.text,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-});

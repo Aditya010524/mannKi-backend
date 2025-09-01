@@ -68,26 +68,26 @@ export default function ChangePasswordScreen() {
   
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+     className='flex-1 bg-background'
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
     >
-      <View style={styles.header}>
+      <View className='flex-row items-center justify-between px-4 py-3 border-b border-border'>
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
         
-        <Text style={styles.headerTitle}>Change password</Text>
+        <Text className='text-xl font-semibold'>Change password</Text>
         
-        <View style={{ width: 24 }} />
+        <View className='w-6' />
       </View>
       
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
-        <Text style={styles.description}>
+      <ScrollView className='flex-1' contentContainerClassName='p-4'>
+        <Text className='text-base text-secondaryText mb-6'>
           Enter your current password and a new password to change your password.
         </Text>
         
-        <View style={styles.form}>
+        <View className='w-full'>
           <Input
             label="Current password"
             placeholder="Enter your current password"
@@ -130,53 +130,18 @@ export default function ChangePasswordScreen() {
             error={errors.confirmPassword}
           />
           
-          <Button
+        <View className='mt-6'>
+            <Button
             title="Change password"
             onPress={handleChangePassword}
             loading={isSubmitting}
             fullWidth
-            style={styles.submitButton}
+           
           />
+        </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-  },
-  description: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    marginBottom: 24,
-    lineHeight: 20,
-  },
-  form: {
-    marginBottom: 24,
-  },
-  submitButton: {
-    marginTop: 16,
-  },
-});

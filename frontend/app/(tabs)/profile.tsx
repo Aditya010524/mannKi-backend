@@ -1,63 +1,81 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
-import { Settings } from 'lucide-react-native';
-import { ProfileHeader } from '@/components/ProfileHeader';
-import { Tweet as TweetComponent } from '@/components/Tweet';
-import { useAuth } from '@/hooks/useAuth';
-import { useTweets } from '@/hooks/useTweets';
-import { colors } from '@/constants/colors';
-import { Tweet } from '@/types';
-import { router } from 'expo-router';
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
+import { Settings } from "lucide-react-native";
+import { ProfileHeader } from "@/components/ProfileHeader";
+import { Tweet as TweetComponent } from "@/components/Tweet";
+import { useAuth } from "@/hooks/useAuth";
+import { useTweets } from "@/hooks/useTweets";
+import { colors } from "@/constants/colors";
+import { Tweet } from "@/types";
+import { router } from "expo-router";
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const { fetchUserTweets, isLoading } = useTweets();
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState<'tweets' | 'replies' | 'media' | 'likes'>('tweets');
-  
+  const [activeTab, setActiveTab] = useState<
+    "tweets" | "replies" | "media" | "likes"
+  >("tweets");
+
+  // styling for tabs
+
+  const activeTabstyle = "border-b-2 border-primary py-3";
+  const inactiveTabStyle = "flex-1 items-center py-3 ";
+  const inactiveTabTextStyle = "font-medium";
+  const activeTabTextStyle = "text-primary";
+
   const loadTweets = async () => {
     if (!user) return;
-    
+
     const userTweets = await fetchUserTweets(user.id);
     setTweets(userTweets);
   };
-  
+
   useEffect(() => {
     if (user) {
       loadTweets();
     }
   }, [user]);
-  
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadTweets();
     setRefreshing(false);
   };
-  
+
   const handleEditProfile = () => {
-    router.push('/edit-profile');
+    router.push("/edit-profile");
   };
-  
+
   const handleSettings = () => {
-    router.push('/settings');
+    router.push("/settings");
   };
-  
+
   if (!user) return null;
-  
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{user.name}</Text>
+    <View className="flex-1 bg-background">
+      <View className="flex-row items-center justify-between px-4 py-3 border-b border-border">
+        <Text className="text-xl font-semibold text-text">{user.name}</Text>
         <TouchableOpacity onPress={handleSettings}>
           <Settings size={20} color={colors.text} />
         </TouchableOpacity>
       </View>
-      
+
       <FlatList
         data={tweets}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <TweetComponent tweet={item} onRefresh={loadTweets} />}
+        renderItem={({ item }) => (
+          <TweetComponent tweet={item} onRefresh={loadTweets} />
+        )}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
@@ -68,47 +86,73 @@ export default function ProfileScreen() {
               isCurrentUser={true}
               onEditProfile={handleEditProfile}
             />
-            
-            <View style={styles.tabsContainer}>
+
+            <View className="flex-row border-b border-border">
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'tweets' && styles.activeTab]}
-                onPress={() => setActiveTab('tweets')}
+                className={`${inactiveTabStyle}  ${
+                  activeTab === "tweets" ? activeTabstyle : ""
+                }`}
+            
+                onPress={() => setActiveTab("tweets")}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'tweets' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${
+                    activeTab === "tweets"
+                      ? activeTabTextStyle
+                      : "text-secondaryText"
+                  }`}
+               
                 >
                   Tweets
                 </Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'replies' && styles.activeTab]}
-                onPress={() => setActiveTab('replies')}
+                className={`${inactiveTabStyle}  ${
+                  activeTab === "replies" ? activeTabstyle : ""
+                }`}
+                onPress={() => setActiveTab("replies")}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'replies' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${
+                    activeTab === "replies"
+                      ? activeTabTextStyle
+                      : "text-secondaryText"
+                  }`}
                 >
                   Replies
                 </Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'media' && styles.activeTab]}
-                onPress={() => setActiveTab('media')}
+                className={`${inactiveTabStyle}  ${
+                  activeTab === "media" ? activeTabstyle : ""
+                }`}
+                onPress={() => setActiveTab("media")}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'media' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${
+                    activeTab === "media"
+                      ? activeTabTextStyle
+                      : "text-secondaryText"
+                  }`}
                 >
                   Media
                 </Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity
-                style={[styles.tab, activeTab === 'likes' && styles.activeTab]}
-                onPress={() => setActiveTab('likes')}
+                className={`${inactiveTabStyle}  ${
+                  activeTab === "likes" ? activeTabstyle : ""
+                }`}
+                onPress={() => setActiveTab("likes")}
               >
                 <Text
-                  style={[styles.tabText, activeTab === 'likes' && styles.activeTabText]}
+                  className={`${inactiveTabTextStyle} ${
+                    activeTab === "likes"
+                      ? activeTabTextStyle
+                      : "text-secondaryText"
+                  }`}
                 >
                   Likes
                 </Text>
@@ -117,9 +161,11 @@ export default function ProfileScreen() {
           </>
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No tweets yet</Text>
-            <Text style={styles.emptySubtext}>
+          <View className="p-6 items-center">
+            <Text className="text-lg font-semibold text-text mb-2">
+              No tweets yet
+            </Text>
+            <Text className="text-center text-secondaryText text-md">
               When you post tweets, they'll show up here.
             </Text>
           </View>
@@ -128,61 +174,3 @@ export default function ProfileScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: colors.text,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500' as const,
-    color: colors.secondaryText,
-  },
-  activeTabText: {
-    color: colors.primary,
-  },
-  emptyContainer: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: colors.secondaryText,
-    textAlign: 'center',
-  },
-});

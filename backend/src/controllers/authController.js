@@ -53,7 +53,7 @@ const register = async (req, res) => {
       username,
       email,
       password,
-      bio: `Hi, I'm ${name}!`
+      bio: `Hi, I'm ${name}!`,
       profilePic: process.env.DEFAULT_PROFILE_URL,
     });
 

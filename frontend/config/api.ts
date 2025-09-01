@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://192.168.208.209:3000/api' // Development - Backend server
+const API_BASE_URL = 'http://192.168.118.208:3000/api' // Development - Backend server
 
 export const API_ENDPOINTS = {
   // Auth

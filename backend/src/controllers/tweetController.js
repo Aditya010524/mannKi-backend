@@ -536,21 +536,10 @@ const retweetTweet = async (req, res) => {
 // @access  Private
 const addComment = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: errors.array()
-      });
-    }
-
     const { tweetId } = req.params;
     const { content } = req.body;
-    const userId = req.user.id;
 
-    const tweet = await Tweet.findById(tweetId).populate('author', 'name username');
-
+    const tweet = await Tweet.findById(tweetId);
     if (!tweet) {
       return res.status(404).json({
         success: false,
@@ -558,71 +547,66 @@ const addComment = async (req, res) => {
       });
     }
 
-    const comment = await Comment.create({
+    const comment = new Comment({
       content,
-      author: userId,
+      author: req.user._id, // store as author in DB
       tweet: tweetId
     });
 
-    await comment.populate('author', 'name username profilePic');
+    await comment.save();
 
-    // Add comment to tweet
+    // Push comment into tweet
     tweet.comments.push(comment._id);
     await tweet.save();
 
-    // Create notification if not own tweet
-    if (tweet.author._id.toString() !== userId) {
-      await Notification.create({
-        recipient: tweet.author._id,
-        sender: userId,
-        type: 'comment',
-        message: `${req.user.name} commented on your tweet`,
-        relatedTweet: tweetId,
-        relatedComment: comment._id
-      });
+    // Re-fetch tweet with populated comments + author
+    let updatedTweet = await Tweet.findById(tweetId)
+      .populate({
+        path: 'comments',
+        populate: { path: 'author', select: 'name username profilePic' }
+      })
+      .populate('author', 'name username profilePic');
 
-      // Emit socket event
-      if (req.io) {
-        req.io.to(tweet.author._id.toString()).emit('new_notification', {
-          type: 'comment',
-          sender: {
-            id: req.user._id,
-            name: req.user.name,
-            username: req.user.username,
-            profilePic: req.user.profilePic
-          },
-          message: `${req.user.name} commented on your tweet`,
-          relatedTweet: tweet,
-          createdAt: new Date()
-        });
-      }
-    }
+    // Transform comments → replace author with user and _id → id
+    const transformedComments = updatedTweet.comments.map(c => {
+      const obj = c.toObject();
+      obj.id = obj._id.toString();  // add id
+      delete obj._id;
+      obj.user = obj.author;
+      delete obj.author;
+      return obj;
+    });
 
-    // Emit real-time update
+    // Replace tweet author with user and _id → id
+    const transformedTweet = updatedTweet.toObject();
+    transformedTweet.id = transformedTweet._id.toString();
+    delete transformedTweet._id;
+    transformedTweet.user = transformedTweet.author;
+    delete transformedTweet.author;
+    transformedTweet.comments = transformedComments;
+
+    // Transform single comment for socket
+    const transformedComment = comment.toObject();
+    transformedComment.id = transformedComment._id.toString();
+    delete transformedComment._id;
+    transformedComment.user = req.user;
+    delete transformedComment.author;
+
+    // Emit socket event
     if (req.io) {
       req.io.emit('tweet_commented', {
         tweetId,
-        comment
+        comment: transformedComment
       });
     }
 
-    // Get updated tweet with comments
-    const updatedTweet = await Tweet.findById(tweetId)
-      .populate('author', 'name username profilePic isVerified')
-      .populate({
-        path: 'comments',
-        populate: {
-          path: 'author',
-          select: 'name username profilePic'
-        }
-      });
-
-    res.json({
+    res.status(201).json({
       success: true,
-      data: updatedTweet
+      data: transformedTweet
     });
+
   } catch (error) {
-    console.error('Add comment error:', error);
+    console.error('Error adding comment:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'

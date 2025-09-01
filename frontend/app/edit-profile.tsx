@@ -111,16 +111,16 @@ const handleSave = async () => {
   
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+   className='flex-1 bg-background'
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
     >
-      <View style={styles.header}>
+      <View className='flex-row items-center justify-between px-4 py-3 border-b border-border'>
         <TouchableOpacity onPress={() => router.back()}>
           <ArrowLeft size={24} color={colors.text} />
         </TouchableOpacity>
         
-        <Text style={styles.headerTitle}>Edit profile</Text>
+        <Text className='text-xl font-semibold text-text'>Edit profile</Text>
         
         <Button
           title="Save"
@@ -130,24 +130,24 @@ const handleSave = async () => {
         />
       </View>
       
-      <ScrollView style={styles.content}>
-        <View style={styles.coverPhotoContainer}>
-          <Image source={{ uri: coverPhoto }} style={styles.coverPhoto} />
+      <ScrollView className='flex-1'>
+        <View className='relative h-[150]'>
+          <Image source={{ uri: coverPhoto }} className='w-full h-full' />
           
-          <TouchableOpacity style={styles.editCoverButton} onPress={pickCoverImage}>
+          <TouchableOpacity className='absolute top-3 right-3 bg-black/60 rounded-full p-2'  onPress={pickCoverImage}>
             <Camera size={20} color={colors.background} />
           </TouchableOpacity>
         </View>
         
-        <View style={styles.profilePicContainer}>
-          <Image source={{ uri: profilePic }} style={styles.profilePic} />
+        <View className='relative self-start mt-[-40] ml-4'>
+          <Image source={{ uri: profilePic }} className='w-[100] h-[100] rounded-full' />
           
-          <TouchableOpacity style={styles.editProfilePicButton} onPress={pickProfileImage}>
+          <TouchableOpacity className='absolute bottom-0 right-0 bg-black/60 rounded-full p-2' onPress={pickProfileImage}>
             <Camera size={20} color={colors.background} />
           </TouchableOpacity>
         </View>
         
-        <View style={styles.form}>
+        <View className='mt-10 px-4'>
           <Input
             label="Name"
             placeholder="Add your name"
@@ -155,10 +155,10 @@ const handleSave = async () => {
             onChangeText={setName}
           />
           
-          <View style={styles.bioContainer}>
-            <Text style={styles.label}>Bio</Text>
+          <View className='mb-4'>
+            <Text className='mb-2 text-md font-semibold text-text'>Bio</Text>
             <TextInput
-              style={styles.bioInput}
+             className='border border-border rounded-lg p-3 text-text text-base min-h-[100] max-h-[200] align-top'
               placeholder="Add your bio"
               placeholderTextColor={colors.secondaryText}
               value={bio}
@@ -166,7 +166,7 @@ const handleSave = async () => {
               multiline
               maxLength={160}
             />
-            <Text style={styles.charCount}>{bio.length}/160</Text>
+            <Text className='text-sm text-secondaryText align-self-end '>{bio.length}/160</Text>
           </View>
           
           <Input
@@ -188,98 +188,3 @@ const handleSave = async () => {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text,
-  },
-  content: {
-    flex: 1,
-  },
-  coverPhotoContainer: {
-    position: 'relative',
-    height: 150,
-  },
-  coverPhoto: {
-    width: '100%',
-    height: '100%',
-  },
-  editCoverButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profilePicContainer: {
-    position: 'relative',
-    alignSelf: 'flex-start',
-    marginTop: -40,
-    marginLeft: 16,
-  },
-  profilePic: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 4,
-    borderColor: colors.background,
-  },
-  editProfilePicButton: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 15,
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  form: {
-    padding: 16,
-    marginTop: 40,
-  },
-  bioContainer: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500' as const,
-    color: colors.text,
-    marginBottom: 8,
-  },
-  bioInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: colors.text,
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  charCount: {
-    fontSize: 12,
-    color: colors.secondaryText,
-    alignSelf: 'flex-end',
-    marginTop: 4,
-  },
-});
