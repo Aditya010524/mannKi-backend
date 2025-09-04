@@ -48,45 +48,10 @@ export default function SignupScreen() {
     setErrors({}); // Clear any previous errors
 
     try {
-      await signup({ name, username, email, password });
+      await signup({ displayName: name, username, email, password });
     } catch (error: any) {
-      const fieldErrors: typeof errors = {};
-
-      // ✅ First check for structured backend field errors
-      if (error?.response?.data?.errors) {
-        error.response.data.errors.forEach((err: any) => {
-          const field = err.path;
-          const msg = err.msg;
-          if (field && msg) {
-            fieldErrors[field as keyof typeof fieldErrors] = msg;
-          }
-        });
-      }
-
-      // ✅ Fallback: if backend sent a message (e.g., "Username already taken")
-      else if (error?.response?.data?.message) {
-        const msg = error.response.data.message.toLowerCase();
-
-        if (msg.includes("username")) {
-          fieldErrors.username = error.response.data.message;
-        } else if (msg.includes("email")) {
-          fieldErrors.email = error.response.data.message;
-        } else {
-          fieldErrors.general = error.response.data.message;
-        }
-      }
-
-      // ✅ Final fallback
-      else if (error.message) {
-        fieldErrors.general = error.message;
-      } else {
-        fieldErrors.general = "Signup failed. Please try again.";
-      }
-
-      setErrors(fieldErrors);
-    }
-  };
-
+    
+    }}
   return (
     <KeyboardAvoidingView
       className="bg-background flex-1 "
@@ -103,7 +68,7 @@ export default function SignupScreen() {
         </Text>
 
         {errors.general && (
-          <Text style={styles.generalError}>{errors.general}</Text>
+          <Text className="text-red-500 text-sm text-center mb-4">{errors.general}</Text>
         )}
 
         <View className="mb-6">
@@ -145,7 +110,7 @@ export default function SignupScreen() {
               onPress={handleSignup}
               loading={isLoading}
               fullWidth
-              className="mt-4"
+           
             />
           </View>
         </View>

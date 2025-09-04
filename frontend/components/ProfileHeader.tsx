@@ -118,13 +118,13 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
            onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
         
           >
-            <Text className="text-text font-bold mr-1">{user.following.length}</Text>
+            <Text className="text-text font-bold mr-1">{user.followingCount}</Text>
             <Text className="text-secondaryText">Following</Text>
           </TouchableOpacity>
 
           <TouchableOpacity     onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
           className="flex-row">
-            <Text className="text-text font-bold mr-1">{user.followers.length}</Text>
+            <Text className="text-text font-bold mr-1">{user.followersCount}</Text>
             <Text className="text-secondaryText">Followers</Text>
             
           </TouchableOpacity>

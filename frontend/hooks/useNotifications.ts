@@ -12,31 +12,31 @@ export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    // Set up real-time listeners
-    if (socketService.connected) {
-      socketService.onNewNotification((notification) => {
-        setNotifications(prev => [notification, ...prev]);
-        setUnreadCount(prev => prev + 1);
-      });
+  // useEffect(() => {
+  //   // Set up real-time listeners
+  //   if (socketService.connected) {
+  //     socketService.onNewNotification((notification) => {
+  //       setNotifications(prev => [notification, ...prev]);
+  //       setUnreadCount(prev => prev + 1);
+  //     });
 
-      socketService.onNotificationRead((notificationId) => {
-        setNotifications(prev => 
-          prev.map(notif => 
-            notif.id === notificationId 
-              ? { ...notif, read: true }
-              : notif
-          )
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      });
-    }
+  //     socketService.onNotificationRead((notificationId) => {
+  //       setNotifications(prev => 
+  //         prev.map(notif => 
+  //           notif.id === notificationId 
+  //             ? { ...notif, read: true }
+  //             : notif
+  //         )
+  //       );
+  //       setUnreadCount(prev => Math.max(0, prev - 1));
+  //     });
+  //   }
 
-    return () => {
-      socketService.off('new_notification');
-      socketService.off('notification_read');
-    };
-  }, []);
+  //   return () => {
+  //     socketService.off('new_notification');
+  //     socketService.off('notification_read');
+  //   };
+  // }, []);
 
   const fetchNotifications = async (page = 1, limit = 20) => {
     if (!user) return [];
@@ -69,14 +69,14 @@ export const useNotifications = () => {
     if (!user) return 0;
     
     try {
-      const response = await apiService.get<{ count: number }>(API_ENDPOINTS.UNREAD_COUNT);
+    //   const response = await apiService.get<{ count: number }>(API_ENDPOINTS.UNREAD_COUNT);
       
-      if (response.success && response.data) {
-        setUnreadCount(response.data.count);
-        return response.data.count;
-      } else {
-        return 0;
-      }
+    //   if (response.success && response.data) {
+    //     setUnreadCount(response.data.count);
+    //     return response.data.count;
+    //   } else {
+    //     return 0;}
+
     } catch (err) {
       console.error('Failed to fetch unread count:', err);
       return 0;

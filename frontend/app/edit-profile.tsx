@@ -11,7 +11,8 @@ import * as ImagePicker from 'expo-image-picker';
 export default function EditProfileScreen() {
   const { user, updateUser, isLoading } = useAuth();
   
-  const [name, setName] = useState(user?.name || '');
+  const [displayName, setdisplayName] = useState(user?.displayName || '');
+  const [username, setuserName] = useState(user?.username || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [location, setLocation] = useState(user?.location || '');
   const [website, setWebsite] = useState(user?.website || '');
@@ -27,47 +28,50 @@ const handleSave = async () => {
   try {
     const formData = new FormData();
 
-    formData.append("name", name);
+    formData.append("displayName", displayName);
+    formData.append("username", username);
     formData.append("bio", bio);
     formData.append("location", location);
     formData.append("website", website);
 
     // ✅ Use state directly instead of formData.get()
-    if (profilePic && profilePic !== user.profilePic) {
-      const fileName = profilePic.split('/').pop();
-      const fileType = fileName?.split('.').pop();
-      const profilePicFile = {
-        uri: profilePic,
-        name: fileName || 'profile.jpg',
-        type: `image/${fileType || 'jpeg'}`,
-      };
+    // if (profilePic && profilePic !== user.profilePic) {
+    //   const fileName = profilePic.split('/').pop();
+    //   const fileType = fileName?.split('.').pop();
+    //   const profilePicFile = {
+    //     uri: profilePic,
+    //     name: fileName || 'profile.jpg',
+    //     type: `image/${fileType || 'jpeg'}`,
+    //   };
 
-      formData.append("profilePic", profilePicFile as any);
+    //   formData.append("profilePic", profilePicFile as any);
 
-      console.log("📷 profilePic:");
-      console.log("   • uri:", profilePicFile.uri);
-      console.log("   • name:", profilePicFile.name);
-      console.log("   • type:", profilePicFile.type);
-    } else {
-      console.log("📷 profilePic: not available");
-    }
+    //   console.log("📷 profilePic:");
+    //   console.log("   • uri:", profilePicFile.uri);
+    //   console.log("   • name:", profilePicFile.name);
+    //   console.log("   • type:", profilePicFile.type);
+    // } else {
+    //   console.log("📷 profilePic: not available");
+    // }
 
-    if (coverPhoto && coverPhoto !== user.coverPhoto) {
-      const fileName = coverPhoto.split('/').pop();
-      const fileType = fileName?.split('.').pop();
-      const coverPhotoFile = {
-        uri: coverPhoto,
-        name: fileName || 'cover.jpg',
-        type: `image/${fileType || 'jpeg'}`,
-      };
+    // if (coverPhoto && coverPhoto !== user.coverPhoto) {
+    //   const fileName = coverPhoto.split('/').pop();
+    //   const fileType = fileName?.split('.').pop();
+    //   const coverPhotoFile = {
+    //     uri: coverPhoto,
+    //     name: fileName || 'cover.jpg',
+    //     type: `image/${fileType || 'jpeg'}`,
+    //   };
 
-      formData.append("coverPhoto", coverPhotoFile as any);
+    //   formData.append("coverPhoto", coverPhotoFile as any);
 
-      console.log("📷 coverPhoto:");
-      console.log("   • uri:", coverPhotoFile.uri);
-      console.log("   • name:", coverPhotoFile.name);
-      console.log("   • type:", coverPhotoFile.type);
-    } else {
+      // console.log("📷 coverPhoto:");
+      // console.log("   • uri:", coverPhotoFile.uri);
+      // console.log("   • name:", coverPhotoFile.name);
+      // console.log("   • type:", coverPhotoFile.type);
+if(false){
+
+}    else {
       console.log("📷 coverPhoto: not available");
     }
 
@@ -151,8 +155,14 @@ const handleSave = async () => {
           <Input
             label="Name"
             placeholder="Add your name"
-            value={name}
-            onChangeText={setName}
+            value={displayName}
+            onChangeText={setdisplayName}
+          />
+          <Input
+            label="Username"
+            placeholder="Add your username"
+            value={username}
+            onChangeText={setuserName}
           />
           
           <View className='mb-4'>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, LogOut, Lock, Bell, User, Shield, Moon, HelpCircle } from 'lucide-react-native';
+import { ArrowLeft, LogOut, Lock, Bell, User, Shield, Moon, HelpCircle, Delete,Laptop } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -56,6 +56,14 @@ export default function SettingsScreen() {
           <TouchableOpacity className='flex-row items-center px-4 py-3 ' onPress={navigateToChangePassword}>
             <Lock size={20} color={colors.text} />
             <Text className='ml-5 text-lg  text-text'>Change password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 ' onPress={()=>router.push('/delete-account')}>
+            <Delete size={20} color={colors.text} />
+            <Text className='ml-5 text-lg  text-text'> Delete Account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className='flex-row items-center px-4 py-3 ' onPress={()=>router.push('/sessions')}>
+            <Laptop size={20} color={colors.text} />
+            <Text className='ml-5 text-lg  text-text'>logged in devices</Text>
           </TouchableOpacity>
         </View>
         

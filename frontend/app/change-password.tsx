@@ -5,8 +5,11 @@ import { ArrowLeft } from 'lucide-react-native';
 import { colors } from '@/constants/colors';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
+import { useAuth } from '@/hooks/useAuth';
+
 
 export default function ChangePasswordScreen() {
+  const {changePassword} = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -46,12 +49,16 @@ export default function ChangePasswordScreen() {
   
   const handleChangePassword = async () => {
     if (!validate()) return;
+  try {
+      setIsSubmitting(true);
     
-    setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+  const response = await changePassword(currentPassword, newPassword, confirmPassword);
+         
+       console.log(response)
+
+   
+     
       
       Alert.alert(
         'Password Changed',
@@ -63,7 +70,16 @@ export default function ChangePasswordScreen() {
           },
         ]
       );
-    }, 1500);
+    
+  } catch (error) {
+   
+    
+  }  
+  finally{
+    setIsSubmitting(false);
+  }
+  
+ 
   };
   
   return (
@@ -109,7 +125,7 @@ export default function ChangePasswordScreen() {
             onChangeText={(text) => {
               setNewPassword(text);
               if (errors.newPassword) {
-                setErrors({ ...errors, newPassword: undefined });
+                setErrors({ ...errors, newPassword });
               }
             }}
             isPassword
@@ -123,7 +139,7 @@ export default function ChangePasswordScreen() {
             onChangeText={(text) => {
               setConfirmPassword(text);
               if (errors.confirmPassword) {
-                setErrors({ ...errors, confirmPassword: undefined });
+                setErrors({ ...errors, confirmPassword });
               }
             }}
             isPassword
@@ -135,6 +151,7 @@ export default function ChangePasswordScreen() {
             title="Change password"
             onPress={handleChangePassword}
             loading={isSubmitting}
+            disabled ={isSubmitting}
             fullWidth
            
           />

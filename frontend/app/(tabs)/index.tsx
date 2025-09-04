@@ -19,6 +19,7 @@ export default function HomeScreen() {
   
   useEffect(() => {
     loadTweets();
+  
   }, []);
   
   const handleRefresh = async () => {

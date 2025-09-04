@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
-  StyleSheet,
+
   Text,
   View,
   FlatList,
   TouchableOpacity,
   RefreshControl,
+  Button,
 } from "react-native";
 import { Settings } from "lucide-react-native";
 import { ProfileHeader } from "@/components/ProfileHeader";
@@ -17,7 +18,7 @@ import { Tweet } from "@/types";
 import { router } from "expo-router";
 
 export default function ProfileScreen() {
-  const { user, logout } = useAuth();
+  const { user, logout , fetchUser } = useAuth();
   const { fetchUserTweets, isLoading } = useTweets();
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -44,10 +45,12 @@ export default function ProfileScreen() {
       loadTweets();
     }
   }, [user]);
+ 
 
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadTweets();
+    await fetchUser()
     setRefreshing(false);
   };
 
@@ -171,6 +174,7 @@ export default function ProfileScreen() {
           </View>
         }
       />
+     
     </View>
   );
 }

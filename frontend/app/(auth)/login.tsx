@@ -32,7 +32,8 @@ export default function LoginScreen() {
     if (!validate()) return;
     
     try {
-      await login(email, password);
+      const identifier = email;
+      await login( identifier, password);
     } catch (error: any) {
       setErrors({ email: error.message || 'Invalid email or password' });
     }
