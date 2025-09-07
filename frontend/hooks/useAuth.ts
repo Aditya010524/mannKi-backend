@@ -63,11 +63,11 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const transformUserData = (userData: any): User => {
     return {
       id: userData._id || userData.id || '',
-      name: userData.name || userData.displayName || '',
+      displayName: userData.displayName || '',
       username: userData.username || '',
       email: userData.email || '',
       bio: userData.bio || '',
-      profilePic: userData.profilePic || userData.avatar || '',
+      avatar: userData.profilePic || userData.avatar || '',
       coverPhoto: userData.coverPhoto || '',
       location: userData.location || '',
       website: userData.website || '',
@@ -92,13 +92,17 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         // Handle different response structures
         const userData = response.data.user || response.data;
         const transformedUser = transformUserData(userData);
+
         
         setUser(transformedUser);
+ 
+     
+
         
         // Update AsyncStorage with latest user data
         await AsyncStorage.setItem('user', JSON.stringify(transformedUser));
         
-        console.log('User fetched and updated:', transformedUser);
+        // console.log('User fetched', transformedUser);
        
         return transformedUser;
 
@@ -215,11 +219,11 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
 
   const updateUser = async (formData: FormData) => {
     if (!user) return;
-    console.log('formData:', formData);
+
   
     try {
       const response = await apiService.putForm<any>(API_ENDPOINTS.UPDATE_PROFILE, formData);
-      console.log('Update user response:', response);
+  
 
       if (response.success && response.data) {
         // Instead of manually transforming, fetch fresh data from server

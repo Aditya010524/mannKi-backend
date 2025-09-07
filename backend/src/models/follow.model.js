@@ -17,10 +17,10 @@ const followSchema = new mongoose.Schema(
     },
 
     // Optional: muted flag if needed for frontend features
-    isMuted: {
-      type: Boolean,
-      default: false,
-    },
+    // isMuted: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     timestamps: true,

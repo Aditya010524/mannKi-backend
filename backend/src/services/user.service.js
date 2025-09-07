@@ -1,60 +1,11 @@
 import { User } from '../models/index.js';
 import ApiError from '../utils/api-error.js';
 import mongoose from 'mongoose';
+import logger from '../config/logger.config.js';
 
 class UserService {
-  // Search users by username, displayName, email
-  async searchUsers(searchTerm, options = {}, currentUserId) {
-    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options;
-
-    // Build search query
-    const searchQuery = {
-      $and: [
-        // Exclude current user from search results
-        { _id: { $ne: new mongoose.Types.ObjectId(currentUserId) } },
-        // Only show active accounts
-        { isActive: { $ne: false } },
-        // Search in multiple fields
-        {
-          $or: [
-            { username: { $regex: searchTerm, $options: 'i' } },
-            { displayName: { $regex: searchTerm, $options: 'i' } },
-            { email: { $regex: searchTerm, $options: 'i' } },
-          ],
-        },
-      ],
-    };
-
-    // Count total first
-    const totalCount = await User.countDocuments(searchQuery);
-
-    // Compute totalPages and clamp currentPage
-    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
-    const currentPage = Math.min(Math.max(1, parseInt(page)), totalPages);
-    const skip = (currentPage - 1) * limit;
-
-    // Fetch users
-    const users = await User.find(searchQuery)
-      .select('username displayName bio avatar isVerified isPrivate followersCount createdAt')
-      .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
-      .skip(skip)
-      .limit(parseInt(limit))
-      .lean();
-
-    return {
-      users,
-      pagination: {
-        currentPage,
-        totalPages,
-        totalCount,
-        hasNextPage: currentPage < totalPages,
-        hasPrevPage: currentPage > 1,
-      },
-    };
-  }
-
   // Get user by ID with public information
-  async getUserById(userId, currentUserId) {
+  async getUserById(userId) {
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw ApiError.badRequest('Invalid user ID');
     }
@@ -62,28 +13,10 @@ class UserService {
     const user = await User.findOne({
       _id: userId,
       isActive: { $ne: false },
-    })
-      .select(
-        'username displayName bio avatar coverPhoto location website isVerified isPrivate followersCount followingCount tweetsCount createdAt'
-      )
-      .lean();
+    }).select('-password');
 
     if (!user) {
       throw ApiError.notFound('User not found');
-    }
-
-    // If profile is private and not the owner, return limited info
-    if (user.isPrivate && userId !== currentUserId) {
-      return {
-        id: user._id,
-        username: user.username,
-        displayName: user.displayName,
-        avatar: user.avatar,
-        isVerified: user.isVerified,
-        isPrivate: user.isPrivate,
-        followersCount: user.followersCount,
-        followingCount: user.followingCount,
-      };
     }
 
     // Return full profile for public accounts or own profile
@@ -97,11 +30,51 @@ class UserService {
       location: user.location,
       website: user.website,
       isVerified: user.isVerified,
-      isPrivate: user.isPrivate,
       followersCount: user.followersCount,
       followingCount: user.followingCount,
       tweetsCount: user.tweetsCount,
       createdAt: user.createdAt,
+    };
+  }
+
+  // Search users by username, displayName, email
+  async searchUsers(searchTerm, options = {}, currentUserId) {
+    const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = options;
+
+    const searchQuery = {
+      $and: [
+        { _id: { $ne: new mongoose.Types.ObjectId(currentUserId) } },
+        { isActive: { $ne: false } },
+        {
+          $or: [
+            { username: { $regex: searchTerm, $options: 'i' } },
+            { displayName: { $regex: searchTerm, $options: 'i' } },
+            { email: { $regex: searchTerm, $options: 'i' } },
+          ],
+        },
+      ],
+    };
+
+    const totalCount = await User.countDocuments(searchQuery);
+    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+    const currentPage = Math.min(Math.max(1, parseInt(page)), totalPages);
+    const skip = (currentPage - 1) * limit;
+
+    const users = await User.find(searchQuery)
+      .select('username displayName bio avatar isVerified isPrivate followersCount createdAt')
+      .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean();
+
+    return {
+      users,
+      pagination: {
+        page: currentPage, // Changed from currentPage
+        limit: parseInt(limit), // Added
+        total: totalCount, // Changed from totalCount
+        totalPages, // Added
+      },
     };
   }
 
@@ -156,32 +129,110 @@ class UserService {
     };
   }
 
-  // Get suggested users (users not followed by current user)
-  async getSuggestedUsers(currentUserId, limit = 10) {
-    // This would require Follow model to check who user is already following
-    // For now, return random active users excluding current user
-    const users = await User.aggregate([
-      {
-        $match: {
-          _id: { $ne: new mongoose.Types.ObjectId(currentUserId) },
-          isActive: { $ne: false },
-          isPrivate: { $ne: true }, // Only suggest public accounts
-        },
-      },
-      { $sample: { size: parseInt(limit) } },
-      {
-        $project: {
-          username: 1,
-          displayName: 1,
-          bio: 1,
-          avatar: 1,
-          isVerified: 1,
-          followersCount: 1,
-        },
-      },
-    ]);
+  // Update profile
+  async updateProfile(userId, updates) {
+    // Remove any undefined/null values
+    Object.keys(updates).forEach((key) => {
+      if (updates[key] === undefined || updates[key] === null || updates[key] === '') {
+        delete updates[key];
+      }
+    });
 
-    return users;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    return user;
+  }
+
+  // Update username - NOW REQUIRES PASSWORD VERIFICATION
+  async updateUsername(userId, newUsername, currentPassword) {
+    // Verify current password first
+    const user = await User.findById(userId).select('+password');
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    const isPasswordValid = await user.comparePassword(currentPassword);
+    if (!isPasswordValid) {
+      throw ApiError.unauthorized('Current password is incorrect');
+    }
+
+    // Check if username is already taken
+    const existingUser = await User.findOne({
+      username: newUsername.toLowerCase(),
+      _id: { $ne: userId },
+    });
+
+    if (existingUser) {
+      throw ApiError.conflict('Username is already taken');
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { username: newUsername.toLowerCase() },
+      { new: true }
+    ).select('-password');
+
+    return updatedUser;
+  }
+
+  // Change password - UPDATED TO HANDLE CONFIRM PASSWORD
+  async changePassword(userId, currentPassword, newPassword) {
+    const user = await User.findById(userId).select('+password');
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+    if (!isCurrentPasswordValid) {
+      throw ApiError.unauthorized('Invalid current password');
+    }
+
+    // Check if new password is different from current
+    const isSamePassword = await user.comparePassword(newPassword);
+    if (isSamePassword) {
+      throw ApiError.badRequest('New password must be different from current password');
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    logger.info(`Password updated for user: ${user.email}`);
+    return { message: 'Password changed successfully' };
+  }
+
+  // Delete account - UPDATED TO HANDLE DELETE CONFIRMATION
+  async deleteAccount(userId, password, confirmDelete) {
+    const user = await User.findById(userId).select('+password');
+    if (!user) {
+      throw ApiError.notFound('User not found');
+    }
+
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      throw ApiError.unauthorized('Password is incorrect');
+    }
+
+    // Additional safety check (already handled by validation, but good to have)
+    if (confirmDelete !== 'DELETE') {
+      throw ApiError.badRequest('Account deletion not confirmed');
+    }
+
+    await User.findByIdAndUpdate(userId, {
+      isActive: false,
+      username: `deleted_${userId}`,
+      email: `deleted_${userId}@deleted.com`,
+      deletedAt: new Date(),
+    });
+
+    return { message: 'Account deleted successfully' };
   }
 
   //  Get user statistics
@@ -202,6 +253,7 @@ class UserService {
       followersCount: user.followersCount || 0,
       followingCount: user.followingCount || 0,
       tweetsCount: user.tweetsCount || 0,
+      accountAge: user.accountAge,
     };
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { User } from '@/types';
@@ -13,31 +13,39 @@ interface UserCardProps {
   onPress?: () => void;
 }
 
-export const UserCard: React.FC<UserCardProps> = ({ 
-  user, 
-  showFollowButton = true, 
+export const UserCard: React.FC<UserCardProps> = ({
+  user,
+  showFollowButton = true,
   compact = false,
   onPress
 }) => {
   const { user: currentUser } = useAuth();
-  const { followUser, unfollowUser } = useUsers();
+  const { toggleFollow } = useUsers();
   
-  const isFollowing = currentUser?.following.includes(user._id) || false;
-  
+  const [isFollowing, setIsFollowing] = useState(user?.followStatus?.isFollowing || false); // Added this line
+ 
+  // Sync with backend data when user prop changes
+  useEffect(() => {
+    setIsFollowing(user?.followStatus?.isFollowing || false);
+  }, [user?.followStatus?.isFollowing]); // Added this useEffect
+ 
   const handleFollow = async () => {
-    if (!currentUser) return;
-    
-    try {
-      if (isFollowing) {
-        await unfollowUser(user._id);
-      } else {
-        await followUser(user._id);
-      }
-    } catch (error) {
-      console.error('Failed to follow/unfollow:', error);
+   try {
+    const response = await toggleFollow(user._id);
+    console.log(user._id)
+    console.log(response)
+    if (response?.success?.action === "followed") {
+      setIsFollowing(true);   
+
     }
+    else if (response?.success?.action === "unfollowed") {
+      setIsFollowing(false);
+    }
+   } catch (error) {
+    
+   }
   };
-  
+ 
   const navigateToProfile = () => {
     if (onPress) {
       onPress();
@@ -45,42 +53,42 @@ export const UserCard: React.FC<UserCardProps> = ({
       router.push(`/profile/${user._id}`);
     }
   };
-  
+ 
   return (
-    <TouchableOpacity 
-      style={[styles.container, compact && styles.compactContainer]} 
+    <TouchableOpacity
+      style={[styles.container, compact && styles.compactContainer]}
       onPress={navigateToProfile}
     >
-      <Image 
-        source={{ uri: user.profilePic }} 
-        style={[styles.avatar, compact && styles.compactAvatar]} 
+      <Image
+        source={{ uri: user.profilePic }}
+        style={[styles.avatar, compact && styles.compactAvatar]}
       />
-      
+     
       <View style={styles.userInfo}>
         <Text style={styles.name} numberOfLines={1}>{user.displayName}</Text>
         <Text style={styles.username} numberOfLines={1}>@{user.username}</Text>
-        
+       
         {!compact && (
           <Text style={styles.bio} numberOfLines={2}>{user.bio}</Text>
         )}
       </View>
-      
+     
       {showFollowButton && currentUser && currentUser._id !== user._id && (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[
-            styles.followButton, 
+            styles.followButton,
             isFollowing && styles.followingButton
-          ]} 
+          ]}
           onPress={handleFollow}
         >
-          <Text 
+         { currentUser._id === user._id ? null :  <Text
             style={[
-              styles.followButtonText, 
+              styles.followButtonText,
               isFollowing && styles.followingButtonText
             ]}
           >
             {isFollowing ? 'Following' : 'Follow'}
-          </Text>
+          </Text>}
         </TouchableOpacity>
       )}
     </TouchableOpacity>

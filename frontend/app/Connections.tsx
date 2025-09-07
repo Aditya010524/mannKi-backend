@@ -18,21 +18,24 @@ const Connections = () => {
      
        
         console.log("followers",response)
+        setfollowers(response)
      
       };
       
       const loadFollowing = async (UserId:any) => {
      try { const response = await getFollowing(UserId);
-      console.log("following",following)
+      console.log("following",response)
+      setfollowing(response)
+  
      } catch (error) {
       console.log(error)
      }
-       setfollowing(following);
+    
       }
        useEffect(() => {
         loadFollowers(UserId);
         loadFollowing(UserId);
-        console.log("ayien",UserId)
+     
 
       }, []);
 
@@ -80,7 +83,7 @@ const Connections = () => {
         {data && data.length > 0 ? (
           <FlatList
             data={data}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item._id.toString()}
             renderItem={({ item }) => <UserCard user={item} />}
             scrollEnabled
           />
@@ -91,7 +94,7 @@ const Connections = () => {
             </Text>
             <Text className="text-secondaryText text-base">
               {activeTab === "followers"
-                ? "You don’t have any followers yet."
+                ? "You do not have any followers yet."
                 : "You are not following anyone yet."}
             </Text>
           </View>

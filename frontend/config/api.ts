@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://192.168.12.208:5000/api/v1';
+const API_BASE_URL = 'http://192.168.207.208:5000/api/v1';
 
 
 export const API_ENDPOINTS = {
@@ -27,6 +27,7 @@ export const API_ENDPOINTS = {
   
   FOLLOW: "/follows",                // POST /follows/:userId
   UNFOLLOW: "/follows",              // DELETE /follows/:userId
+  TOGGLE_FOLLOW: "/follows",         // PATCH /follows/:userId
   GET_FOLLOWERS: "/follows",         // GET /follows/:userId/followers
   GET_FOLLOWING: "/follows",         // GET /follows/:userId/following
   CHECK_FOLLOW_STATUS: "/follows",   // GET /follows/:userId/status

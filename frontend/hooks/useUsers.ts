@@ -19,12 +19,13 @@ export const useUsers = () => {
         page,
         limit,
       });
+      console.log("search results",response)
       
       if (response.success && response.data) {
         // console.log(response)
         // console.log(response.data)        
 
-        return response.data.users;
+        return response.data
       } else {
         throw new Error(response.error || 'Failed to search users');
       }
@@ -47,7 +48,7 @@ export const useUsers = () => {
       console.log('user by id',userId)
       if (response.success && response.data) {
          
-        return response.data.user;
+        return response.data;
        
       } else {
         throw new Error(response.error || 'User not found');
@@ -79,6 +80,16 @@ export const useUsers = () => {
       return null;
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const toggleFollow = async (userId: string) => {
+    try {
+      const response = await apiService.put(`${API_ENDPOINTS.TOGGLE_FOLLOW}/${userId}/toggle`);
+      return response;
+    }
+    catch(error) {
+      console.log(error)
     }
   };
 
@@ -153,7 +164,7 @@ const followUser = async (userId: string) => {
         page,
         limit,
       });
-      
+      console.log("followers",response)
       if (response.success && response.data) {
         return response.data;
       } else {
@@ -274,5 +285,6 @@ const followUser = async (userId: string) => {
     getFollowing,
     uploadAvatar,
     uploadCover,
+    toggleFollow
   };
 };

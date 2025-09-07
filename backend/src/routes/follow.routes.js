@@ -9,6 +9,10 @@ const router = express.Router();
 // All follow routes require authentication
 router.use(authenticateUser);
 
+// ==========================================
+// CORE FOLLOW/UNFOLLOW OPERATIONS
+// ==========================================
+
 // Follow a user
 router.post(
   '/:userId',
@@ -22,6 +26,17 @@ router.delete(
   validate(followValidation.unfollowUser, 'params'),
   followController.unfollowUser
 );
+
+// Toggle follow status (follow if not following, unfollow if following)
+router.put(
+  '/:userId/toggle',
+  validate(followValidation.followUser, 'params'),
+  followController.toggleFollow
+);
+
+// ==========================================
+// FOLLOW LISTS & INFORMATION
+// ==========================================
 
 // Get user's followers list
 router.get(
@@ -37,9 +52,17 @@ router.get(
   followController.getFollowing
 );
 
+// Get mutual follows between current user and target user
+router.get(
+  '/:userId/mutual',
+  validate(followValidation.getMutualFollows, 'params'),
+  followController.getMutualFollows
+);
+
 // ==========================================
 // FOLLOW STATUS & UTILITIES
 // ==========================================
+
 // Check follow status with a user
 router.get(
   '/:userId/status',
@@ -48,6 +71,10 @@ router.get(
 );
 
 // Get suggested users to follow
-router.get('/suggestions', followController.getSuggestedUsers);
+router.get(
+  '/suggestions',
+  validate(followValidation.getSuggestions, 'query'),
+  followController.getSuggestedUsers
+);
 
 export default router;

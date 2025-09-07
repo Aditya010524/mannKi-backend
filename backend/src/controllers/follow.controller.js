@@ -1,33 +1,105 @@
 import { followService } from '../services/follow.service.js';
 import asyncHandler from '../utils/async-handler.js';
 import ApiResponse from '../utils/api-response.js';
+import ApiError from '../utils/api-error.js';
+import mongoose from 'mongoose';
 
 class FollowController {
   // Follow a user
   followUser = asyncHandler(async (req, res) => {
-    const followerId = req.user._id.toString();
-    const followingId = req.params.userId;
+    const followerId = req.user._id; // Keep as ObjectId for consistency
+    const { userId: followingId } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(followingId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
 
     const follow = await followService.followUser(followerId, followingId);
 
-    return ApiResponse.created(res, { followId: follow._id }, 'Successfully followed user');
+    return ApiResponse.created(
+      res,
+      {
+        followId: follow._id,
+        followedAt: follow.createdAt,
+        followingUserId: followingId,
+      },
+      'Successfully followed user'
+    );
   });
 
-  //  Unfollow a user
+  // Unfollow a user
   unfollowUser = asyncHandler(async (req, res) => {
-    const followerId = req.user._id.toString();
-    const followingId = req.params.userId;
+    const followerId = req.user._id;
+    const { userId: followingId } = req.params;
 
-    await followService.unfollowUser(followerId, followingId);
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(followingId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
 
-    return ApiResponse.deleted(res, 'Successfully unfollowed user');
+    const unfollow = await followService.unfollowUser(followerId, followingId);
+
+    return ApiResponse.success(
+      res,
+      {
+        unfollowedUserId: followingId,
+        unfollowedAt: new Date(),
+        previousFollowDate: unfollow.createdAt,
+      },
+      'Successfully unfollowed user'
+    );
+  });
+
+  // Toggle follow status (follow if not following, unfollow if following)
+  toggleFollow = asyncHandler(async (req, res) => {
+    const followerId = req.user._id;
+    const { userId: followingId } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(followingId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
+
+    // Check current status
+    const currentStatus = await followService.getFollowStatus(followerId, followingId);
+
+    let result;
+    let action;
+
+    if (currentStatus.status === 'following' || currentStatus.status === 'mutual') {
+      // Currently following, so unfollow
+      result = await followService.unfollowUser(followerId, followingId);
+      action = 'unfollowed';
+    } else if (currentStatus.status === 'not_following' || currentStatus.status === 'followed_by') {
+      // Not following, so follow
+      result = await followService.followUser(followerId, followingId);
+      action = 'followed';
+    } else {
+      throw ApiError.badRequest('Cannot toggle follow status for this user');
+    }
+
+    return ApiResponse.success(
+      res,
+      {
+        action,
+        userId: followingId,
+        actionDate: result.createdAt || new Date(),
+      },
+      `Successfully ${action} user`
+    );
   });
 
   // Get user's followers
   getFollowers = asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100); // Cap at 100
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
 
     const result = await followService.getFollowers(userId, page, limit);
 
@@ -41,9 +113,14 @@ class FollowController {
 
   // Get user's following list
   getFollowing = asyncHandler(async (req, res) => {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100); // Cap at 100
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
 
     const result = await followService.getFollowing(userId, page, limit);
 
@@ -55,24 +132,60 @@ class FollowController {
     );
   });
 
-  //  Check follow status between two users
+  // Check follow status between two users
   getFollowStatus = asyncHandler(async (req, res) => {
-    const followerId = req.user._id.toString();
-    const followingId = req.params.userId;
+    const followerId = req.user._id;
+    const { userId: followingId } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(followingId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
 
     const status = await followService.getFollowStatus(followerId, followingId);
 
     return ApiResponse.success(res, status, 'Follow status retrieved successfully');
   });
 
-  //  Get suggested users to follow
+  // Get mutual followers between current user and target user
+  getMutualFollows = asyncHandler(async (req, res) => {
+    const currentUserId = req.user._id;
+    const { userId: targetUserId } = req.params;
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+      throw ApiError.badRequest('Invalid user ID format');
+    }
+
+    const mutualFollows = await followService.getMutualFollows(currentUserId, targetUserId, limit);
+
+    return ApiResponse.success(
+      res,
+      {
+        mutualFollows,
+        count: mutualFollows.length,
+        hasMore: mutualFollows.length === limit,
+      },
+      'Mutual follows retrieved successfully'
+    );
+  });
+
+  // Get suggested users to follow
   getSuggestedUsers = asyncHandler(async (req, res) => {
-    const userId = req.user._id.toString();
-    const limit = parseInt(req.query.limit) || 10;
+    const userId = req.user._id;
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50); // Cap at 50
 
     const suggestedUsers = await followService.getSuggestedUsers(userId, limit);
 
-    return ApiResponse.success(res, suggestedUsers, 'Suggested users retrieved successfully');
+    return ApiResponse.success(
+      res,
+      {
+        suggestions: suggestedUsers,
+        count: suggestedUsers.length,
+      },
+      'Suggested users retrieved successfully'
+    );
   });
 }
 

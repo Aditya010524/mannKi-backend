@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,6 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  Alert,
+
 } from "react-native";
 import { MapPin, Link, Calendar} from "lucide-react-native";
 import { User } from "@/types";
@@ -26,27 +28,35 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   onEditProfile,
 }) => {
   const { user: currentUser } = useAuth();
-  const {followUser, unfollowUser} = useUsers();
+  const {toggleFollow} = useUsers();
+  const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing || true);
+  
 
-  const isFollowing = currentUser?.following.includes(user.id) || false;
+useEffect(() => {
+  setisFollowing(user?.followStatus?.isFollowing || true);
+}, [user?.followStatus?.isFollowing]);
 
   const handleFollow = async () => {
-    if (!currentUser) return;
+
 
    try{
-    if (isFollowing) {
-      await unfollowUser(user.id);
-    } else {
-      await followUser(user.id);
-    }
+     const response = await toggleFollow(user.id);
+    if(response.success){
+      console.log(response?.success)
+      console.log(response?.data.action)
+  if (response?.data?.action === "followed") {
+   setisFollowing(true);
+  } else if (response?.data?.action === "unfollowed") {
+    setisFollowing(false);
+  } 
+  }
+  
+    
    } catch (error) {
       console.error('Failed to follow/unfollow:', error);
     }
   
    }
-   useEffect(() => {
-    console.log('useId:', user.id);
-   }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -61,7 +71,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       <Image source={{ uri: user.coverPhoto }} className="w-full h-[150px]" />
 
       <View className="flex-row justify-between px-4 mt-[-40px]">
-        <Image source={{ uri: user.profilePic }} className="w-[80px] h-[80px] rounded-full border-1 border-background" />
+        <Image source={{ uri: user.avatar }} className="w-[80px] h-[80px] rounded-full border-1 border-background" />
 
         {isCurrentUser ? (
           <TouchableOpacity style={styles.editButton} onPress={onEditProfile}>
@@ -131,6 +141,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </TouchableOpacity>
         </View>
       </View>
+
     </View>
   );
 };

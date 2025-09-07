@@ -3,49 +3,31 @@ import { validate } from '../middleware/validation.middleware.js';
 import { userController } from '../controllers/user.controller.js';
 import { authenticateUser } from '../middleware/auth.middleware.js';
 import userValidation from '../validations/user.validation.js';
-import multer from 'multer';
-import path from 'path';
-
-// use memory storage for easy integration with Cloudinary/S3 later
-// storage config
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // save in uploads/ directory
-  },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
-    cb(null, uniqueName);
-  },
-});
-
-const upload = multer({ storage });
+import upload from '../config/upload.config.js';
 
 const router = express.Router();
+
+// All routes require authentication
+router.use(authenticateUser);
 
 // ================= USER ROUTES (Protected) =================
 
 // Current user info
-router.get('/me', authenticateUser, userController.getCurrentUser);
+router.get('/me', userController.getCurrentUser);
 
+// Update profile with file uploads
 router.put(
   '/me',
-  authenticateUser,
   upload.fields([
     { name: 'avatar', maxCount: 1 },
     { name: 'coverPhoto', maxCount: 1 },
   ]),
-  validate(userValidation.updateProfile), // Joi still validates text fields
+  validate(userValidation.updateProfile),
   userController.updateProfile
 );
 
 // Update Username
-router.put(
-  '/me/username',
-  authenticateUser,
-  validate(userValidation.updateUsername),
-  userController.updateUsername
-);
+router.put('/me/username', validate(userValidation.updateUsername), userController.updateUsername);
 
 // Update Email
 // router.put(
@@ -58,62 +40,48 @@ router.put(
 // Change password
 router.post(
   '/change-password',
-  authenticateUser,
   validate(userValidation.changePassword),
   userController.changePassword
 );
 
 // Logout current session
-router.post('/logout', authenticateUser, userController.logout);
+router.post('/logout', userController.logout);
 
 // Logout from all sessions
-router.post('/logout-all', authenticateUser, userController.logoutAll);
+router.post('/logout-all', userController.logoutAll);
 
 // Get active sessions
-router.get('/sessions', authenticateUser, userController.getSessions);
+router.get('/sessions', userController.getSessions);
 
 // Remove specific session
-router.delete('/sessions/:tokenId', authenticateUser, userController.removeSession);
+router.delete('/sessions/:tokenId', userController.removeSession);
 
 // Delete account
-router.delete(
-  '/me',
-  authenticateUser,
-  validate(userValidation.deleteAccount),
-  userController.deleteAccount
-);
+router.delete('/me', validate(userValidation.deleteAccount), userController.deleteAccount);
 
-// Search users
-router.get(
-  '/search',
-  authenticateUser,
-  validate(userValidation.searchUsers, 'query'),
-  userController.searchUsers
-);
+// ================= USER DISCOVERY ROUTES =================
 
-// Get all users with pagination
-router.get('/', authenticateUser, validate(userValidation.getAllUsers), userController.getAllUsers);
+// Search users (with follow status)
+router.get('/search', validate(userValidation.searchUsers, 'query'), userController.searchUsers);
 
-// Get suggested users
+// Get suggested users to follow
 router.get(
   '/suggested',
-  authenticateUser,
-  validate(userValidation.getSuggestedUsers),
+  validate(userValidation.getSuggestedUsers, 'query'),
   userController.getSuggestedUsers
 );
 
-// Get user by ID
-router.get(
-  '/:userId',
-  authenticateUser,
-  validate(userValidation.getUserById, 'params'),
-  userController.getUserById
-);
+// Get all users with pagination (discover page)
+router.get('/', validate(userValidation.getAllUsers, 'query'), userController.getAllUsers);
 
-// Get user statistics
+// ================= SPECIFIC USER ROUTES =================
+
+// Get user by ID (with follow status)
+router.get('/:userId', validate(userValidation.getUserById, 'params'), userController.getUserById);
+
+// Get user statistics (with follow status)
 router.get(
   '/:userId/stats',
-  authenticateUser,
   validate(userValidation.getUserStats, 'params'),
   userController.getUserStats
 );

@@ -1,5 +1,6 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Search as SearchIcon, TrendingUp } from 'lucide-react-native';
 import { Tweet as TweetComponent } from '@/components/Tweet';
 import { UserCard } from '@/components/UserCard';
@@ -26,20 +27,24 @@ export default function ExploreScreen() {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim().length <=2) {
+    if (searchQuery.trim().length <= 2) {
       setSearchResults({ tweets: [], users: [] });
-    }
-    else{
-    const delaydebounce =  setTimeout(() => {
+    } else {
+      const delaydebounce = setTimeout(() => {
         handleSearch(searchQuery);
-
-       
-        
       }, 500);
 
       return () => clearTimeout(delaydebounce);
     }
   }, [searchQuery]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (searchQuery.trim().length > 2) {
+        handleSearch(searchQuery);
+      }
+    }, [searchQuery])
+  );
   
   const loadTrendingHashtags = async () => {
     try {
@@ -51,8 +56,6 @@ export default function ExploreScreen() {
   };
   
   const handleSearch = async (query: string) => {
- 
-    
     if (query.trim().length === 0) {
       setSearchResults({ tweets: [], users: [] });
       return;
@@ -70,7 +73,6 @@ export default function ExploreScreen() {
         tweets: tweetsResult,
         users: usersResult,
       });
-      console.log('search results',usersResult);
     } catch (error) {
       console.error('Search failed:', error);
       setSearchResults({ tweets: [], users: [] });
@@ -78,7 +80,20 @@ export default function ExploreScreen() {
       setIsSearching(false);
     }
   };
-  
+
+  const handleFollowChange = (userId: string, newFollowStatus: boolean) => {
+    setSearchResults(currentResults => {
+      const updatedUsers = currentResults.users.map(user => {
+        if (user._id === userId) {
+          return { ...user, followStatus: { ...user.followStatus, isFollowing: newFollowStatus } };
+        }
+        return user;
+      });
+
+      return { ...currentResults, users: updatedUsers };
+    });
+  };
+
   const renderTrendingHashtags = () => {
     return (
       <View className='p-4'>
@@ -90,8 +105,11 @@ export default function ExploreScreen() {
         {trendingHashtags.map((item, index) => (
           <TouchableOpacity
             key={index}
-             className='py-3 border-b border-border mb-1'
-            onPress={() => handleSearch(item.tag)}
+            className='py-3 border-b border-border mb-1'
+            onPress={() => {
+              setSearchQuery(item.tag);
+              handleSearch(item.tag);
+            }}
           >
             <Text className='text-lg font-semibold text-text'>#{item.tag}</Text>
             <Text className='text-md text-secondaryText'>{item.count} tweets</Text>
@@ -102,7 +120,7 @@ export default function ExploreScreen() {
   };
   
   const renderSearchResults = () => {
-    if (searchQuery.trim().length === 0) {
+    if (searchQuery.trim().length <= 2) {
       return renderTrendingHashtags();
     }
     
@@ -121,7 +139,7 @@ export default function ExploreScreen() {
             <View className="py-3">
               <Text className="text-base font-bold text-text px-4 mb-2">People</Text>
               {searchResults.users.slice(0, 3).map((user) => (
-                <UserCard key={user._id} user={user} />
+                <UserCard key={user._id} user={user} onFollowChange={handleFollowChange} />
               ))}
               {searchResults.users.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('users')}>
@@ -158,8 +176,8 @@ export default function ExploreScreen() {
       return (
         <FlatList
           data={searchResults.users}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <UserCard user={item} />}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <UserCard user={item} onFollowChange={handleFollowChange} />}
           ListEmptyComponent={
             <View className='p-6 items-center'>
               <Text className='text-lg text-secondaryText'>No users found for "{searchQuery}"</Text>
@@ -173,7 +191,7 @@ export default function ExploreScreen() {
       return (
         <FlatList
           data={searchResults.tweets}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => <TweetComponent tweet={item} />}
           ListEmptyComponent={
             <View className='p-6 items-center'>
@@ -192,7 +210,7 @@ export default function ExploreScreen() {
           <SearchIcon size={20} color={colors.secondaryText} />
           <TextInput
             className='flex-1 py-2 px-2 text-base text-text'
-            placeholder="Search MANN KI"
+            placeholder="Search Twitter"
             placeholderTextColor={colors.secondaryText}
             value={searchQuery}
             onChangeText={(text) => setSearchQuery(text)}
@@ -200,38 +218,36 @@ export default function ExploreScreen() {
         </View>
       </View>
       
-      {searchQuery.trim().length > 0 && (
+      {searchQuery.trim().length > 2 && (
         <View className='flex-row border-b border-border' >
           <TouchableOpacity
-          className={`flex-1 items-center py-3 ${activeTab === 'top' ? 'border-b-2 border-primary' : ''}`}
-
+            className={`flex-1 items-center py-3 ${activeTab === 'top' ? 'border-b-2 border-primary' : ''}`}
             onPress={() => setActiveTab('top')}
           >
             <Text
-            className={`font-medium ${activeTab === 'top' ? 'text-primary' : 'text-secondaryText'}`}
-
+              className={`font-medium ${activeTab === 'top' ? 'text-primary' : 'text-secondaryText'}`}
             >
               Top
             </Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-className={`flex-1 items-center py-3 ${activeTab === 'users' ? 'border-b-2 border-primary' : ''}`}
+            className={`flex-1 items-center py-3 ${activeTab === 'users' ? 'border-b-2 border-primary' : ''}`}
             onPress={() => setActiveTab('users')}
           >
             <Text
-            className={`font-medium ${activeTab === 'users' ? 'text-primary' : 'text-secondaryText'}`}
+              className={`font-medium ${activeTab === 'users' ? 'text-primary' : 'text-secondaryText'}`}
             >
               People
             </Text>
           </TouchableOpacity>
           
           <TouchableOpacity
-className={`flex-1 items-center py-3 ${activeTab === 'tweets' ? 'border-b-2 border-primary' : ''}`}
+            className={`flex-1 items-center py-3 ${activeTab === 'tweets' ? 'border-b-2 border-primary' : ''}`}
             onPress={() => setActiveTab('tweets')}
           >
             <Text
-            className={`font-medium ${activeTab === 'tweets' ? 'text-primary' : 'text-secondaryText'}`}
+              className={`font-medium ${activeTab === 'tweets' ? 'text-primary' : 'text-secondaryText'}`}
             >
               Tweets
             </Text>

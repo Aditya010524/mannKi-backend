@@ -118,20 +118,20 @@ class ApiService {
         requestConfig.body = isFormData ? body : JSON.stringify(body);
       }
 
-      console.log(`🚀 API Request: ${method} ${endpoint}`, {
-        headers: headers,
-        body: isFormData ? '[FormData]' : body,
-      });
+      // console.log(`🚀 API Request: ${method} ${endpoint}`, {
+      //   headers: headers,
+      //   body: isFormData ? '[FormData]' : body,
+      // });
 
       const response = await fetch(`${this.baseURL}${endpoint}`, requestConfig);
       const result = await this.handleResponse<T>(response);
 
-      console.log(`📥 API Response: ${method} ${endpoint}`, {
-        status: response.status,
-        success: result.success,
-        data: result.data,
-        error: result.error,
-      });
+      // console.log(`📥 API Response: ${method} ${endpoint}`, {
+      //   status: response.status,
+      //   success: result.success,
+      //   data: result.data,
+      //   error: result.error,
+      // });
 
       // If 401 Unauthorized, try refreshing token and retry once
       if (!result.success && response.status === 401 && retry) {

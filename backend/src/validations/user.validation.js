@@ -4,13 +4,15 @@ const userValidation = {
   // PUT /me -> Update Profile
   updateProfile: Joi.object({
     displayName: Joi.string().min(1).max(50).trim().optional().messages({
+      'string.min': 'Display name cannot be empty',
       'string.max': 'Display name cannot exceed 50 characters',
     }),
 
     bio: Joi.string().max(160).allow('').optional().messages({
       'string.max': 'Bio cannot exceed 160 characters',
     }),
-      location: Joi.string().max(30).allow('').optional().messages({
+
+    location: Joi.string().max(30).allow('').optional().messages({
       'string.max': 'Location cannot exceed 30 characters',
     }),
 
@@ -32,7 +34,7 @@ const userValidation = {
         Joi.string().valid('', null)
       )
       .optional(),
-  }).min(1),
+  }),
 
   // PUT /me/username -> Update Username
   updateUsername: Joi.object({
@@ -50,8 +52,8 @@ const userValidation = {
         'any.required': 'Username is required',
       }),
 
-    password: Joi.string().required().messages({
-      'any.required': 'Current password is required for verification',
+    currentPassword: Joi.string().required().messages({
+      'any.required': 'Current password is required to change username',
     }),
   }),
 
@@ -77,7 +79,8 @@ const userValidation = {
     }),
 
     confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required().messages({
-      'any.only': 'Passwords do not match',
+      'any.only': 'Confirm password must match new password',
+      'any.required': 'Confirm password is required',
     }),
   }),
 
@@ -88,7 +91,7 @@ const userValidation = {
     }),
 
     confirmDelete: Joi.string().valid('DELETE').required().messages({
-      'any.only': 'Please type DELETE to confirm account deletion',
+      'any.only': 'Please type "DELETE" to confirm account deletion',
       'any.required': 'Confirmation is required',
     }),
   }),
@@ -96,23 +99,29 @@ const userValidation = {
   // Search users
   searchUsers: Joi.object({
     q: Joi.string().min(2).max(50).required().messages({
-      'string.min': 'Search term must be at least 2 characters long',
-      'string.max': 'Search term cannot exceed 50 characters',
-      'any.required': 'Search term is required',
+      'string.min': 'Search query must be at least 2 characters',
+      'string.max': 'Search query cannot exceed 50 characters',
+      'any.required': 'Search query is required',
     }),
-    page: Joi.number().integer().min(1).default(1),
-    limit: Joi.number().integer().min(1).max(50).default(10),
-    sortBy: Joi.string().valid('createdAt', 'username', 'followersCount').default('createdAt'),
-    sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+    page: Joi.number().integer().min(1).max(100).default(1).messages({
+      'number.min': 'Page must be at least 1',
+      'number.max': 'Page cannot exceed 100',
+    }),
+    limit: Joi.number().integer().min(1).max(50).default(20).messages({
+      'number.min': 'Limit must be at least 1',
+      'number.max': 'Limit cannot exceed 50',
+    }),
   }),
 
   // Get user by ID
   getUserById: Joi.object({
-    userId: Joi.string().hex().length(24).required().messages({
-      'string.hex': 'Invalid user ID format',
-      'string.length': 'User ID must be 24 characters long',
-      'any.required': 'User ID is required',
-    }),
+    userId: Joi.string()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Invalid user ID format',
+        'any.required': 'User ID is required',
+      }),
   }),
 
   // Get all users
@@ -129,16 +138,21 @@ const userValidation = {
 
   // Get user stats
   getUserStats: Joi.object({
-    userId: Joi.string().hex().length(24).required().messages({
-      'string.hex': 'Invalid user ID format',
-      'string.length': 'User ID must be 24 characters long',
-      'any.required': 'User ID is required',
-    }),
+    userId: Joi.string()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Invalid user ID format',
+        'any.required': 'User ID is required',
+      }),
   }),
 
   // Get suggested users
   getSuggestedUsers: Joi.object({
-    limit: Joi.number().integer().min(1).max(50).default(10),
+    limit: Joi.number().integer().min(1).max(20).default(10).messages({
+      'number.min': 'Limit must be at least 1',
+      'number.max': 'Limit cannot exceed 20',
+    }),
   }),
 };
 

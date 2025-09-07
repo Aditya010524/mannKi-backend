@@ -1,6 +1,7 @@
 import { User, AuthToken } from '../models/index.js';
 import { authService } from '../services/auth.service.js';
 import { userService } from '../services/user.service.js';
+import { followService } from '../services/follow.service.js';
 import ApiError from '../utils/api-error.js';
 import ApiResponse from '../utils/api-response.js';
 import asyncHandler from '../utils/async-handler.js';
@@ -10,120 +11,136 @@ import configEnv from '../config/env.config.js';
 class UserController {
   // Get current user profile
   getCurrentUser = asyncHandler(async (req, res) => {
-    const user = req.user;
+    const user = await userService.getUserById(req.user._id);
+    return ApiResponse.success(res, user, 'User profile retrieved successfully');
+  });
 
-    return ApiResponse.success(res, {
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        displayName: user.displayName,
-        bio: user.bio,
-        avatar: user.avatar || configEnv.DEFAULT_PROFILE_URL, // Not saving avatar in db directly coming from the CDN
-        coverPhoto: user.coverPhoto,
-        location: user.location,
-        website: user.website,
-        dateOfBirth: user.dateOfBirth,
-        isVerified: user.isVerified,
-        isPrivate: user.isPrivate,
-        role: user.role,
-        followersCount: user.followersCount,
-        followingCount: user.followingCount,
-        tweetsCount: user.tweetsCount,
-        createdAt: user.createdAt,
-        lastActiveAt: user.lastActiveAt,
+  // Get user by ID with follow status
+  getUserById = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const currentUserId = req.user._id;
+
+    // Get user and follow status in parallel
+    const [user, followStatus] = await Promise.all([
+      userService.getUserById(userId),
+      followService.getFollowStatus(currentUserId, userId),
+    ]);
+
+    // Add follow status to user object
+    const userWithFollowStatus = {
+      ...user,
+      followStatus: {
+        isFollowing: followStatus.status === 'following' || followStatus.status === 'mutual',
+        isFollowedBy: followStatus.status === 'followed_by' || followStatus.status === 'mutual',
+        isMutual: followStatus.status === 'mutual',
+        isSelf: followStatus.status === 'self',
+        followedAt: followStatus.followedAt || null,
       },
-    });
+    };
+
+    return ApiResponse.success(res, userWithFollowStatus, 'User profile retrieved successfully');
+  });
+
+  // Search users
+  searchUsers = asyncHandler(async (req, res) => {
+    const { q: query, page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    const currentUserId = req.user._id;
+
+    if (!query || query.trim().length < 2) {
+      throw ApiError.badRequest('Search query must be at least 2 characters');
+    }
+
+    const searchResults = await userService.searchUsers(
+      query.trim(),
+      { page: parseInt(page), limit: parseInt(limit), sortBy, sortOrder },
+      currentUserId
+    );
+
+    // Get follow status for each user in parallel
+    const usersWithFollowStatus = await Promise.all(
+      searchResults.users.map(async (user) => {
+        const followStatus = await followService.getFollowStatus(currentUserId, user._id);
+
+        return {
+          _id: user._id,
+          username: user.username,
+          displayName: user.displayName,
+          avatar: user.avatar,
+          bio: user.bio,
+          isVerified: user.isVerified,
+          followersCount: user.followersCount,
+          followingCount: user.followingCount,
+          followStatus: {
+            isFollowing: followStatus.status === 'following' || followStatus.status === 'mutual',
+            isFollowedBy: followStatus.status === 'followed_by' || followStatus.status === 'mutual',
+            isMutual: followStatus.status === 'mutual',
+            isSelf: followStatus.status === 'self',
+          },
+        };
+      })
+    );
+
+    return ApiResponse.paginated(
+      res,
+      usersWithFollowStatus,
+      searchResults.pagination,
+      'Users found successfully'
+    );
+  });
+
+  // Get suggested users (not following)
+  getSuggestedUsers = asyncHandler(async (req, res) => {
+    const currentUserId = req.user._id;
+    const { limit = 10 } = req.query;
+
+    const suggestedUsers = await followService.getSuggestedUsers(currentUserId, parseInt(limit));
+
+    // Add follow status (should all be false since these are suggestions)
+    const usersWithFollowStatus = suggestedUsers.map((user) => ({
+      _id: user._id,
+      username: user.username,
+      displayName: user.displayName,
+      avatar: user.avatar,
+      isVerified: user.isVerified,
+      followersCount: user.followersCount,
+      followStatus: {
+        isFollowing: false,
+        isFollowedBy: false,
+        isMutual: false,
+        isSelf: false,
+      },
+    }));
+
+    return ApiResponse.success(
+      res,
+      usersWithFollowStatus,
+      'Suggested users retrieved successfully'
+    );
   });
 
   // Update user profile
   updateProfile = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-
-    // Start with text updates
     const updates = { ...req.body };
 
-    // Handle avatar if uploaded
-    if (req.files?.avatar) {
-      // later you’ll upload this to Cloudinary/S3 and get a URL
-      // for now just placeholder path
-      updates.avatar = `/uploads/${req.files.avatar[0].originalname}`;
+    if (req.files?.avatar?.[0]?.path) {
+      updates.avatar = req.files.avatar[0].path;
     }
 
-    // Handle coverPhoto if uploaded
-    if (req.files?.coverPhoto) {
-      updates.coverPhoto = `/uploads/${req.files.coverPhoto[0].originalname}`;
+    if (req.files?.coverPhoto?.[0]?.path) {
+      updates.coverPhoto = req.files.coverPhoto[0].path;
     }
 
-    const user = await User.findByIdAndUpdate(userId, updates, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!user) throw ApiError.notFound('User not found');
-
-    return ApiResponse.success(res, {
-      message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        displayName: user.displayName,
-        bio: user.bio,
-        avatar: user.avatar,
-        coverPhoto: user.coverPhoto,
-        location: user.location,
-        website: user.website,
-        dateOfBirth: user.dateOfBirth,
-      },
-    });
+    const updatedUser = await userService.updateProfile(req.user._id, updates);
+    return ApiResponse.success(res, updatedUser, 'Profile updated successfully');
   });
 
-  // Update Username
+  // Update username - NOW REQUIRES CURRENT PASSWORD
   updateUsername = asyncHandler(async (req, res) => {
-    const { username, password } = req.body;
     const userId = req.user._id;
+    const { username, currentPassword } = req.body;
 
-    const user = await User.findById(userId).select('+password');
-
-    if (!user) {
-      throw ApiError.notFound('User not found');
-    }
-
-    // Verify current password
-    const isValidPassword = await user.comparePassword(password);
-    if (!isValidPassword) {
-      throw ApiError.unauthorized('Invalid current password');
-    }
-
-    // Check if username is already taken by another user
-    const existingUser = await User.findOne({
-      username,
-      _id: { $ne: user._id },
-    });
-
-    if (existingUser) {
-      throw ApiError.conflict('Username is already taken');
-    }
-
-    // Update username
-    const updatedUser = await User.findByIdAndUpdate(
-      user._id,
-      { username },
-      { new: true, runValidators: true }
-    );
-
-    logger.info(`Username updated for user: ${user.email} - New username: ${username}`);
-
-    return ApiResponse.success(res, {
-      message: 'Username updated successfully',
-      user: {
-        id: updatedUser._id,
-        username: updatedUser.username,
-        email: updatedUser.email,
-        displayName: updatedUser.displayName,
-      },
-    });
+    const updatedUser = await userService.updateUsername(userId, username, currentPassword);
+    return ApiResponse.success(res, updatedUser, 'Username updated successfully');
   });
 
   // Update Email
@@ -183,38 +200,14 @@ class UserController {
   // });
 
   // Update Password
+  // Change password - NOW HANDLES CONFIRM PASSWORD
   changePassword = asyncHandler(async (req, res) => {
-    const { currentPassword, newPassword } = req.body;
     const userId = req.user._id;
+    const { currentPassword, newPassword } = req.body;
+    // confirmPassword is validated by Joi, so we know it matches newPassword
 
-    // Get user with password field (since it's select: false by default)
-    const user = await User.findById(userId).select('+password');
-
-    if (!user) {
-      throw ApiError.notFound('User not found');
-    }
-
-    // Verify current password
-    const isValidPassword = await user.comparePassword(currentPassword);
-    if (!isValidPassword) {
-      throw ApiError.unauthorized('Invalid current password');
-    }
-
-    // Check if new password is different from current
-    const isSamePassword = await user.comparePassword(newPassword);
-    if (isSamePassword) {
-      throw ApiError.badRequest('New password must be different from current password');
-    }
-
-    // Update password (will be hashed by pre-save middleware)
-    user.password = newPassword;
-    await user.save();
-
-    logger.info(`Password updated for user: ${user.email}`);
-
-    return ApiResponse.success(res, {
-      message: 'Password updated successfully',
-    });
+    await userService.changePassword(userId, currentPassword, newPassword);
+    return ApiResponse.success(res, null, 'Password changed successfully');
   });
 
   // Logout from current device -(refreshToken required)
@@ -339,63 +332,13 @@ class UserController {
     });
   });
 
-  // Delete user account
+  // Delete account - NOW HANDLES DELETE CONFIRMATION
   deleteAccount = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
     const { password, confirmDelete } = req.body;
-    const userId = req.user._id.toString();
 
-    // Get user with password
-    const user = await User.findById(userId).select('+password');
-
-    // Verify password
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      throw ApiError.unauthorized('Incorrect password');
-    }
-
-    // Soft delete - set isActive to false
-    user.isActive = false;
-    await user.save();
-
-    // Revoke all tokens
-    await authService.removeAllUserTokens(userId);
-
-    logger.info(`Account deleted for user: ${user.email}`);
-
-    return ApiResponse.success(res, {
-      message: 'Account deleted successfully',
-    });
-  });
-
-  // Search users
-  searchUsers = asyncHandler(async (req, res) => {
-    const {
-      q: searchTerm,
-      page = 1,
-      limit = 10,
-      sortBy = 'createdAt',
-      sortOrder = 'desc',
-    } = req.query;
-    const currentUserId = req.user._id.toString();
-
-    if (!searchTerm || searchTerm.trim().length < 2) {
-      throw ApiError.badRequest('Search term must be at least 2 characters long');
-    }
-
-    const result = await userService.searchUsers(
-      searchTerm.trim(),
-      { page: parseInt(page), limit: parseInt(limit), sortBy, sortOrder },
-      currentUserId
-    );
-
-    logger.info(
-      `User search performed by ${req.user.email}: "${searchTerm}" - ${result.users.length} results`
-    );
-
-    return ApiResponse.success(res, {
-      message: `Found ${result.pagination.totalCount} users`,
-      ...result,
-    });
+    await userService.deleteAccount(userId, password, confirmDelete);
+    return ApiResponse.success(res, null, 'Account deleted successfully');
   });
 
   // Get all user in Database
@@ -408,7 +351,7 @@ class UserController {
       verified,
       isPrivate,
     } = req.query;
-    const currentUserId = req.user._id.toString();
+    const currentUserId = req.user._id;
 
     const result = await userService.getAllUsers(
       {
@@ -430,46 +373,28 @@ class UserController {
     });
   });
 
-  // Get user by ID (when we click on the user)
-  getUserById = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const currentUserId = req.user._id.toString();
-
-    const user = await userService.getUserById(userId, currentUserId);
-
-    logger.info(`User profile viewed: ${userId} by ${req.user.email}`);
-
-    return ApiResponse.success(res, {
-      message: 'User profile retrieved successfully',
-      user,
-    });
-  });
-
-  // Get user statistics
+  // Get user statistics with follow status
   getUserStats = asyncHandler(async (req, res) => {
     const { userId } = req.params;
+    const currentUserId = req.user._id;
 
-    const stats = await userService.getUserStats(userId);
+    const [stats, followStatus] = await Promise.all([
+      userService.getUserStats(userId),
+      followService.getFollowStatus(currentUserId, userId),
+    ]);
 
-    return ApiResponse.success(res, {
-      message: 'User statistics retrieved successfully',
-      stats,
-    });
-  });
+    console.log(stats.accountAge);
+    const response = {
+      ...stats,
+      followStatus: {
+        isFollowing: followStatus.status === 'following' || followStatus.status === 'mutual',
+        isFollowedBy: followStatus.status === 'followed_by' || followStatus.status === 'mutual',
+        isMutual: followStatus.status === 'mutual',
+        isSelf: followStatus.status === 'self',
+      },
+    };
 
-  // Get suggested users
-  getSuggestedUsers = asyncHandler(async (req, res) => {
-    const { limit = 10 } = req.query;
-    const currentUserId = req.user._id.toString();
-
-    const users = await userService.getSuggestedUsers(currentUserId, parseInt(limit));
-
-    logger.info(`Suggested users retrieved by ${req.user.email} - ${users.length} suggestions`);
-
-    return ApiResponse.success(res, {
-      message: `Found ${users.length} suggested users`,
-      users,
-    });
+    return ApiResponse.success(res, response, 'User statistics retrieved successfully');
   });
 }
 

@@ -57,7 +57,35 @@ const followValidation = {
       }),
   }),
 
-  // Get suggested users (only query params)
+  // Get mutual follows
+  getMutualFollows: Joi.object({
+    userId: Joi.string()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Invalid user ID format',
+        'any.required': 'User ID is required',
+      }),
+    limit: Joi.number().integer().min(1).max(50).default(10).messages({
+      'number.base': 'Limit must be a number',
+      'number.integer': 'Limit must be an integer',
+      'number.min': 'Limit must be at least 1',
+      'number.max': 'Limit cannot exceed 50',
+    }),
+  }),
+
+  // Get follow statistics
+  getFollowStatistics: Joi.object({
+    userId: Joi.string()
+      .pattern(/^[0-9a-fA-F]{24}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Invalid user ID format',
+        'any.required': 'User ID is required',
+      }),
+  }),
+
+  // Get suggested users (query params)
   getSuggestions: Joi.object({
     limit: Joi.number().integer().min(1).max(50).default(10).messages({
       'number.base': 'Limit must be a number',

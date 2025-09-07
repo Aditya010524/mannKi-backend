@@ -38,7 +38,7 @@ export default function ProfileScreen() {
     setLoading(true);
     try {
       const profileUser = await getUserByUserId(userId);
-   
+
       if (profileUser) {
         setUser(profileUser);
         await loadTweets(profileUser.id);
@@ -99,6 +99,7 @@ export default function ProfileScreen() {
             <ProfileHeader
               user={user}
               isCurrentUser={isCurrentUser}
+           
             />
             
             <View className='flex-row border-b border-border'>
