@@ -47,10 +47,10 @@ class ApiService {
       const data = await response.json();
 
       if (data.success) {
-        const newToken = data?.data?.token || data?.data?.accessToken || null;
+        const newToken = data?.data?.token || data?.data?.accessToken || data?.token || data?.accessToken || null;
         if (newToken) {
           await AsyncStorage.setItem('authToken', newToken);
-          console.log('✅ New token obtained:', newToken);
+          console.log('✅ Token refreshed successfully');
           return true;
         }
       }
@@ -61,15 +61,24 @@ class ApiService {
     }
   };
 
-  // ✅ Handle API response
+  // ✅ Handle API response with better error handling
   private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     try {
-      const data = await response.json();
+      const contentType = response.headers.get('content-type');
+      let data: any;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const textData = await response.text();
+        data = { message: textData };
+      }
 
       if (!response.ok) {
         return {
           success: false,
-          error: data.message || 'An error occurred',
+          error: data.message || data.error || `HTTP ${response.status}: ${response.statusText}`,
+          message: data.message || data.error,
         };
       }
 
@@ -78,15 +87,17 @@ class ApiService {
         data: data.data || data,
         message: data.message,
       };
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error handling response:', error);
       return {
         success: false,
-        error: 'Network error or invalid response',
+        error: 'Network error or invalid response format',
+        message: error.message || 'Network error',
       };
     }
   }
 
-  // ✅ Generic request with auto token refresh
+  // ✅ Generic request with auto token refresh and better error handling
   private async request<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
@@ -96,39 +107,68 @@ class ApiService {
   ): Promise<ApiResponse<T>> {
     try {
       const headers = await this.getHeaders(!isFormData);
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
+      
+      const requestConfig: RequestInit = {
         method,
         headers,
-        body: isFormData ? body : body ? JSON.stringify(body) : undefined,
+      };
+
+      // Only add body for non-GET requests
+      if (method !== 'GET' && body !== undefined) {
+        requestConfig.body = isFormData ? body : JSON.stringify(body);
+      }
+
+      console.log(`🚀 API Request: ${method} ${endpoint}`, {
+        headers: headers,
+        body: isFormData ? '[FormData]' : body,
       });
 
+      const response = await fetch(`${this.baseURL}${endpoint}`, requestConfig);
       const result = await this.handleResponse<T>(response);
 
-      // If 401, try refreshing token and retry once
+      console.log(`📥 API Response: ${method} ${endpoint}`, {
+        status: response.status,
+        success: result.success,
+        data: result.data,
+        error: result.error,
+      });
+
+      // If 401 Unauthorized, try refreshing token and retry once
       if (!result.success && response.status === 401 && retry) {
+        console.log('🔄 Received 401, attempting token refresh...');
         const refreshed = await this.refreshTokenHandler();
         if (refreshed) {
+          console.log('✅ Token refreshed, retrying request...');
           return this.request(method, endpoint, body, isFormData, false);
         } else {
+          console.log('❌ Token refresh failed, clearing auth data...');
           await AsyncStorage.multiRemove(['authToken', 'user']);
+          // Don't navigate here, let the auth context handle it
         }
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
+      console.error(`❌ API Request Error: ${method} ${endpoint}`, error);
       return {
         success: false,
-        error: 'Network error',
+        error: error.message || 'Network error',
+        message: error.message || 'Network connection failed',
       };
     }
   }
 
-  // ✅ Public methods
+  // ✅ Public methods with better parameter handling
   async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
     let url = endpoint;
-    if (params) {
-      const query = new URLSearchParams(params as any).toString();
-      url += `?${query}`;
+    if (params && Object.keys(params).length > 0) {
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([_, value]) => value !== undefined && value !== null)
+      );
+      if (Object.keys(filteredParams).length > 0) {
+        const query = new URLSearchParams(filteredParams as any).toString();
+        url += `?${query}`;
+      }
     }
     return this.request<T>('GET', url);
   }
@@ -142,7 +182,7 @@ class ApiService {
   }
 
   async delete<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
-    return this.request<T>('DELETE', endpoint,data);
+    return this.request<T>('DELETE', endpoint, data);
   }
 
   async postForm<T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> {
@@ -152,11 +192,28 @@ class ApiService {
   async putForm<T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> {
     return this.request<T>('PUT', endpoint, formData, true);
   }
+
+  // ✅ Helper method to check if token is valid
+  async isTokenValid(): Promise<boolean> {
+    const token = await this.getAuthToken();
+    if (!token) return false;
+    
+    try {
+      const response = await this.get(API_ENDPOINTS.CURRENT_USER);
+      return response.success;
+    } catch {
+      return false;
+    }
+  }
+
+  // ✅ Helper method to clear auth data
+  async clearAuthData(): Promise<void> {
+    await AsyncStorage.multiRemove(['authToken', 'user']);
+  }
 }
 
 export const apiService = new ApiService();
 export default apiService;
-
 
 
 // import AsyncStorage from '@react-native-async-storage/async-storage';

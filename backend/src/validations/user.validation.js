@@ -10,51 +10,29 @@ const userValidation = {
     bio: Joi.string().max(160).allow('').optional().messages({
       'string.max': 'Bio cannot exceed 160 characters',
     }),
-
-    avatar: Joi.string()
-      .uri()
-      .allow('')
-      .optional()
-      .regex(/\.(jpg|jpeg|png|gif|webp)$/i)
-      .messages({
-        'string.uri': 'Avatar must be a valid URL',
-        'string.pattern.base': 'Avatar must be an image (jpg, jpeg, png, gif, webp)',
-      }),
-
-    coverPhoto: Joi.string()
-      .uri()
-      .allow('')
-      .optional()
-      .regex(/\.(jpg|jpeg|png|gif|webp)$/i)
-      .messages({
-        'string.uri': 'Cover photo must be a valid URL',
-        'string.pattern.base': 'Cover photo must be an image (jpg, jpeg, png, gif, webp)',
-      }),
-
-    location: Joi.string().max(30).allow('').optional().messages({
+      location: Joi.string().max(30).allow('').optional().messages({
       'string.max': 'Location cannot exceed 30 characters',
     }),
 
     website: Joi.string()
-      .uri({ scheme: [/https?/] }) // must start with http or https
+      .uri({ scheme: [/https?/] })
       .allow('')
       .optional()
       .messages({
         'string.uri': 'Please provide a valid website URL (must include http:// or https://)',
       }),
 
-    dateOfBirth: Joi.date()
-      .iso() // enforce ISO 8601 format
-      .max('now') // must not be in the future
-      .optional()
-      .messages({
-        'date.format': 'Date of birth must be in YYYY-MM-DD format',
-        'date.iso': 'Date of birth must be in YYYY-MM-DD format',
-        'date.max': 'Date of birth cannot be in the future',
-      }),
-
-    isPrivate: Joi.boolean().optional(),
-  }).min(1), // At least one field required
+    dateOfBirth: Joi.alternatives()
+      .try(
+        Joi.date().iso().max('now').messages({
+          'date.format': 'Date of birth must be in YYYY-MM-DD format',
+          'date.iso': 'Date of birth must be in YYYY-MM-DD format',
+          'date.max': 'Date of birth cannot be in the future',
+        }),
+        Joi.string().valid('', null)
+      )
+      .optional(),
+  }).min(1),
 
   // PUT /me/username -> Update Username
   updateUsername: Joi.object({
@@ -113,6 +91,54 @@ const userValidation = {
       'any.only': 'Please type DELETE to confirm account deletion',
       'any.required': 'Confirmation is required',
     }),
+  }),
+
+  // Search users
+  searchUsers: Joi.object({
+    q: Joi.string().min(2).max(50).required().messages({
+      'string.min': 'Search term must be at least 2 characters long',
+      'string.max': 'Search term cannot exceed 50 characters',
+      'any.required': 'Search term is required',
+    }),
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(50).default(10),
+    sortBy: Joi.string().valid('createdAt', 'username', 'followersCount').default('createdAt'),
+    sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+  }),
+
+  // Get user by ID
+  getUserById: Joi.object({
+    userId: Joi.string().hex().length(24).required().messages({
+      'string.hex': 'Invalid user ID format',
+      'string.length': 'User ID must be 24 characters long',
+      'any.required': 'User ID is required',
+    }),
+  }),
+
+  // Get all users
+  getAllUsers: Joi.object({
+    page: Joi.number().integer().min(1).default(1),
+    limit: Joi.number().integer().min(1).max(50).default(10),
+    sortBy: Joi.string()
+      .valid('createdAt', 'username', 'followersCount', 'displayName')
+      .default('createdAt'),
+    sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+    verified: Joi.string().valid('true', 'false').optional(),
+    isPrivate: Joi.string().valid('true', 'false').optional(),
+  }),
+
+  // Get user stats
+  getUserStats: Joi.object({
+    userId: Joi.string().hex().length(24).required().messages({
+      'string.hex': 'Invalid user ID format',
+      'string.length': 'User ID must be 24 characters long',
+      'any.required': 'User ID is required',
+    }),
+  }),
+
+  // Get suggested users
+  getSuggestedUsers: Joi.object({
+    limit: Joi.number().integer().min(1).max(50).default(10),
   }),
 };
 

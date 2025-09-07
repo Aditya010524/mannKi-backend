@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -25,7 +25,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   isCurrentUser,
   onEditProfile,
 }) => {
-  const { user: currentUser, updateUser } = useAuth();
+  const { user: currentUser } = useAuth();
   const {followUser, unfollowUser} = useUsers();
 
   const isFollowing = currentUser?.following.includes(user.id) || false;
@@ -44,8 +44,9 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     }
   
    }
-   
-  
+   useEffect(() => {
+    console.log('useId:', user.id);
+   }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -84,7 +85,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       </View>
 
       <View className="p-5">
-        <Text className="text-text font-bold text-2xl">{user.name}</Text>
+        <Text className="text-text font-bold text-2xl">{user.displayName}</Text>
         <Text className="text-secondaryText text-md my-1">@{user.username}</Text>
 
         <Text className="text-Text text-lg my-1">{user.bio}</Text>

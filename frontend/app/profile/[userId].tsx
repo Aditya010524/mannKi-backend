@@ -10,10 +10,10 @@ import { colors } from '@/constants/colors';
 import { Tweet, User } from '@/types';
 
 export default function ProfileScreen() {
-  const { username } = useLocalSearchParams<{ username: string }>();
+  const { userId } = useLocalSearchParams<{ userId: string }>();
   const { user: currentUser } = useAuth();
   const { fetchUserTweets } = useTweets();
-  const { getUserByUsername } = useUsers();
+  const { getUserByUserId } = useUsers();
   
   const [user, setUser] = useState<User | null>(null);
   const [tweets, setTweets] = useState<Tweet[]>([]);
@@ -27,17 +27,18 @@ export default function ProfileScreen() {
   const activeTabTextStyle = "text-primary";
   
   useEffect(() => {
-    if (username) {
+    if (userId) {
       loadUserProfile();
     }
-  }, [username]);
+  }, [userId]);
   
   const loadUserProfile = async () => {
-    if (!username) return;
+    if (!userId) return;
     
     setLoading(true);
     try {
-      const profileUser = await getUserByUsername(username);
+      const profileUser = await getUserByUserId(userId);
+   
       if (profileUser) {
         setUser(profileUser);
         await loadTweets(profileUser.id);

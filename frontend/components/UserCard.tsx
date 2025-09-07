@@ -22,16 +22,16 @@ export const UserCard: React.FC<UserCardProps> = ({
   const { user: currentUser } = useAuth();
   const { followUser, unfollowUser } = useUsers();
   
-  const isFollowing = currentUser?.following.includes(user.id) || false;
+  const isFollowing = currentUser?.following.includes(user._id) || false;
   
   const handleFollow = async () => {
     if (!currentUser) return;
     
     try {
       if (isFollowing) {
-        await unfollowUser(user.id);
+        await unfollowUser(user._id);
       } else {
-        await followUser(user.id);
+        await followUser(user._id);
       }
     } catch (error) {
       console.error('Failed to follow/unfollow:', error);
@@ -42,7 +42,7 @@ export const UserCard: React.FC<UserCardProps> = ({
     if (onPress) {
       onPress();
     } else {
-      router.push(`/profile/${user.username}`);
+      router.push(`/profile/${user._id}`);
     }
   };
   
@@ -57,7 +57,7 @@ export const UserCard: React.FC<UserCardProps> = ({
       />
       
       <View style={styles.userInfo}>
-        <Text style={styles.name} numberOfLines={1}>{user.name}</Text>
+        <Text style={styles.name} numberOfLines={1}>{user.displayName}</Text>
         <Text style={styles.username} numberOfLines={1}>@{user.username}</Text>
         
         {!compact && (
@@ -65,7 +65,7 @@ export const UserCard: React.FC<UserCardProps> = ({
         )}
       </View>
       
-      {showFollowButton && currentUser && currentUser.id !== user.id && (
+      {showFollowButton && currentUser && currentUser._id !== user._id && (
         <TouchableOpacity 
           style={[
             styles.followButton, 

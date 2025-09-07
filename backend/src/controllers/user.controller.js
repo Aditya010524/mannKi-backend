@@ -1,5 +1,6 @@
 import { User, AuthToken } from '../models/index.js';
 import { authService } from '../services/auth.service.js';
+import { userService } from '../services/user.service.js';
 import ApiError from '../utils/api-error.js';
 import ApiResponse from '../utils/api-response.js';
 import asyncHandler from '../utils/async-handler.js';
@@ -38,17 +39,28 @@ class UserController {
   // Update user profile
   updateProfile = asyncHandler(async (req, res) => {
     const userId = req.user._id;
-    const updates = req.body;
-    console.log(updates)
 
-    // Update user
-    const user = await User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true });
+    // Start with text updates
+    const updates = { ...req.body };
 
-    if (!user) {
-      throw ApiError.notFound('User not found');
+    // Handle avatar if uploaded
+    if (req.files?.avatar) {
+      // later you’ll upload this to Cloudinary/S3 and get a URL
+      // for now just placeholder path
+      updates.avatar = `/uploads/${req.files.avatar[0].originalname}`;
     }
 
-    logger.info(`Profile updated for user: ${user.email}`);
+    // Handle coverPhoto if uploaded
+    if (req.files?.coverPhoto) {
+      updates.coverPhoto = `/uploads/${req.files.coverPhoto[0].originalname}`;
+    }
+
+    const user = await User.findByIdAndUpdate(userId, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user) throw ApiError.notFound('User not found');
 
     return ApiResponse.success(res, {
       message: 'Profile updated successfully',
@@ -352,6 +364,111 @@ class UserController {
 
     return ApiResponse.success(res, {
       message: 'Account deleted successfully',
+    });
+  });
+
+  // Search users
+  searchUsers = asyncHandler(async (req, res) => {
+    const {
+      q: searchTerm,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+    } = req.query;
+    const currentUserId = req.user._id.toString();
+
+    if (!searchTerm || searchTerm.trim().length < 2) {
+      throw ApiError.badRequest('Search term must be at least 2 characters long');
+    }
+
+    const result = await userService.searchUsers(
+      searchTerm.trim(),
+      { page: parseInt(page), limit: parseInt(limit), sortBy, sortOrder },
+      currentUserId
+    );
+
+    logger.info(
+      `User search performed by ${req.user.email}: "${searchTerm}" - ${result.users.length} results`
+    );
+
+    return ApiResponse.success(res, {
+      message: `Found ${result.pagination.totalCount} users`,
+      ...result,
+    });
+  });
+
+  // Get all user in Database
+  getAllUsers = asyncHandler(async (req, res) => {
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      verified,
+      isPrivate,
+    } = req.query;
+    const currentUserId = req.user._id.toString();
+
+    const result = await userService.getAllUsers(
+      {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        sortBy,
+        sortOrder,
+        verified,
+        isPrivate,
+      },
+      currentUserId
+    );
+
+    logger.info(`All users retrieved by ${req.user.email} - ${result.users.length} results`);
+
+    return ApiResponse.success(res, {
+      message: `Retrieved ${result.pagination.totalCount} users`,
+      ...result,
+    });
+  });
+
+  // Get user by ID (when we click on the user)
+  getUserById = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const currentUserId = req.user._id.toString();
+
+    const user = await userService.getUserById(userId, currentUserId);
+
+    logger.info(`User profile viewed: ${userId} by ${req.user.email}`);
+
+    return ApiResponse.success(res, {
+      message: 'User profile retrieved successfully',
+      user,
+    });
+  });
+
+  // Get user statistics
+  getUserStats = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const stats = await userService.getUserStats(userId);
+
+    return ApiResponse.success(res, {
+      message: 'User statistics retrieved successfully',
+      stats,
+    });
+  });
+
+  // Get suggested users
+  getSuggestedUsers = asyncHandler(async (req, res) => {
+    const { limit = 10 } = req.query;
+    const currentUserId = req.user._id.toString();
+
+    const users = await userService.getSuggestedUsers(currentUserId, parseInt(limit));
+
+    logger.info(`Suggested users retrieved by ${req.user.email} - ${users.length} suggestions`);
+
+    return ApiResponse.success(res, {
+      message: `Found ${users.length} suggested users`,
+      users,
     });
   });
 }

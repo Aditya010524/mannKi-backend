@@ -3,6 +3,23 @@ import { validate } from '../middleware/validation.middleware.js';
 import { userController } from '../controllers/user.controller.js';
 import { authenticateUser } from '../middleware/auth.middleware.js';
 import userValidation from '../validations/user.validation.js';
+import multer from 'multer';
+import path from 'path';
+
+// use memory storage for easy integration with Cloudinary/S3 later
+// storage config
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // save in uploads/ directory
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9) + ext;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -11,11 +28,14 @@ const router = express.Router();
 // Current user info
 router.get('/me', authenticateUser, userController.getCurrentUser);
 
-// Update profile
 router.put(
   '/me',
   authenticateUser,
-  validate(userValidation.updateProfile),
+  upload.fields([
+    { name: 'avatar', maxCount: 1 },
+    { name: 'coverPhoto', maxCount: 1 },
+  ]),
+  validate(userValidation.updateProfile), // Joi still validates text fields
   userController.updateProfile
 );
 
@@ -61,6 +81,41 @@ router.delete(
   authenticateUser,
   validate(userValidation.deleteAccount),
   userController.deleteAccount
+);
+
+// Search users
+router.get(
+  '/search',
+  authenticateUser,
+  validate(userValidation.searchUsers, 'query'),
+  userController.searchUsers
+);
+
+// Get all users with pagination
+router.get('/', authenticateUser, validate(userValidation.getAllUsers), userController.getAllUsers);
+
+// Get suggested users
+router.get(
+  '/suggested',
+  authenticateUser,
+  validate(userValidation.getSuggestedUsers),
+  userController.getSuggestedUsers
+);
+
+// Get user by ID
+router.get(
+  '/:userId',
+  authenticateUser,
+  validate(userValidation.getUserById, 'params'),
+  userController.getUserById
+);
+
+// Get user statistics
+router.get(
+  '/:userId/stats',
+  authenticateUser,
+  validate(userValidation.getUserStats, 'params'),
+  userController.getUserStats
 );
 
 export default router;

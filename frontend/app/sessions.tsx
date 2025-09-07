@@ -79,12 +79,18 @@ export default function ActiveSessionsScreen() {
           text: "Yes, Terminate All",
           style: "destructive",
           onPress: async () => {
-            const response = await apiService.delete(API_ENDPOINTS.ACTIVE_SESSIONS);
+           try {
+             const response = await apiService.post(API_ENDPOINTS.LOGOUT_ALL);
             if (response.success) {
               setSessions([]);
+              router.navigate("/(auth)/login");
+              console.log('logged out from all device successfull');
             } else {
               Alert.alert("Error", response.error || "Failed to terminate all sessions.");
             }
+           } catch (error) {
+            console.log('error logging out from all device',error);
+           }
           },
         },
       ]

@@ -6,14 +6,13 @@ const authTokenSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User ID is required'],
-      index: true,
     },
 
     token: {
       type: String,
       required: [true, 'Token is required'],
-      unique: true,
-      select: false, // Don't expose token in queries
+      unique: true, // Keep this - it's essential for token lookups
+      select: false,
     },
 
     tokenId: {
@@ -27,19 +26,17 @@ const authTokenSchema = new mongoose.Schema(
       type: String,
       enum: ['refresh', 'access', 'email_verification', 'password_reset'],
       required: [true, 'Token type is required'],
-      index: true,
     },
 
     isActive: {
       type: Boolean,
       default: true,
-      index: true,
     },
 
     expiresAt: {
       type: Date,
       required: [true, 'Expiration date is required'],
-      index: { expireAfterSeconds: 0 }, // MongoDB TTL - auto cleanup
+      index: { expireAfterSeconds: 0 }, // Keep TTL index
     },
 
     lastUsedAt: {
@@ -64,11 +61,20 @@ const authTokenSchema = new mongoose.Schema(
   }
 );
 
-// Compound indexes for better query performance
-authTokenSchema.index({ userId: 1, type: 1, isActive: 1 });
-authTokenSchema.index({ token: 1, type: 1, isActive: 1 });
+// PRIMARY compound index - covers most common queries
+authTokenSchema.index(
+  {
+    userId: 1,
+    type: 1,
+    isActive: 1,
+    expiresAt: 1,
+  },
+  {
+    name: 'user_token_lookup',
+  }
+);
 
-// CRITICAL: Sparse unique index for tokenId
+// SPARSE unique index for tokenId (refresh tokens)
 authTokenSchema.index(
   { tokenId: 1 },
   {
@@ -78,7 +84,14 @@ authTokenSchema.index(
   }
 );
 
-// Instance methods (logout) -> revoke a single token
+// Optional: If you frequently query by token alone without userId
+// authTokenSchema.index({
+//   token: 1,
+//   isActive: 1,
+//   expiresAt: 1
+// });
+
+// Instance methods
 authTokenSchema.methods.revoke = function () {
   this.isActive = false;
   this.revokedAt = new Date();

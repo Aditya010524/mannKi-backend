@@ -9,6 +9,7 @@ import compression from 'compression';
 import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import followRoutes from './routes/follow.routes.js';
 
 // Middleware
 import limiter from './middleware/rate-limiter.middleware.js';
@@ -32,7 +33,7 @@ app.use(
   })
 );
 app.use(compression());
-// app.use(limiter);
+app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -61,6 +62,7 @@ app.use(configEnv.API_PREFIX || '/api/v1', apiRouter);
 // Mount your API routes here
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
+apiRouter.use('/follows', followRoutes);
 
 // 404 handler
 app.use(notFound);

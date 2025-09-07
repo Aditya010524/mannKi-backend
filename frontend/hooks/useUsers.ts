@@ -21,7 +21,10 @@ export const useUsers = () => {
       });
       
       if (response.success && response.data) {
-        return response.data;
+        // console.log(response)
+        // console.log(response.data)        
+
+        return response.data.users;
       } else {
         throw new Error(response.error || 'Failed to search users');
       }
@@ -33,6 +36,30 @@ export const useUsers = () => {
       setIsLoading(false);
     }
   };
+
+  const getUserByUserId = async(userId: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<User>(`${API_ENDPOINTS.GET_USER_BY_ID}/${userId}`);
+      console.log('user by id',response.data)
+      console.log('user by id',userId)
+      if (response.success && response.data) {
+         
+        return response.data.user;
+       
+      } else {
+        throw new Error(response.error || 'User not found');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user';
+      setError(errorMessage);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const getUserByUsername = async (username: string) => {
     setIsLoading(true);
@@ -122,7 +149,7 @@ const followUser = async (userId: string) => {
     setError(null);
     
     try {
-      const response = await apiService.get<User[]>(`${API_ENDPOINTS.FOLLOWERS}/${userId}`, {
+      const response = await apiService.get<User[]>(`${API_ENDPOINTS.GET_FOLLOWERS}/${userId}/followers`, {
         page,
         limit,
       });
@@ -146,7 +173,7 @@ const followUser = async (userId: string) => {
     setError(null);
     
     try {
-      const response = await apiService.get<User[]>(`${API_ENDPOINTS.FOLLOWING}/${userId}`, {
+      const response = await apiService.get<User[]>(`${API_ENDPOINTS.GET_FOLLOWING}/${userId}/following`, {
         page,
         limit,
       });
@@ -239,6 +266,7 @@ const followUser = async (userId: string) => {
     isLoading,
     error,
     searchUsers,
+    getUserByUserId,
     getUserByUsername,
     followUser,
     unfollowUser,

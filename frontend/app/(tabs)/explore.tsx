@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { Search as SearchIcon, TrendingUp } from 'lucide-react-native';
 import { Tweet as TweetComponent } from '@/components/Tweet';
@@ -24,6 +24,22 @@ export default function ExploreScreen() {
   useEffect(() => {
     loadTrendingHashtags();
   }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim().length <=2) {
+      setSearchResults({ tweets: [], users: [] });
+    }
+    else{
+    const delaydebounce =  setTimeout(() => {
+        handleSearch(searchQuery);
+
+       
+        
+      }, 500);
+
+      return () => clearTimeout(delaydebounce);
+    }
+  }, [searchQuery]);
   
   const loadTrendingHashtags = async () => {
     try {
@@ -35,7 +51,7 @@ export default function ExploreScreen() {
   };
   
   const handleSearch = async (query: string) => {
-    setSearchQuery(query);
+ 
     
     if (query.trim().length === 0) {
       setSearchResults({ tweets: [], users: [] });
@@ -54,6 +70,7 @@ export default function ExploreScreen() {
         tweets: tweetsResult,
         users: usersResult,
       });
+      console.log('search results',usersResult);
     } catch (error) {
       console.error('Search failed:', error);
       setSearchResults({ tweets: [], users: [] });
@@ -104,7 +121,7 @@ export default function ExploreScreen() {
             <View className="py-3">
               <Text className="text-base font-bold text-text px-4 mb-2">People</Text>
               {searchResults.users.slice(0, 3).map((user) => (
-                <UserCard key={user.id} user={user} />
+                <UserCard key={user._id} user={user} />
               ))}
               {searchResults.users.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('users')}>
@@ -118,7 +135,7 @@ export default function ExploreScreen() {
             <View className='p-4 border-t border-border'>
               <Text className='text-lg font-semibold text-text'>Tweets</Text>
               {searchResults.tweets.slice(0, 3).map((tweet) => (
-                <TweetComponent key={tweet.id} tweet={tweet} />
+                <TweetComponent key={tweet._id} tweet={tweet} />
               ))}
               {searchResults.tweets.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('tweets')}>
@@ -178,7 +195,7 @@ export default function ExploreScreen() {
             placeholder="Search MANN KI"
             placeholderTextColor={colors.secondaryText}
             value={searchQuery}
-            onChangeText={handleSearch}
+            onChangeText={(text) => setSearchQuery(text)}
           />
         </View>
       </View>

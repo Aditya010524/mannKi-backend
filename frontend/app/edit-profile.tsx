@@ -16,7 +16,7 @@ export default function EditProfileScreen() {
   const [bio, setBio] = useState(user?.bio || '');
   const [location, setLocation] = useState(user?.location || '');
   const [website, setWebsite] = useState(user?.website || '');
-  const [profilePic, setProfilePic] = useState(user?.profilePic || '');
+  const [avatar, setAvatar] = useState(user?.avatar || '');
   const [coverPhoto, setCoverPhoto] = useState(user?.coverPhoto || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -35,46 +35,46 @@ const handleSave = async () => {
     formData.append("website", website);
 
     // ✅ Use state directly instead of formData.get()
-    // if (profilePic && profilePic !== user.profilePic) {
-    //   const fileName = profilePic.split('/').pop();
-    //   const fileType = fileName?.split('.').pop();
-    //   const profilePicFile = {
-    //     uri: profilePic,
-    //     name: fileName || 'profile.jpg',
-    //     type: `image/${fileType || 'jpeg'}`,
-    //   };
+    if (avatar && avatar !== user.avatar) {
+      const fileName = avatar.split('/').pop();
+      const fileType = fileName?.split('.').pop();
+      const avatarFile = {
+        uri: avatar,
+        name: fileName || 'profile.jpg',
+        type: `image/${fileType || 'jpeg'}`,
+      };
 
-    //   formData.append("profilePic", profilePicFile as any);
+      formData.append("avatar", avatarFile as any);
 
-    //   console.log("📷 profilePic:");
-    //   console.log("   • uri:", profilePicFile.uri);
-    //   console.log("   • name:", profilePicFile.name);
-    //   console.log("   • type:", profilePicFile.type);
-    // } else {
-    //   console.log("📷 profilePic: not available");
-    // }
+      console.log("📷 avatar:");
+      console.log("   • uri:", avatarFile.uri);
+      console.log("   • name:", avatarFile.name);
+      console.log("   • type:", avatarFile.type);
+    } else {
+      console.log("📷 avatar: not available");
+    }
 
-    // if (coverPhoto && coverPhoto !== user.coverPhoto) {
-    //   const fileName = coverPhoto.split('/').pop();
-    //   const fileType = fileName?.split('.').pop();
-    //   const coverPhotoFile = {
-    //     uri: coverPhoto,
-    //     name: fileName || 'cover.jpg',
-    //     type: `image/${fileType || 'jpeg'}`,
-    //   };
+    if (coverPhoto && coverPhoto !== user.coverPhoto) {
+      const fileName = coverPhoto.split('/').pop();
+      const fileType = fileName?.split('.').pop();
+      const coverPhotoFile = {
+        uri: coverPhoto,
+        name: fileName || 'cover.jpg',
+        type: `image/${fileType || 'jpeg'}`,
+      };
 
-    //   formData.append("coverPhoto", coverPhotoFile as any);
+      formData.append("coverPhoto", coverPhotoFile as any);
 
-      // console.log("📷 coverPhoto:");
-      // console.log("   • uri:", coverPhotoFile.uri);
-      // console.log("   • name:", coverPhotoFile.name);
-      // console.log("   • type:", coverPhotoFile.type);
+      console.log("📷 coverPhoto:");
+      console.log("   • uri:", coverPhotoFile.uri);
+      console.log("   • name:", coverPhotoFile.name);
+      console.log("   • type:", coverPhotoFile.type);
 if(false){
 
 }    else {
       console.log("📷 coverPhoto: not available");
     }
-
+    }
     await updateUser(formData);
     router.back();
   } catch (error) {
@@ -94,7 +94,7 @@ if(false){
     });
     
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setProfilePic(result.assets[0].uri);
+      setAvatar(result.assets[0].uri);
     }
   };
   
@@ -144,7 +144,7 @@ if(false){
         </View>
         
         <View className='relative self-start mt-[-40] ml-4'>
-          <Image source={{ uri: profilePic }} className='w-[100] h-[100] rounded-full' />
+          <Image source={{ uri: avatar }} className='w-[100] h-[100] rounded-full' />
           
           <TouchableOpacity className='absolute bottom-0 right-0 bg-black/60 rounded-full p-2' onPress={pickProfileImage}>
             <Camera size={20} color={colors.background} />

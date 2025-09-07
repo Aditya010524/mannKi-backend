@@ -1,60 +1,7 @@
 
-// const API_BASE_URL = 'http://192.168.118.208:5000/api' // Development - Backend server
-
-// export const API_ENDPOINTS = {
-//   // Auth
-//   LOGIN: '/auth/login',
-//   REGISTER: '/auth/register',
-//   FORGOT_PASSWORD: '/auth/forgot-password',
-//   RESET_PASSWORD: '/auth/reset-password',
-//   CHANGE_PASSWORD: '/auth/change-password',
-//   REFRESH_TOKEN: '/auth/refresh-token',
-  
-//   // User
-//   PROFILE: '/users/profile',
-//   UPDATE_PROFILE: '/users/profile',
-//   UPLOAD_AVATAR: '/upload/image',
-//   UPLOAD_COVER: '/upload/image',
-//   FOLLOW: '/users/follow',
-//   UNFOLLOW: '/users/unfollow',
-//   FOLLOWERS: '/users',
-//   FOLLOWING: '/users',
-//   SEARCH_USERS: '/users/search',
-  
-//   // Tweets
-//   TWEETS: '/tweets',
-//   USER_TWEETS: '/tweets/user',
-//   TWEET_DETAIL: '/tweets',
-//   CREATE_TWEET: '/tweets',
-//   LIKE_TWEET: '/tweets',
-//   RETWEET: '/tweets',
-//   COMMENT: '/tweets',
-//   HOME_FEED: '/tweets/feed',
-//   TRENDING: '/tweets/trending',
-//   SEARCH_TWEETS: '/tweets/search',
-  
-//   // Notifications
-//   NOTIFICATIONS: '/notifications',
-//   MARK_READ: '/notifications/read',
-//   MARK_ALL_READ: '/notifications/read-all',
-//   UNREAD_COUNT: '/notifications/unread-count',
-  
-//   // Messages
-//   CONVERSATIONS: '/messages/conversations',
-//   MESSAGES: '/messages',
-//   SEND_MESSAGE: '/messages',
-//   MARK_CONVERSATION_READ: '/messages/read',
-// };
-
-// export default API_BASE_URL;
-
-// import axios from 'axios';
-
-// API Configuration
-// const API_BASE_URL = 'http://192.168.118.208:5000';
 const API_BASE_URL = 'http://192.168.12.208:5000/api/v1';
 
-// API Endpoints - All 17 APIs from Postman
+
 export const API_ENDPOINTS = {
   // Authentication Requests (7)
   REGISTER: '/auth/register',
@@ -71,7 +18,22 @@ export const API_ENDPOINTS = {
   UPDATE_USERNAME: '/users/username',
   CHANGE_PASSWORD: '/users/change-password',
   DELETE_ACCOUNT: '/users/me',
+  SEARCH_USERS: "/users/search",   // 🔍 Search user by query
+  GET_ALL_USERS: "/users",         // 👥 Get all users
+  GET_USER_BY_ID: "/users",        // 🆔 Get user by ID (append /:id)
+  GET_USER_STATS: "/users",        // 📊 Get user stats (append /:id/stats)   
+
+
   
+  FOLLOW: "/follows",                // POST /follows/:userId
+  UNFOLLOW: "/follows",              // DELETE /follows/:userId
+  GET_FOLLOWERS: "/follows",         // GET /follows/:userId/followers
+  GET_FOLLOWING: "/follows",         // GET /follows/:userId/following
+  CHECK_FOLLOW_STATUS: "/follows",   // GET /follows/:userId/status
+  SUGGESTED_USERS: "/follows/suggestions", // GET
+
+
+
   // Session Management (4)
   ACTIVE_SESSIONS: '/users/sessions',
   REMOVE_SESSION: '/users/sessions',
@@ -83,51 +45,5 @@ export const API_ENDPOINTS = {
 
 
 
-  
-//   // User
-//   PROFILE: '/users/profile',
-
-//   UPLOAD_AVATAR: '/upload/image',
-//   UPLOAD_COVER: '/upload/image',
-//   FOLLOW: '/users/follow',
-//   UNFOLLOW: '/users/unfollow',
-//   FOLLOWERS: '/users',
-//   FOLLOWING: '/users',
-//   SEARCH_USERS: '/users/search',
-  
-//   // Tweets
-//   TWEETS: '/tweets',
-//   USER_TWEETS: '/tweets/user',
-//   TWEET_DETAIL: '/tweets',
-//   CREATE_TWEET: '/tweets',
-//   LIKE_TWEET: '/tweets',
-//   RETWEET: '/tweets',
-//   COMMENT: '/tweets',
-//   HOME_FEED: '/tweets/feed',
-//   TRENDING: '/tweets/trending',
-//   SEARCH_TWEETS: '/tweets/search',
-  
-//   // Notifications
-//   NOTIFICATIONS: '/notifications',
-//   MARK_READ: '/notifications/read',
-//   MARK_ALL_READ: '/notifications/read-all',
-//   UNREAD_COUNT: '/notifications/unread-count',
-  
-//   // Messages
-//   CONVERSATIONS: '/messages/conversations',
-//   MESSAGES: '/messages',
-//   SEND_MESSAGE: '/messages',
-//   MARK_CONVERSATION_READ: '/messages/read',
-};
-
-// Create axios instance
-// const apiClient = axios.create({
-//   baseURL: API_URL,
-//   timeout: 10000,
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
-// });
-
-// export default apiClient;
+}
 export default API_BASE_URL;
