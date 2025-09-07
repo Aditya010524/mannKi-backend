@@ -77,11 +77,6 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // isPrivate: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-
     // Soft delete or suspension flag.
     isActive: {
       type: Boolean,

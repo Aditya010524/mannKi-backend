@@ -33,6 +33,7 @@ class AuthController {
       password,
       displayName,
       bio: `Hi, I'm ${displayName.split(' ')[0]}!`,
+      avatar: configEnv.DEFAULT_PROFILE_URL,
     });
 
     await user.save();

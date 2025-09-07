@@ -66,15 +66,18 @@ class FollowController {
 
     let result;
     let action;
+    let isFollowing;
 
     if (currentStatus.status === 'following' || currentStatus.status === 'mutual') {
       // Currently following, so unfollow
       result = await followService.unfollowUser(followerId, followingId);
       action = 'unfollowed';
+      isFollowing = false;
     } else if (currentStatus.status === 'not_following' || currentStatus.status === 'followed_by') {
       // Not following, so follow
       result = await followService.followUser(followerId, followingId);
       action = 'followed';
+      isFollowing = true;
     } else {
       throw ApiError.badRequest('Cannot toggle follow status for this user');
     }
@@ -83,6 +86,7 @@ class FollowController {
       res,
       {
         action,
+        isFollowing,
         userId: followingId,
         actionDate: result.createdAt || new Date(),
       },

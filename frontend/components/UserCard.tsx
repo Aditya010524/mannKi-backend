@@ -22,29 +22,25 @@ export const UserCard: React.FC<UserCardProps> = ({
   const { user: currentUser } = useAuth();
   const { toggleFollow } = useUsers();
   
-  const [isFollowing, setIsFollowing] = useState(user?.followStatus?.isFollowing || false); // Added this line
+  const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing); // Added this line
  
-  // Sync with backend data when user prop changes
-  useEffect(() => {
-    setIsFollowing(user?.followStatus?.isFollowing || false);
-  }, [user?.followStatus?.isFollowing]); // Added this useEffect
- 
-  const handleFollow = async () => {
-   try {
-    const response = await toggleFollow(user._id);
-    console.log(user._id)
-    console.log(response)
-    if (response?.success?.action === "followed") {
-      setIsFollowing(true);   
 
-    }
-    else if (response?.success?.action === "unfollowed") {
-      setIsFollowing(false);
-    }
+ 
+ const handleFollow = async () => {
+ 
+   try{
+     const response = await toggleFollow(user._id);
+     console.log(response)
+     if(response?.data){
+      setisFollowing(response.data.isFollowing)
+      console.log(response.data)
+      console.log(isFollowing)
+     }
    } catch (error) {
-    
+      console.error('Failed to follow/unfollow:', error);
+    }
+  
    }
-  };
  
   const navigateToProfile = () => {
     if (onPress) {
@@ -73,7 +69,7 @@ export const UserCard: React.FC<UserCardProps> = ({
         )}
       </View>
      
-      {showFollowButton && currentUser && currentUser._id !== user._id && (
+      {showFollowButton && currentUser && (
         <TouchableOpacity
           style={[
             styles.followButton,

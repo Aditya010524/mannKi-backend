@@ -86,7 +86,9 @@ export const useUsers = () => {
   const toggleFollow = async (userId: string) => {
     try {
       const response = await apiService.put(`${API_ENDPOINTS.TOGGLE_FOLLOW}/${userId}/toggle`);
+    
       return response;
+     
     }
     catch(error) {
       console.log(error)

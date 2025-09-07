@@ -70,6 +70,7 @@ class UserController {
           isVerified: user.isVerified,
           followersCount: user.followersCount,
           followingCount: user.followingCount,
+          tweetsCount: user.tweetsCount,
           followStatus: {
             isFollowing: followStatus.status === 'following' || followStatus.status === 'mutual',
             isFollowedBy: followStatus.status === 'followed_by' || followStatus.status === 'mutual',

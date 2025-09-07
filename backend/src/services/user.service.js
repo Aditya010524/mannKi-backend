@@ -61,7 +61,6 @@ class UserService {
     const skip = (currentPage - 1) * limit;
 
     const users = await User.find(searchQuery)
-      .select('username displayName bio avatar isVerified isPrivate followersCount createdAt')
       .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
       .skip(skip)
       .limit(parseInt(limit))

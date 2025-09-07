@@ -29,29 +29,21 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 }) => {
   const { user: currentUser } = useAuth();
   const {toggleFollow} = useUsers();
-  const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing || true);
+const [isFollowing, setisFollowing] = useState(user.followStatus.isFollowing)
+
   
 
-useEffect(() => {
-  setisFollowing(user?.followStatus?.isFollowing || true);
-}, [user?.followStatus?.isFollowing]);
 
   const handleFollow = async () => {
 
 
    try{
      const response = await toggleFollow(user.id);
-    if(response.success){
-      console.log(response?.success)
-      console.log(response?.data.action)
-  if (response?.data?.action === "followed") {
-   setisFollowing(true);
-  } else if (response?.data?.action === "unfollowed") {
-    setisFollowing(false);
-  } 
-  }
-  
-    
+     if(response?.data){
+      setisFollowing(response.data.isFollowing)
+      console.log(response.data)
+      console.log(isFollowing)
+     }
    } catch (error) {
       console.error('Failed to follow/unfollow:', error);
     }
