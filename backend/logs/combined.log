@@ -1109,3 +1109,5 @@
     at logger (C:\Users\Abhishek\Desktop\LaunchMyTech\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
     at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\LaunchMyTech\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
     at trim_prefix (C:\Users\Abhishek\Desktop\LaunchMyTech\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-09-07 23:01:29 [INFO]: ✅ Dev DB connected: 127.0.0.1:27017
+2025-09-07 23:01:29 [INFO]: Server started on port 5000
