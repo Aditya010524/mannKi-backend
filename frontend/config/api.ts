@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://192.168.207.208:5000/api/v1';
+const API_BASE_URL = 'http://192.168.109.208:5000/api/v1';
 
 
 export const API_ENDPOINTS = {
@@ -23,8 +23,7 @@ export const API_ENDPOINTS = {
   GET_USER_BY_ID: "/users",        // 🆔 Get user by ID (append /:id)
   GET_USER_STATS: "/users",        // 📊 Get user stats (append /:id/stats)   
 
-
-  
+  // Follow Requests (6)
   FOLLOW: "/follows",                // POST /follows/:userId
   UNFOLLOW: "/follows",              // DELETE /follows/:userId
   TOGGLE_FOLLOW: "/follows",         // PATCH /follows/:userId
@@ -41,10 +40,25 @@ export const API_ENDPOINTS = {
   LOGOUT_CURRENT: '/users/logout',
   LOGOUT_ALL: '/users/logout-all',
   
-  // Health Check (1)
+
+  // tweets
+  CREATE_TWEET : '/tweets',
+  HOME_FEED : '/tweets/timeline',
+  TWEET_DETAIL : '/tweets',
+  LIKE_TWEET : '/tweets',
+  RETWEET : '/tweets',
+  USER_TWEETS : '/tweets/user',
+  COMMENTS : '/tweets',
+  LIKE_COMMENT : '/tweets/comments',
+  DELETE_COMMENT : '/tweets/comments',
+  CREATE_COMMENT : '/tweets/comments',
+  GET_COMMENT_REPLY : '/tweets/comments',
+  TRENDING : '/tweets/trending',
+  DELETE_TWEET : '/tweets',
+
+
+    // Health Check (1)
   HEALTH_STATUS: '/health',
-
-
 
 }
 export default API_BASE_URL;

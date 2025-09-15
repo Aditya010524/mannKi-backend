@@ -54,8 +54,9 @@ export const useTweets = () => {
         page,
         limit,
       });
-      
+
       if (response.success && response.data) {
+              console.log("Home tweets fetched", );
         return response.data;
       } else {
         throw new Error(response.error || 'Failed to fetch tweets');
@@ -99,9 +100,7 @@ export const useTweets = () => {
     
     try {
       const response = await apiService.get<Tweet>(`${API_ENDPOINTS.TWEET_DETAIL}/${tweetId}`);
-      console.log("fetchTweetById raw response:", response);
-      console.log("fetchTweetById response.data:", response.data);
-      
+   
       if (response.success && response.data) {
         return response.data;
       } else {
@@ -129,6 +128,7 @@ export const useTweets = () => {
       }>(`${API_ENDPOINTS.LIKE_TWEET}/${tweetId}/like`);
       
       if (response.success && response.data) {
+        console.log("tweet liked")
         return response.data.tweet;
       } else {
         throw new Error(response.error || 'Failed to like tweet');
@@ -153,8 +153,9 @@ export const useTweets = () => {
         tweet: Tweet;
         retweeted: boolean;
       }>(`${API_ENDPOINTS.RETWEET}/${tweetId}/retweet`);
-      
+
       if (response.success && response.data) {
+        console.log("tweet retweeted")
         return response.data.tweet;
       } else {
         throw new Error(response.error || 'Failed to retweet');
@@ -175,13 +176,13 @@ export const useTweets = () => {
     setError(null);
     
     try {
-      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.COMMENT}/${tweetId}/comment`, {
+      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.COMMENTS}/${tweetId}/comments`, {
         content,
       });
-      console.log("addComment raw response:", response);
-console.log("addComment response.data:", response.data);
+
       
       if (response.success && response.data) {
+        console.log("comment added")
         return response.data;
       } else {
         throw new Error(response.error || 'Failed to add comment');
@@ -195,29 +196,150 @@ console.log("addComment response.data:", response.data);
     }
   };
 
-const createTweet = async (formData: FormData) => {
-  if (!user) return null;
-
-  setIsLoading(true);
-  setError(null);
-
-  try {
-    const response = await apiService.postForm<Tweet>(API_ENDPOINTS.CREATE_TWEET, formData);
-
-    if (response.success && response.data) {
-      return response.data;
-    } else {
-      throw new Error(response.error || 'Failed to create tweet');
+  const addReply = async(content: string, commentId: string) => {
+    if (!user) return null;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.CREATE_COMMENT}/${commentId}/reply`, {
+        content,
+      });
+    
+      console.log(response)
+      if (response.success && response.data) {
+        console.log("reply added")
+        return response;
+      } else {
+        throw new Error(response.error || 'Failed to add reply');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to add reply';
+      setError(errorMessage);
+      return null;
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to create tweet';
-    setError(errorMessage);
-    return null;
-  } finally {
-    setIsLoading(false);
   }
-};
 
+  const createTweet = async (formData:any) => {
+    if (!user) return null;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Replace this with your actual API call
+      const response = await apiService.postForm(API_ENDPOINTS.CREATE_TWEET, formData);
+
+      if (response.success && response.data) {
+        console.log('✅ Tweet created successfully:');
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to create tweet');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create tweet';
+      setError(errorMessage);
+      console.error('❌ Tweet creation failed:', errorMessage);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  const fetchCommentsByTweetId = async (tweetId: string , limit = 10 , timeFrame = '24') => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.COMMENTS}/${tweetId}/comments`,{
+        limit,
+        timeFrame
+      });
+      
+      if (response.success && response.data) {
+        return response;
+      } else {
+        throw new Error(response.error || 'Failed to fetch comments');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch comments';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getReplyByCommentId = async (commentId: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.GET_COMMENT_REPLY}/${commentId}/replies`);
+  
+      if (response.success && response.data) {
+        return response;
+      } else {
+        throw new Error(response.error || 'Failed to fetch replies');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch replies';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+
+  const likeComment = async (commentId: string) => {
+    if (!user) return null;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.post(`${API_ENDPOINTS.LIKE_COMMENT}/${commentId}/like`);
+        console.log("comment liked",response)
+      if (response.success && response.data) {
+      
+        return response.data.comment;
+      } else {
+        throw new Error(response.error || 'Failed to like comment');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to like comment';
+      setError(errorMessage);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const deleteComment = async (commentId: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.delete(`${API_ENDPOINTS.DELETE_COMMENT}/${commentId}`);
+      console.log("comment deleted",response)
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to delete comment');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete comment';
+      setError(errorMessage);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
 
   const searchTweets = async (query: string, page = 1, limit = 20) => {
@@ -265,6 +387,27 @@ const createTweet = async (formData: FormData) => {
       setIsLoading(false);
     }
   };
+  const deleteTweet = async(tweetId: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.delete(`${API_ENDPOINTS.DELETE_TWEET}/${tweetId}`);
+           console.log("tweet deleted",response)
+      if (response.success && response.data) {
+        return response.data;
+   
+      } else {
+        throw new Error(response.error || 'Failed to delete tweet');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete tweet';
+      setError(errorMessage);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return {
     isLoading,
@@ -274,9 +417,15 @@ const createTweet = async (formData: FormData) => {
     fetchTweetById,
     likeTweet,
     retweet,
-    addComment,
     createTweet,
+    deleteTweet,
     searchTweets,
     getTrendingHashtags,
+    addComment,
+    deleteComment,
+    addReply,
+    fetchCommentsByTweetId,
+    getReplyByCommentId,
+    likeComment
   };
 };

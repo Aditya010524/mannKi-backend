@@ -31,11 +31,13 @@ export default function ComposeScreen() {
   };
 
   const handleTweet = async () => {
-    if (!user || !tweetText.trim()) return;
+    if (!user || (!tweetText.trim() && media.length === 0)) 
+    return;
 
     setIsSubmitting(true);
-
+    let content = tweetText;
     try {
+     
       const formData = new FormData();
       formData.append("content", tweetText);
 
@@ -48,6 +50,7 @@ export default function ComposeScreen() {
           name: fileName,
           type: `image/${fileType}`,
         } as any); // casting for React Native
+         console.log("formdata",formData)
       });
 
       const newTweet = await createTweet(formData);
@@ -57,6 +60,12 @@ export default function ComposeScreen() {
         }
         router.replace("/(tabs)");
       }
+      // const response = await createTweet({ content: tweetText });
+      //       router.replace("/(tabs)");
+      // if (response.success && response.data) {
+      //   console.log("✅ Tweet created successfully:", response.data);
+       
+      
     } catch (error) {
       console.error("Failed to create tweet:", error);
     } finally {
@@ -115,13 +124,24 @@ export default function ComposeScreen() {
       </View>
 
       <ScrollView className="flex-1">
-        <View className="flex-row p-4">
-          <Image
-            source={{ uri: user.profilePic }}
-            className="w-14 h-14 rounded-full"
-          />
+        <View className=" ">
+          <View className="flex-row p-4">
+            <Image
+              source={{ uri: user.avatar }}
+              className="w-16 h-16 rounded-full"
+            />
 
-          <View className="flex-1 ml-4">
+            <View>
+            
+              <Text className="font-bold text-xl text-text ml-4">
+                {user.displayName}
+              </Text>
+              <Text className="text-sm text-secondaryText ml-4">
+                @{user.username}
+              </Text>
+            </View>
+          </View>
+          <View className="flex-1 ml-4 mt-0">
             <TextInput
               className="text-lg text-text"
               placeholder="What's happening?"

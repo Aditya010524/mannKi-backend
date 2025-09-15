@@ -56,7 +56,7 @@ export const UserCard: React.FC<UserCardProps> = ({
       onPress={navigateToProfile}
     >
       <Image
-        source={{ uri: user.profilePic }}
+        source={{ uri: user.avatar }}
         style={[styles.avatar, compact && styles.compactAvatar]}
       />
      

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import ModalScreen from "@/app/modal";
 
@@ -17,6 +17,7 @@ const Grid: React.FC<GridProps> = ({ photos , isLiked , onLike , likeCount}) => 
   if (!photos || photos.length === 0) return null;
 
   // Handles photo press → opens modal
+
   const handlePress = () => {
     setShowModal(true);
   };

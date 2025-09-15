@@ -49,6 +49,7 @@ export default function ExploreScreen() {
   const loadTrendingHashtags = async () => {
     try {
       const trending = await getTrendingHashtags();
+
       setTrendingHashtags(trending);
     } catch (error) {
       console.error('Failed to load trending hashtags:', error);
@@ -111,7 +112,7 @@ export default function ExploreScreen() {
               handleSearch(item.tag);
             }}
           >
-            <Text className='text-lg font-semibold text-text'>#{item.tag}</Text>
+            <Text className='text-lg font-semibold text-text'>#{item.hashtag}</Text>
             <Text className='text-md text-secondaryText'>{item.count} tweets</Text>
           </TouchableOpacity>
         ))}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Pressable, Image, TouchableOpacity } from 'react-native';
-import { Heart, MessageCircle, Repeat, Share2 } from 'lucide-react-native';
+import { Heart, MessageCircle, Repeat, Share2, MoreVertical } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { Tweet as TweetType } from '@/types';
 import { formatDate } from '@/utils/formatDate';
@@ -10,6 +10,7 @@ import { useTweets } from '@/hooks/useTweets';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 import Grid from '@/components/Grid'
+import OptionsMenu from '@/components/OptionsMenuModal'
 
 interface TweetProps {
   tweet: TweetType;
@@ -19,11 +20,20 @@ interface TweetProps {
 
 export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
   const { user } = useAuth();
-  const { likeTweet, retweet } = useTweets();
-  const [isLiked, setIsLiked] = useState(user ? tweet.likes.includes(user.id) : false);
-  const [likeCount, setLikeCount] = useState(tweet.likes.length);
-  const [isRetweeted, setIsRetweeted] = useState(user ? tweet.retweets.includes(user.id) : false);
-  const [retweetCount, setRetweetCount] = useState(tweet.retweets.length);
+  const { likeTweet, retweet, deleteTweet } = useTweets();
+  const [isLiked, setIsLiked] = useState(user ? tweet?.likes?.includes(user.id) : false);
+  const [likeCount, setLikeCount] = useState(tweet?.stats?.likes);
+  const [isRetweeted, setIsRetweeted] = useState(tweet?.isRetweet);
+  const [retweetCount, setRetweetCount] = useState(tweet?.stats?.retweets);
+  const [MenuVisible, setMenuVisible] = useState(false)
+
+ const tweetOptions: MenuOption[] = [
+  { title: "Not interested", onPress: () => console.log('Not interested in:', tweet.id) },
+  { title: "Report Tweet", onPress: () => console.log('Reporting:', tweet.id) },
+  ]
+ if(user?.id === tweet?.author?.id){
+   tweetOptions.push({ title: "Delete Tweet", onPress: () => deleteTweet(tweet.id), isDestructive: true })
+ }
 
   const handleLike = async () => {
     if (Platform.OS !== 'web') {
@@ -32,7 +42,8 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
     
     setIsLiked(!isLiked);
     setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-    
+    console.log("likeCount",likeCount)
+     console.log(tweet.id)
     await likeTweet(tweet.id);
     if (onRefresh) onRefresh();
   };
@@ -46,6 +57,7 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
     setRetweetCount(isRetweeted ? retweetCount - 1 : retweetCount + 1);
     
     await retweet(tweet.id);
+   
     if (onRefresh) onRefresh();
   };
 
@@ -61,7 +73,7 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
   };
 
   const navigateToProfile = () => {
-    router.push(`/profile/${tweet.user.username}`);
+    router.push(`/profile/${tweet?.author?.id}`);
   };
 
   const navigateToTweet = () => {
@@ -71,38 +83,50 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
   return (
     <Pressable style={styles.container} onPress={navigateToTweet}>
       <TouchableOpacity onPress={navigateToProfile}>
-        <Image source={{ uri: tweet.user.profilePic }} style={styles.avatar} />
+        <Image source={{ uri: tweet?.author?.avatar }} style={styles.avatar} />
       </TouchableOpacity>
+    
       
       <View style={styles.content}>
         <View style={styles.header}>
           <TouchableOpacity onPress={navigateToProfile}>
-            <Text style={styles.name}>{tweet.user.name}</Text>
+            <Text style={styles.name}>{tweet?.author?.displayName}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={navigateToProfile}>
-            <Text style={styles.username}>@{tweet.user.username}</Text>
+            <Text style={styles.username}>@{tweet?.author?.username}</Text>
           </TouchableOpacity>
           <Text style={styles.dot}>·</Text>
           <Text style={styles.time}>{formatDate(tweet.createdAt)}</Text>
+            <TouchableOpacity onPress={()=>setMenuVisible(true)}>
+        <MoreVertical size={18} color={colors.lightGray} />
+        {
+          MenuVisible && <OptionsMenu  MenuVisible={MenuVisible}
+        onClose={() => setMenuVisible(false)}
+        options={tweetOptions}
+          />
+        }
+      </TouchableOpacity>
         </View>
         
         <Text style={styles.tweetText}>{tweet.content}</Text>
         
     
-        {tweet.media && tweet.media.length > 0 && (
-          <Grid photos={tweet.media} isLiked = {isLiked} onLike = {handleLike} likeCount = {likeCount} />
+        {tweet?.media && tweet?.media?.length > 0 && (
+          <Grid photos={tweet?.media.map((media) => media?.url)} isLiked = {isLiked} onLike = {handleLike} likeCount = {likeCount} />
         )}
         
         <View style={styles.actions}>
           <TouchableOpacity style={styles.actionButton} onPress={handleComment}>
             <MessageCircle size={18} color={colors.lightGray} />
-            {tweet.comments.length > 0 && (
-              <Text style={styles.actionText}>{tweet.comments.length}</Text>
+            {tweet?.comments?.length > 0 && (
+              <Text style={styles.actionText}>{tweet?.comments?.length}</Text>
             )}
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionButton} onPress={handleRetweet}>
-            <Repeat 
+{
+  tweet?.author?.id !== user?.id ? (
+              <TouchableOpacity style={styles.actionButton} onPress={handleRetweet}>
+            <Repeat
               size={18} 
               color={isRetweeted ? colors.success : colors.lightGray} 
             />
@@ -117,6 +141,8 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
               </Text>
             )}
           </TouchableOpacity>
+  ): null
+}
           
           <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
             <Heart 

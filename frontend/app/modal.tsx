@@ -22,7 +22,7 @@ export default function ModalScreen({ photos, showModal, setshowModal ,isLiked, 
 
 
   return (
-    <Modal transparent={true} visible={showModal} animationType="slide">
+    <Modal transparent={true} visible={showModal} animationType="slide" onRequestClose={() => setshowModal(false)}>
       <View style={styles.container}>
         {/* Back Button */}
         <TouchableOpacity

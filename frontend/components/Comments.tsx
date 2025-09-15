@@ -1,137 +1,207 @@
-// components/Comment.tsx
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Platform , Button} from "react-native";
-import { Comment as CommentType } from "@/types";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  TextInput,
+  FlatList,
+} from "react-native";
+import { Comment as CommentType, Reply as ReplyType } from "@/types"; // make sure ReplyType exists in your types
 import { colors } from "@/constants/colors";
 import { formatDate } from "@/utils/formatDate";
 import { Heart } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import { useTweets } from "@/hooks/useTweets";
+import { CommentReply } from "@/components/CommentsReply";
+import  OptionsMenu  from "./OptionsMenuModal";
+import { MoreVertical } from "lucide-react-native";
+import { useAuth } from "@/hooks/useAuth";
 
+type Props = { 
+  comment: CommentType,
+  onDelete: (id: string) => void
 
-type Props = { comment: CommentType };
+ };
 
-export function Comment({ comment }: Props) {
-  // main comment like state
+export function Comment({ comment , onDelete }: Props) {
+  const {user} = useAuth();
+  const { likeComment, addReply, getReplyByCommentId ,isLoading } = useTweets();
+
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [likeCount, setLikeCount] = useState(comment?.stats?.likes ?? 0);
+  const [MenuVisible, setMenuVisible] = useState(false)
 
-  // reply data (use backend-provided reply if you have it; else local)
-  const initialReply = (comment as any).reply ?? null;
-  const [reply, setReply] = useState<any | null>(initialReply);
-  const [showReply, setShowReply] = useState(Boolean(initialReply));
+  // Replies
+  const [reply, setReply] = useState<ReplyType[]>([]);
+  const [showReply, setShowReply] = useState(false);
+  const [isReplied, setIsReplied] = useState(comment?.stats?.replies > 0);
 
-  // reply like state (independent from main comment)
+  // Reply Like (for individual replies)
   const [isReplyLiked, setIsReplyLiked] = useState(false);
-  const [replyLikeCount, setReplyLikeCount] = useState(
-    Array.isArray(initialReply?.likes) ? initialReply.likes.length : 0
-  );
+  const [replyLikeCount, setReplyLikeCount] = useState(0);
 
-  const handleLike = () => {
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsLiked((prev) => {
-      const next = !prev;
-      setLikeCount((c) => c + (next ? 1 : -1));
-      return next;
-    });
+  // Reply input state
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [replyText, setReplyText] = useState("");
+
+   const tweetOptions: MenuOption[] = [
+  { title: "Not interested", onPress: () => console.log('Not interested in:', comment.id) },
+  { title: "Report Tweet", onPress: () => console.log('Reporting:', comment.id) },
+  ]
+ if(user?.id === comment?.author?.id){
+   tweetOptions.push({ title: "Delete Tweet", onPress: () => onDelete(comment.id), isDestructive: true })
+ }
+
+  const handleLike = async () => {
+    try {
+      await likeComment(comment.id);
+      setIsLiked(!isLiked);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    } catch (error) {
+      console.log("Like error:", error);
+    }
   };
 
-  const handleReplyLike = () => {
-    if (!reply) return; // nothing to like if reply isn't shown
-    if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsReplyLiked((prev) => {
-      const next = !prev;
-      setReplyLikeCount((c) => c + (next ? 1 : -1));
-      return next;
-    });
-  };
 
   const handleAddReply = () => {
-    // Demo reply object (until backend is wired)
-    const demo = {
-      _id: Date.now().toString(),
-      content: "This is a reply",
-      createdAt: new Date().toISOString(),
-      user: {
-        name: "John Doe",
-        username: "johndoe",
-        profilePic : "https://res.cloudinary.com/di1e0mwbu/image/upload/v1753185517/twitter_media/g280oybc1rw1xg5c8z1j.jpg",
-      },
-      likes: [] as string[],
-    };
-    setReply(demo);
+    setShowReplyInput(true);
+  };
+
+ const handleToggleReply = async () => {
+  if (!showReply) {
+    // only fetch if empty
+    if (reply.length === 0) {
+      try {
+        const response = await getReplyByCommentId(comment.id);
+        if (response?.success && Array.isArray(response.data)) {
+          setReply(response.data);
+        }
+      } catch (error) {
+        console.log("Fetch replies error:", error);
+      }
+    }
     setShowReply(true);
-    setIsReplyLiked(false);
-    setReplyLikeCount(0);
+    setShowReplyInput(false);
+  } else {
+    setShowReply(false);
+  }
+};
+
+
+  const refreshReplies = async () => {
+  try {
+    const response = await getReplyByCommentId(comment.id);
+    if (response?.success && Array.isArray(response.data)) {
+      setReply(response.data);
+    }
+  } catch (error) {
+    console.log("Refresh replies error:", error);
+  }
+};
+
+  const handleSubmitReply = async () => {
+    if (!replyText.trim()) return;
+
+    try {
+      const response = await addReply(replyText, comment.id);
+      if (response?.success && response?.data) {
+        // Add new reply to the list
+        setReply((prev) => [response.data, ...prev]);
+        setShowReply(true);
+        setReplyText("");
+        setShowReplyInput(false);
+        setIsReplied(true);
+      }
+    } catch (error) {
+      console.log("Reply error:", error);
+    }
   };
 
   return (
     <View style={styles.commentItem}>
-      {/* Comment Avatar */}
-      <Image source={{ uri: comment.user.profilePic }} style={styles.commentAvatar} />
+      {/* Avatar */}
+      <Image
+        source={{ uri: comment?.author?.avatar }}
+        style={styles.commentAvatar}
+      />
 
-      {/* Comment Content */}
       <View style={styles.commentContent}>
+        {/* Header */}
         <View style={styles.commentHeader}>
-          <Text style={styles.commentName}>{comment.user.name}</Text>
-          <Text style={styles.commentUsername}>@{comment.user.username}</Text>
+          <Text style={styles.commentName}>{comment?.author?.displayName}</Text>
+          <Text style={styles.commentUsername}>@{comment?.author?.username}</Text>
           <Text style={styles.commentTime}>{formatDate(comment.createdAt)}</Text>
+         <TouchableOpacity onPress={()=>setMenuVisible(true)}>
+        <MoreVertical size={18} color={colors.lightGray} />
+        {
+          MenuVisible && <OptionsMenu  MenuVisible={MenuVisible}
+        onClose={() => setMenuVisible(false)}
+        options={tweetOptions}
+          />
+        }
+      </TouchableOpacity>
         </View>
 
+        {/* Comment Text */}
         <Text style={styles.commentText}>{comment.content}</Text>
 
-        {/* Reply / Show-Hide */}
-        {reply ? (
-          <TouchableOpacity onPress={() => setShowReply((s) => !s)}>
-            <Text style={styles.replyActionText}>{showReply ? "Hide Reply" : "Show Reply"}</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={handleAddReply}>
-            <Text style={styles.replyActionText}>Reply</Text>
-          </TouchableOpacity>
+        {/* Reply + Toggle */}
+        {!showReplyInput && (
+          <View style={{ flexDirection: "row", gap: 12, marginTop: 6 }}>
+            <TouchableOpacity onPress={handleAddReply}>
+              <Text style={styles.replyActionText}>Reply</Text>
+            </TouchableOpacity>
+
+            {isReplied && (
+              <TouchableOpacity onPress={handleToggleReply}>
+                <Text style={styles.replyActionText}>
+                  {showReply ? "Hide Replies" : "Show Replies"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
 
-        {/* Render Reply */}
-        {showReply && reply && (
-          <View style={styles.replyContainer}>
-
-            <Image source={{ uri: reply.user.profilePic }} style={styles.replyAvatar} />
-
-            <View style={styles.replyContent}>
-              <View style={styles.replyHeader}>
-                <Text style={styles.replyName}>{reply.user.name}</Text>
-                <Text style={styles.replyUsername}>@{reply.user.username}</Text>
-                <Text style={styles.replyTime}>{formatDate(reply.createdAt)}</Text>
-              </View>
-
-              <Text style={styles.replyTextContent}>{reply.content}</Text>
-            </View>
-
+        {/* Reply Input */}
+        {showReplyInput && (
+          <View style={styles.replyInputContainer}>
+            <TextInput
+              value={replyText}
+              onChangeText={setReplyText}
+              placeholder={`Replying to @${comment?.author?.username}`}
+              placeholderTextColor={colors.secondaryText}
+              style={styles.replyInput}
+            />
+            <TouchableOpacity onPress={handleSubmitReply}>
+              <Text style={styles.sendButton}>Send</Text>
+            </TouchableOpacity>
             <TouchableOpacity
-              style={styles.replyLikeButton}
-              onPress={handleReplyLike}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              onPress={() => {
+                setShowReplyInput(false);
+                setReplyText("");
+              }}
             >
-              <Heart
-                size={16}
-                fill={isReplyLiked ? colors.danger : "transparent"}
-                color={isReplyLiked ? colors.danger : colors.lightGray}
-              />
-              {replyLikeCount > 0 && (
-                <Text
-                  style={[
-                    styles.replyLikeText,
-                    isReplyLiked && { color: colors.danger },
-                  ]}
-                >
-                  {replyLikeCount}
-                </Text>
-              )}
+              <Text style={styles.cancelButton}>Cancel</Text>
             </TouchableOpacity>
           </View>
         )}
+
+        {/* Replies List */}
+        {showReply && (
+         <FlatList
+            data={reply}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => <CommentReply reply={item} />}
+              refreshing={isLoading}
+              onRefresh={refreshReplies}
+/>
+        )}
       </View>
 
-      {/* Like button for main comment */}
+      {/* Like Button */}
       <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
         <Heart
           size={18}
@@ -139,7 +209,9 @@ export function Comment({ comment }: Props) {
           color={isLiked ? colors.danger : colors.lightGray}
         />
         {likeCount > 0 && (
-          <Text style={[styles.actionText, isLiked && { color: colors.danger }]}>{likeCount}</Text>
+          <Text style={[styles.actionText, isLiked && { color: colors.danger }]}>
+            {likeCount}
+          </Text>
         )}
       </TouchableOpacity>
     </View>
@@ -149,11 +221,7 @@ export function Comment({ comment }: Props) {
 const styles = StyleSheet.create({
   commentItem: {
     flexDirection: "row",
-   padding : 12,
-   
-  
-  
-    
+    padding: 12,
   },
   commentAvatar: {
     width: 40,
@@ -167,7 +235,6 @@ const styles = StyleSheet.create({
   commentHeader: {
     flexDirection: "row",
     alignItems: "center",
-   
     flexWrap: "wrap",
   },
   commentName: {
@@ -194,10 +261,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 14,
     fontWeight: "500",
-    marginTop: 6,
   },
-
-  /** --- Main like --- **/
   actionButton: {
     alignItems: "center",
     marginLeft: 8,
@@ -206,60 +270,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.secondaryText,
   },
-
-  /** --- Reply styles --- **/
-  replyContainer: {
+  replyInputContainer: {
     flexDirection: "row",
-    marginTop: 8,
-    marginLeft: 20,
-    backgroundColor: colors.background,
-    borderRadius: 10,
-    padding: 8,
+    alignItems: "center",
+    marginTop: 6,
   },
-  replyAvatar: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 8,
-  },
-  replyContent: {
+  replyInput: {
     flex: 1,
+    borderWidth: 1,
+    borderColor: colors.secondaryText,
+    borderRadius: 8,
+    padding: 8,
+    fontSize: 14,
+    color: colors.text,
   },
-  replyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 2,
-    flexWrap: "wrap",
-  },
-  replyName: {
+  sendButton: {
+    marginLeft: 8,
+    color: colors.primary,
     fontWeight: "600",
-    fontSize: 13,
-    color: colors.text,
-    marginRight: 4,
   },
-  replyUsername: {
-    fontSize: 11,
-    color: colors.secondaryText,
-    marginRight: 4,
-  },
-  replyTime: {
-    fontSize: 11,
-    color: colors.secondaryText,
-  },
-  replyTextContent: {
-    fontSize: 13,
-    color: colors.text,
-    lineHeight: 18,
-  },
-  replyLikeButton: {
-    
-    alignItems: "center",
-   
-    paddingLeft: 6,
-  },
-  replyLikeText: {
-    marginTop: 2,
-    fontSize: 12,
-    color: colors.secondaryText,
+  cancelButton: {
+    marginLeft: 8,
+    color: colors.danger,
+    fontWeight: "600",
   },
 });

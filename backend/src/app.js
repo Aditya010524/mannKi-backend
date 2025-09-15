@@ -10,6 +10,7 @@ import healthRoutes from './routes/health.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import followRoutes from './routes/follow.routes.js';
+import tweetRoutes from './routes/tweet.routes.js';
 
 // Middleware
 import limiter from './middleware/rate-limiter.middleware.js';
@@ -63,6 +64,7 @@ app.use(configEnv.API_PREFIX || '/api/v1', apiRouter);
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/follows', followRoutes);
+apiRouter.use('/tweets', tweetRoutes);
 
 // 404 handler
 app.use(notFound);

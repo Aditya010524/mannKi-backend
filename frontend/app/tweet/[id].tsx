@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -9,26 +9,28 @@ import {
   FlatList,
   Image,
   RefreshControl,
-} from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { useTweets } from '@/hooks/useTweets';
-import { colors } from '@/constants/colors';
-import { Tweet } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Comment } from '@/components/Comments';
+} from "react-native";
+import { useLocalSearchParams } from "expo-router";
+import { useTweets } from "@/hooks/useTweets";
+import { colors } from "@/constants/colors";
+import { Tweet } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Comment } from "@/components/Comments";
+import { router } from "expo-router";
+import { Button } from "@/components/Button";
 
 export default function TweetDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { fetchTweetById, addComment } = useTweets();
+  const { fetchTweetById, addComment, fetchCommentsByTweetId ,deleteComment } = useTweets();
   const { user } = useAuth();
   const [tweet, setTweet] = useState<Tweet | null>(null);
-  const [commentText, setCommentText] = useState('');
+  const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [DummyComments, setDummyComments] = useState<Comment[]>([]);
+  const [comments, setcomments] = useState<Comment[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const handlerefresh = async() => {
+  const handlerefresh = async () => {
     setRefreshing(true);
     await loadTweet();
     setRefreshing(false);
@@ -40,29 +42,42 @@ export default function TweetDetailScreen() {
     if (tweetData) setTweet(tweetData);
   };
 
-  const fetchDummyComments = async () => {
+  const Comments = async () => {
     try {
-      const res = await fetch('https://dummyjson.com/c/ce05-96e8-4d0a-b686');
-      const data = await res.json();
-      setDummyComments(data.data);
+      const response = await fetchCommentsByTweetId(tweet.id);
+  
+// console.log("comments",response.data)
+      setcomments(response.data);
     } catch (error) {
-      console.error('Error fetching dummy comments:', error);
+      console.error("Error fetching dummy comments:", error);
     }
   };
 
   useEffect(() => {
-    loadTweet();
-    fetchDummyComments();
+    if (id) {
+      loadTweet();
+    }
   }, [id]);
+
+  useEffect(() => {
+    if (tweet?.id) {
+      Comments(tweet.id);
+    }
+  }, [tweet]);
+
+  const handleNavigate = () => {
+    router.push(`/profile/${tweet?.author?.id}`);
+  };
 
   const handleAddComment = async () => {
     if (!tweet || !user || !commentText.trim()) return;
     setIsSubmitting(true);
     try {
-      const updatedTweet = await addComment(tweet.id, commentText);
-      if (updatedTweet) {
-        setTweet(updatedTweet);
-        setCommentText('');
+      const updatedComment = await addComment(tweet.id, commentText);
+      if (updatedComment) {
+        console.log("Updated comment:");
+        setcomments((prev) => [updatedComment, ...prev]);
+        setCommentText("");
       }
     } finally {
       setIsSubmitting(false);
@@ -76,45 +91,72 @@ export default function TweetDetailScreen() {
       </View>
     );
   }
-
+const handleDeleteComment = async (commentId: string) => {
+  try {
+    await deleteComment(commentId);
+    setcomments((prev) => prev.filter((comment) => comment.id !== commentId));
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+  }
+};
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <SafeAreaView className="flex-1 bg-white" edges={["bottom"]}>
       <KeyboardAvoidingView
         className="flex-1 bg-white"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 88 : 0}
       >
         <FlatList
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={()=>handlerefresh()} />}
-          data={DummyComments.comments}
-          keyExtractor={(item) => item._id?.toString() || Math.random().toString()}
-          renderItem={({ item }) => <Comment comment={item} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => handlerefresh()}
+            />
+          }
+          data={comments}
+          keyExtractor={(item) =>
+            item.id?.toString() || Math.random().toString()
+          }
+          renderItem={({ item }) => <Comment comment={item} onDelete={handleDeleteComment} />}
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
           ListHeaderComponent={
             <View className="p-4 border-b border-gray-200">
               {/* Tweet header */}
-              <View className="flex-row items-center mb-3">
+              <TouchableOpacity
+                className="flex-row items-center mb-3"
+                onPress={() => handleNavigate()}
+              >
                 <Image
-                  source={{ uri: tweet.user.profilePic }}
+                  source={{ uri: tweet?.author?.avatar }}
                   className="w-12 h-12 rounded-full mr-3"
                 />
                 <View>
-                  <Text className="text-base font-bold text-black">{tweet.user.name}</Text>
-                  <Text className="text-sm text-gray-500">@{tweet.user.username}</Text>
+                  <Text className="text-xl font-bold text-black">
+                    {tweet?.author?.displayName}
+                  </Text>
+                  <Text className="text-m text-gray-500">
+                    @{tweet?.author?.username}
+                  </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
 
               {/* Tweet content */}
-              <Text className="text-lg leading-6 text-black mb-3">{tweet.content}</Text>
+              <Text className="text-lg leading-6 text-black mb-3">
+                {tweet.content}
+              </Text>
 
               {/* Tweet media - horizontal scroll */}
-              {tweet.media && tweet.media.length > 0 && (
+              {tweet?.media && tweet?.media?.length > 0 && (
                 <FlatList
-                  data={tweet.media}
-                  keyExtractor={(item, index) => index.toString()}
+                  data={tweet?.media}
+                  keyExtractor={(item) => item?.id} // safer than index
                   renderItem={({ item }) => (
-                    <Image source={{ uri: item }} className="w-[360] h-60 rounded-xl mr-2 mb-3" />
+                    <Image
+                      source={{ uri: item?.url }}
+                      className="w-[360] h-60 rounded-xl mr-2 mb-3"
+                      alt={item?.altText || "tweet media"}
+                    />
                   )}
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -123,18 +165,22 @@ export default function TweetDetailScreen() {
 
               {/* Timestamp */}
               <Text className="text-sm text-gray-500 mb-3">
-                {new Date(tweet.createdAt).toLocaleTimeString()} ·{' '}
-                {new Date(tweet.createdAt).toLocaleDateString()}
+                {new Date(tweet?.createdAt).toLocaleTimeString()} ·{" "}
+                {new Date(tweet?.createdAt).toLocaleDateString()}
               </Text>
 
               {/* Stats */}
               <View className="flex-row border-y border-gray-200 py-3 mb-3">
                 <View className="flex-row mr-6">
-                  <Text className="font-bold text-black mr-1">{tweet.retweets.length}</Text>
+                  <Text className="font-bold text-black mr-1">
+                    {tweet?.stats?.retweets}
+                  </Text>
                   <Text className="text-gray-500">Retweets</Text>
                 </View>
                 <View className="flex-row">
-                  <Text className="font-bold text-black mr-1">{tweet.likes.length}</Text>
+                  <Text className="font-bold text-black mr-1">
+                    {tweet?.stats?.likes}
+                  </Text>
                   <Text className="text-gray-500">Likes</Text>
                 </View>
               </View>
@@ -153,7 +199,10 @@ export default function TweetDetailScreen() {
         {/* Input for new comment */}
         {user && (
           <View className="flex-row items-center p-3 border-t border-gray-200 bg-white">
-            <Image source={{ uri: user.profilePic }} className="w-8 h-8 rounded-full mr-2" />
+            <Image
+              source={{ uri: user?.profilePic }}
+              className="w-8 h-8 rounded-full mr-2"
+            />
             <TextInput
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-100 rounded-full px-3 py-2 text-sm text-black"
               placeholder="Add a comment..."
@@ -164,7 +213,9 @@ export default function TweetDetailScreen() {
             />
             <TouchableOpacity
               className={`ml-2 rounded-full px-3 py-1 ${
-                !commentText.trim() || isSubmitting ? 'bg-gray-300' : 'bg-blue-500'
+                !commentText.trim() || isSubmitting
+                  ? "bg-gray-300"
+                  : "bg-blue-500"
               }`}
               onPress={handleAddComment}
               disabled={!commentText.trim() || isSubmitting}

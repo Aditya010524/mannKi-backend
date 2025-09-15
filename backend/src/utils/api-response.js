@@ -90,20 +90,40 @@ class ApiResponse {
     });
   }
 
-  // For file uploads
-  static upload(res, data, message = 'File uploaded successfully') {
-    return res.status(201).json({
+  // Your existing upload method
+  static upload(res, data, message = 'Media uploaded successfully') {
+    const mediaArray = data.media || [data];
+
+    const files = mediaArray.map((media) => ({
+      id: media._id,
+      url: media.cloudinary?.urls?.original,
+      type: media.type,
+      size: media.size,
+      originalName: media.originalName,
+      altText: media.altText,
+      status: media.status,
+    }));
+
+    const response = {
       success: true,
       message,
-      file: {
-        filename: data?.filename,
-        size: data?.size,
-        mimetype: data?.mimetype,
-        url: data?.url || null,
-        path: data?.path || null,
-      },
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    if (files.length === 1) {
+      response.file = files[0];
+    } else {
+      response.files = files;
+      if (data.summary) {
+        response.summary = {
+          total: data.summary.total,
+          successful: data.summary.successful,
+          failed: data.summary.failed,
+        };
+      }
+    }
+
+    return res.status(201).json(response);
   }
 
   // For search results

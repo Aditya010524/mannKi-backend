@@ -1,11 +1,17 @@
+// middleware/validation.middleware.js - This is correct
 import ApiError from '../utils/api-error.js';
 
 export const validate = (schema, property = 'body') => {
   return (req, res, next) => {
+    // ✅ ADD: Debug logging
+    // console.log(`🔍 Validating ${property}:`, req[property]);
+    // console.log(`🔍 Schema type:`, typeof schema);
+    // console.log(`🔍 Schema has validate method:`, typeof schema.validate);
+
     const { error, value } = schema.validate(req[property], {
-      abortEarly: false, // Get all errors, not just the first
-      stripUnknown: true, // Remove unknown fields
-      convert: true, // Convert types automatically
+      abortEarly: false,
+      stripUnknown: true,
+      convert: true,
     });
 
     if (error) {
@@ -18,7 +24,6 @@ export const validate = (schema, property = 'body') => {
       throw ApiError.validation('Validation failed', errors);
     }
 
-    // Replace request data with validated and sanitized data
     req[property] = value;
     next();
   };

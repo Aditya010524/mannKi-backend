@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -29,9 +29,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 }) => {
   const { user: currentUser } = useAuth();
   const {toggleFollow} = useUsers();
-const [isFollowing, setisFollowing] = useState(user.followStatus.isFollowing)
+const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing)
 
-  
 
 
   const handleFollow = async () => {
@@ -40,8 +39,8 @@ const [isFollowing, setisFollowing] = useState(user.followStatus.isFollowing)
    try{
      const response = await toggleFollow(user.id);
      if(response?.data){
-      setisFollowing(response.data.isFollowing)
-      console.log(response.data)
+      setisFollowing(response?.data?.isFollowing)
+      console.log(response?.data)
       console.log(isFollowing)
      }
    } catch (error) {
@@ -60,10 +59,10 @@ const [isFollowing, setisFollowing] = useState(user.followStatus.isFollowing)
 
   return (
     <View className="bg-background" >
-      <Image source={{ uri: user.coverPhoto }} className="w-full h-[150px]" />
+      <Image source={{ uri: user?.coverPhoto }} className="w-full h-[150px]" />
 
       <View className="flex-row justify-between px-4 mt-[-40px]">
-        <Image source={{ uri: user.avatar }} className="w-[80px] h-[80px] rounded-full border-1 border-background" />
+        <Image source={{ uri: user?.avatar }} className="w-[80px] h-[80px] rounded-full border-1 border-background" />
 
         {isCurrentUser ? (
           <TouchableOpacity style={styles.editButton} onPress={onEditProfile}>
@@ -87,31 +86,31 @@ const [isFollowing, setisFollowing] = useState(user.followStatus.isFollowing)
       </View>
 
       <View className="p-5">
-        <Text className="text-text font-bold text-2xl">{user.displayName}</Text>
-        <Text className="text-secondaryText text-md my-1">@{user.username}</Text>
+        <Text className="text-text font-bold text-2xl">{user?.displayName}</Text>
+        <Text className="text-secondaryText text-md my-1">@{user?.username}</Text>
 
-        <Text className="text-Text text-lg my-1">{user.bio}</Text>
+        <Text className="text-Text text-lg my-1">{user?.bio}</Text>
 
         <View className="mb-3">
-          {user.location && (
+          {user?.location && (
             <View style={styles.detailItem}>
               <MapPin size={16} color={colors.secondaryText} />
-              <Text style={styles.detailText}>{user.location}</Text>
+              <Text style={styles.detailText}>{user?.location}</Text>
             </View>
           )}
 
-          {user.website && (
+          {user?.website && (
             <View style={styles.detailItem}>
               <Link size={16} color={colors.secondaryText} />
               <Text style={[styles.detailText, styles.link]}>
-                {user.website}
+                {user?.website}
               </Text>
             </View>
           )}
 
           <View className="flex-row items-center mb-1" >
             <Calendar size={16} color={colors.secondaryText} />
-            <Text className="text-secondaryText text-md">{formatDate(user.createdAt)}</Text>
+            <Text className="text-secondaryText text-md">{formatDate(user?.createdAt)}</Text>
           </View>
         </View>
 
@@ -121,13 +120,13 @@ const [isFollowing, setisFollowing] = useState(user.followStatus.isFollowing)
            onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
         
           >
-            <Text className="text-text font-bold mr-1">{user.followingCount}</Text>
+            <Text className="text-text font-bold mr-1">{user?.followingCount}</Text>
             <Text className="text-secondaryText">Following</Text>
           </TouchableOpacity>
 
           <TouchableOpacity     onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
           className="flex-row">
-            <Text className="text-text font-bold mr-1">{user.followersCount}</Text>
+            <Text className="text-text font-bold mr-1">{user?.followersCount}</Text>
             <Text className="text-secondaryText">Followers</Text>
             
           </TouchableOpacity>

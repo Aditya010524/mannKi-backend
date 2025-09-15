@@ -15,6 +15,7 @@ export default function HomeScreen() {
   const loadTweets = async () => {
     const homeTweets = await fetchHomeTweets();
     setTweets(homeTweets);
+
   };
   
   useEffect(() => {
