@@ -4,6 +4,7 @@ import { mediaService } from '../services/media.service.js';
 import asyncHandler from '../utils/async-handler.js';
 import ApiResponse from '../utils/api-response.js';
 import ApiError from '../utils/api-error.js';
+import { Comment, Tweet } from '../models/index.js';
 
 class TweetController {
   // Create tweet (handles content, media, mentions, hashtags)
@@ -84,8 +85,11 @@ class TweetController {
   // Single tweet
   getTweetById = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
-    const tweet = await tweetService.getTweetById(tweetId);
-    return ApiResponse.success(res, tweet, 'Tweet retrieved');
+    const currentUserId = req.user._id; // ✅ Current logged-in user
+
+    const tweet = await tweetService.getTweetById(tweetId, currentUserId);
+
+    return ApiResponse.success(res, tweet, 'Tweet retrieved successfully');
   });
 
   // Delete tweet
@@ -116,14 +120,20 @@ class TweetController {
     return ApiResponse.success(res, result, message);
   });
 
-  // User tweets (Profile tab)
+  //  Get user tweets
   getUserTweets = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const { userId: targetUserId } = req.params;
+    const { page = 1, limit = 20 } = req.query;
+    const currentUserId = req.user._id; // ✅ Current logged-in user
 
-    const result = await tweetService.getUserTweets(userId, page, limit);
-    return ApiResponse.paginated(res, result.tweets, result.pagination, 'User tweets retrieved');
+    const result = await tweetService.getUserTweets(
+      targetUserId,
+      currentUserId, // ✅ Pass current user ID
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    return ApiResponse.success(res, result, 'User tweets retrieved successfully');
   });
 
   // Get user mentions (Notifications tab)
@@ -139,16 +149,18 @@ class TweetController {
   //  Get tweets by hashtag (Discovery tab)
   getTweetsByHashtag = asyncHandler(async (req, res) => {
     const { hashtag } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const { page = 1, limit = 20, sort = 'latest' } = req.query;
+    const userId = req.user._id; // ✅ Pass current user ID
 
-    const result = await tweetService.getTweetsByHashtag(hashtag, page, limit);
-    return ApiResponse.paginated(
-      res,
-      result.tweets,
-      result.pagination,
-      `Tweets for #${hashtag} retrieved`
+    const result = await tweetService.getTweetsByHashtag(
+      hashtag,
+      userId, // ✅ Add userId parameter
+      parseInt(page),
+      parseInt(limit),
+      sort
     );
+
+    return ApiResponse.success(res, result, `Tweets with hashtag #${hashtag}`);
   });
 
   // ===== NEW COMMENT METHODS =====
@@ -156,11 +168,17 @@ class TweetController {
   // Get tweet comments
   getTweetComments = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const { page = 1, limit = 20 } = req.query;
+    const userId = req.user._id; // ✅ Pass current user ID
 
-    const result = await commentService.getTweetComments(tweetId, page, limit);
-    return ApiResponse.paginated(res, result.comments, result.pagination, 'Comments retrieved');
+    const result = await commentService.getTweetComments(
+      tweetId,
+      userId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    return ApiResponse.success(res, result, 'Comments retrieved successfully');
   });
 
   // Create comment on tweet
@@ -256,23 +274,79 @@ class TweetController {
   // Get comment replies
   getCommentReplies = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const { page = 1, limit = 20 } = req.query;
+    const userId = req.user._id; // ✅ Pass current user ID
 
-    const result = await commentService.getCommentReplies(commentId, page, limit);
-    return ApiResponse.paginated(res, result.replies, result.pagination, 'Replies retrieved');
+    const result = await commentService.getCommentReplies(
+      commentId,
+      userId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    return ApiResponse.success(res, result, 'Replies retrieved successfully');
   });
 
-  // controllers/tweet.controller.js
+  // Toggle reply like (replies are also comments in DB)
+  toggleReplyLike = asyncHandler(async (req, res) => {
+    const { replyId } = req.params;
+    const userId = req.user._id;
+
+    // Verify it's actually a reply (has parentComment)
+    const reply = await Comment.findOne({
+      _id: replyId,
+      isActive: true,
+      parentComment: { $ne: null }, // Must be a reply
+    });
+
+    if (!reply) {
+      throw ApiError.notFound('Reply not found or has been deleted');
+    }
+
+    const result = await commentService.toggleCommentLike(replyId, userId);
+
+    const message = result.liked ? 'Reply liked successfully' : 'Reply unliked successfully';
+
+    return ApiResponse.success(res, result, message);
+  });
+
+  // Delete reply
+  deleteReply = asyncHandler(async (req, res) => {
+    const { replyId } = req.params;
+    const userId = req.user._id;
+
+    // Verify it's actually a reply
+    const reply = await Comment.findOne({
+      _id: replyId,
+      isActive: true,
+      parentComment: { $ne: null }, // Must be a reply
+    });
+
+    if (!reply) {
+      throw ApiError.notFound('Reply not found or has been deleted');
+    }
+
+    await commentService.deleteComment(replyId, userId);
+    return ApiResponse.success(res, null, 'Reply deleted successfully');
+  });
+
+  // Search Tweets
   searchTweets = asyncHandler(async (req, res) => {
     const { q, page = 1, limit = 20, sort = 'latest' } = req.query;
+    const userId = req.user._id; // ✅ Pass current user ID
 
-    const result = await tweetService.searchTweets(q, parseInt(page), parseInt(limit), sort);
+    const result = await tweetService.searchTweets(
+      q,
+      userId, // ✅ Add userId parameter
+      parseInt(page),
+      parseInt(limit),
+      sort
+    );
 
     return ApiResponse.success(res, result, `Search results for "${q}"`);
   });
 
-  // controllers/tweet.controller.js
+  // Get Trending Tweets
   getTrendingTweets = asyncHandler(async (req, res) => {
     const { page = 1, limit = 20, timeframe = '24h' } = req.query;
 
@@ -283,6 +357,38 @@ class TweetController {
     );
 
     return ApiResponse.success(res, hashtags, `Trending hashtags (${timeframe})`);
+  });
+
+  // Media Tab Controller
+  getUserMedia = asyncHandler(async (req, res) => {
+    const { userId: targetUserId } = req.params;
+    const { page = 1, limit = 20 } = req.query;
+    const currentUserId = req.user._id;
+
+    const result = await tweetService.getUserMedia(
+      targetUserId,
+      currentUserId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    return ApiResponse.success(res, result, 'User media tweets retrieved successfully');
+  });
+
+  // Likes Tab Controller
+  getUserLikes = asyncHandler(async (req, res) => {
+    const { userId: targetUserId } = req.params;
+    const { page = 1, limit = 20 } = req.query;
+    const currentUserId = req.user._id;
+
+    const result = await tweetService.getUserLikes(
+      targetUserId,
+      currentUserId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    return ApiResponse.success(res, result, 'User liked tweets retrieved successfully');
   });
 }
 

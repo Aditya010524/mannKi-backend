@@ -42,12 +42,13 @@ export default function TweetDetailScreen() {
     if (tweetData) setTweet(tweetData);
   };
 
-  const Comments = async () => {
+  const Comments = async (tweetId: string) => {
     try {
       const response = await fetchCommentsByTweetId(tweet.id);
   
 // console.log("comments",response.data)
-      setcomments(response.data);
+
+      setcomments(response.data.comments);
     } catch (error) {
       console.error("Error fetching dummy comments:", error);
     }

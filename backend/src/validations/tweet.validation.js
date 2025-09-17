@@ -135,6 +135,17 @@ const tweetValidation = {
       }),
   }),
 
+  // Validation for reply ID
+  getReplyById: Joi.object({
+    replyId: Joi.string()
+      .regex(/^[0-9a-fA-F]{24}$/)
+      .required()
+      .messages({
+        'string.pattern.base': 'Invalid reply ID format',
+        'any.required': 'Reply ID is required',
+      }),
+  }),
+
   // Replies query validation
   getRepliesQuery: Joi.object({
     page: Joi.number().integer().min(1).max(1000).default(1),

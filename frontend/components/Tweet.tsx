@@ -21,9 +21,9 @@ interface TweetProps {
 export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
   const { user } = useAuth();
   const { likeTweet, retweet, deleteTweet } = useTweets();
-  const [isLiked, setIsLiked] = useState(user ? tweet?.likes?.includes(user.id) : false);
+  const [isLiked, setIsLiked] = useState(tweet?.isLiked);
   const [likeCount, setLikeCount] = useState(tweet?.stats?.likes);
-  const [isRetweeted, setIsRetweeted] = useState(tweet?.isRetweet);
+  const [isRetweeted, setIsRetweeted] = useState(tweet?.isRetweeted);
   const [retweetCount, setRetweetCount] = useState(tweet?.stats?.retweets);
   const [MenuVisible, setMenuVisible] = useState(false)
 
@@ -42,8 +42,8 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
     
     setIsLiked(!isLiked);
     setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
-    console.log("likeCount",likeCount)
-     console.log(tweet.id)
+    console.log("likeCount",likeCount);
+    console.log(tweet.id);
     await likeTweet(tweet.id);
     if (onRefresh) onRefresh();
   };

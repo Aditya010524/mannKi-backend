@@ -19,6 +19,7 @@ export interface MenuOption {
 interface OptionsMenuProps {
   isVisible: boolean;
   onClose: () => void;
+
   options: MenuOption[];
 }
 

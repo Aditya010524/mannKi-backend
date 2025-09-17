@@ -28,9 +28,9 @@ type Props = {
 
 export function Comment({ comment , onDelete }: Props) {
   const {user} = useAuth();
-  const { likeComment, addReply, getReplyByCommentId ,isLoading } = useTweets();
+  const { likeComment, addReply, getReplyByCommentId ,isLoading ,deleteReply } = useTweets();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(comment?.isLiked);
   const [likeCount, setLikeCount] = useState(comment?.stats?.likes ?? 0);
   const [MenuVisible, setMenuVisible] = useState(false)
 
@@ -58,6 +58,7 @@ export function Comment({ comment , onDelete }: Props) {
   const handleLike = async () => {
     try {
       await likeComment(comment.id);
+      console.log(comment.id)
       setIsLiked(!isLiked);
       setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
     } catch (error) {
@@ -75,10 +76,12 @@ export function Comment({ comment , onDelete }: Props) {
     // only fetch if empty
     if (reply.length === 0) {
       try {
-        const response = await getReplyByCommentId(comment.id);
-        if (response?.success && Array.isArray(response.data)) {
-          setReply(response.data);
-        }
+        console.log(comment?.id)
+        const response = await getReplyByCommentId(comment?.id);
+        // console.log(response.data.replies)
+          setReply(response?.data?.replies);
+          console.log("replies",response?.data?.replies)
+
       } catch (error) {
         console.log("Fetch replies error:", error);
       }
@@ -96,6 +99,7 @@ export function Comment({ comment , onDelete }: Props) {
     const response = await getReplyByCommentId(comment.id);
     if (response?.success && Array.isArray(response.data)) {
       setReply(response.data);
+    
     }
   } catch (error) {
     console.log("Refresh replies error:", error);
@@ -119,6 +123,15 @@ export function Comment({ comment , onDelete }: Props) {
       console.log("Reply error:", error);
     }
   };
+
+  const handleDeleteReply = async(replyId: string) => {
+    try {
+      await deleteReply(replyId);
+      setReply((prev) => prev.filter((reply) => reply.id !== replyId));
+    } catch (error) {
+      console.log("Delete reply error:", error);
+    }
+  }
 
   return (
     <View style={styles.commentItem}>
@@ -194,7 +207,7 @@ export function Comment({ comment , onDelete }: Props) {
          <FlatList
             data={reply}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <CommentReply reply={item} />}
+              renderItem={({ item }) => <CommentReply reply={item} onDelete={handleDeleteReply}  />}
               refreshing={isLoading}
               onRefresh={refreshReplies}
 />

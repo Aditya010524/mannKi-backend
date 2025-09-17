@@ -94,6 +94,22 @@ router.get(
   tweetController.getUserTweets
 );
 
+// Get user media tweets (Twitter Media tab)
+router.get(
+  '/user/:userId/media',
+  validate(tweetValidation.getUserTweets, 'params'),
+  validate(tweetValidation.getUserTweetsQuery, 'query'),
+  tweetController.getUserMedia
+);
+
+// Get user liked tweets (Twitter Likes tab)
+router.get(
+  '/user/:userId/likes',
+  validate(tweetValidation.getUserTweets, 'params'),
+  validate(tweetValidation.getUserTweetsQuery, 'query'),
+  tweetController.getUserLikes
+);
+
 // ===== COMMENT ROUTES =====
 router.get(
   '/:tweetId/comments',
@@ -124,10 +140,23 @@ router.post(
   tweetController.toggleCommentLike
 );
 
+// Like/Unlike REPLY (replies to comments)
+router.post(
+  '/replies/:replyId/like',
+  validate(tweetValidation.getReplyById, 'params'),
+  tweetController.toggleReplyLike
+);
+
 router.delete(
   '/comments/:commentId',
   validate(tweetValidation.getCommentById, 'params'),
   tweetController.deleteComment
+);
+
+router.delete(
+  '/replies/:replyId',
+  validate(tweetValidation.getReplyById, 'params'),
+  tweetController.deleteReply
 );
 
 router.get(

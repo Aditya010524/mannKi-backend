@@ -79,9 +79,10 @@ export const useTweets = () => {
         page,
         limit,
       });
+ 
       
       if (response.success && response.data) {
-        return response.data;
+        return response.data.tweets;
       } else {
         throw new Error(response.error || 'Failed to fetch user tweets');
       }
@@ -93,6 +94,53 @@ export const useTweets = () => {
       setIsLoading(false);
     }
   };
+
+  const fetchUserTweetsMedia = async (userId: string, page = 1, limit = 20) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.USER_TWEETS}/${userId}`, {
+        page,
+        limit,
+      });
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to fetch user tweets');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user tweets';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }   
+  };
+
+  const fetchLikedTweetsByUser = async(userId: string, page = 1, limit = 20) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.USER_TWEETS}/${userId}/likes`, {
+        page,
+        limit,
+      });
+      if (response.success && response.data) {
+        return response.data.tweets;
+      } else {
+        throw new Error(response.error || 'Failed to fetch user tweets');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user tweets';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
   const fetchTweetById = async (tweetId: string) => {
     setIsLoading(true);
@@ -203,7 +251,7 @@ export const useTweets = () => {
     setError(null);
     
     try {
-      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.CREATE_COMMENT}/${commentId}/reply`, {
+      const response = await apiService.post<Tweet>(`${API_ENDPOINTS.CREATE_COMMENT_REPLY}/${commentId}/reply`, {
         content,
       });
     
@@ -221,6 +269,31 @@ export const useTweets = () => {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  const likeReply = async(replyId: string) => {
+    if (!user) return null;
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const response = await apiService.post(`${API_ENDPOINTS.LIKE_COMMENT_REPLY}/${replyId}/like`);
+        console.log(response)
+        if(response.success && response.data) {
+          console.log("reply liked")
+          return response;
+        } else {
+          throw new Error(response.error || 'Failed to like reply');
+        }
+      
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to like reply';
+        setError(errorMessage);
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
+
   }
 
   const createTweet = async (formData:any) => {
@@ -290,6 +363,27 @@ export const useTweets = () => {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch replies';
       setError(errorMessage);
       return [];
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const deleteReply = async (replyId: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.delete(`${API_ENDPOINTS.DELETE_COMMENT_REPLY}/${replyId}`);
+      console.log("reply deleted",response)
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to delete reply');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete reply';
+      setError(errorMessage);
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -387,6 +481,28 @@ export const useTweets = () => {
       setIsLoading(false);
     }
   };
+
+  const getTrendingHashtagTweets = async (tag: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.HASHTAG_TWEETS}/${tag}`);
+    
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to fetch trending hashtag tweets');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch trending hashtag tweets';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   const deleteTweet = async(tweetId: string) => {
     setIsLoading(true);
     setError(null);
@@ -414,6 +530,8 @@ export const useTweets = () => {
     error,
     fetchHomeTweets,
     fetchUserTweets,
+    fetchUserTweetsMedia,
+    fetchLikedTweetsByUser,
     fetchTweetById,
     likeTweet,
     retweet,
@@ -421,11 +539,14 @@ export const useTweets = () => {
     deleteTweet,
     searchTweets,
     getTrendingHashtags,
+    getTrendingHashtagTweets,
     addComment,
     deleteComment,
-    addReply,
-    fetchCommentsByTweetId,
     getReplyByCommentId,
+    addReply,
+    likeReply,
+    deleteReply,
+    fetchCommentsByTweetId,
     likeComment
   };
 };

@@ -120,7 +120,8 @@ class CommentService {
   }
 
   // Get tweet comments
-  async getTweetComments(tweetId, page, limit) {
+  async getTweetComments(tweetId, userId, page = 1, limit = 20) {
+    // Check if tweet exists
     const tweet = await Tweet.findOne({ _id: tweetId, isActive: true });
     if (!tweet) {
       throw ApiError.notFound('Tweet not found or has been deleted');
@@ -131,12 +132,12 @@ class CommentService {
     const [comments, total] = await Promise.all([
       Comment.find({
         tweet: tweetId,
-        parentComment: null, // Only top-level comments
-        isActive: true, // Only active comments
+        parentComment: null,
+        isActive: true,
       })
         .populate('author', 'username displayName avatar isVerified')
-        // .populate('mentions', 'username displayName')
-        // .populate('mediaIds', 'type cloudinary.urls originalName altText')
+        .populate('mentions', 'username displayName')
+        .populate('mediaIds', 'type cloudinary.urls originalName altText')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -147,15 +148,28 @@ class CommentService {
       }),
     ]);
 
+    // Get user's likes for comments
+    const { likes } = await this.getCommentInteractionFlags(userId, comments);
+
+    // Format comments with interaction flags
+    const formattedComments = comments.map((comment) => {
+      const formattedComment = this.formatComment(comment);
+
+      // Add isLiked flag for UI
+      formattedComment.isLiked = likes.has(comment._id.toString());
+
+      return formattedComment;
+    });
+
     return {
-      comments: comments.map(this.formatComment),
-      pagination: { page, limit, total },
+      comments: formattedComments,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     };
   }
 
   // Get comment replies
-  async getCommentReplies(commentId, page, limit) {
-    // Check if parent comment is active
+  async getCommentReplies(commentId, userId, page = 1, limit = 20) {
+    // Check if parent comment exists
     const parentComment = await Comment.findOne({ _id: commentId, isActive: true });
     if (!parentComment) {
       throw ApiError.notFound('Comment not found or has been deleted');
@@ -166,9 +180,11 @@ class CommentService {
     const [replies, total] = await Promise.all([
       Comment.find({
         parentComment: commentId,
-        isActive: true, // ✅ FIX: Only get active replies
+        isActive: true,
       })
         .populate('author', 'username displayName avatar isVerified')
+        .populate('mentions', 'username displayName')
+        .populate('mediaIds', 'type cloudinary.urls originalName altText')
         .sort({ createdAt: 1 })
         .skip(skip)
         .limit(limit),
@@ -178,12 +194,28 @@ class CommentService {
       }),
     ]);
 
-    return { replies: replies.map(this.formatComment), pagination: { page, limit, total } };
+    // Get user's likes for replies
+    const { likes } = await this.getCommentInteractionFlags(userId, replies);
+
+    // Format replies with interaction flags
+    const formattedReplies = replies.map((reply) => {
+      const formattedReply = this.formatComment(reply);
+
+      // Add isLiked flag for UI
+      formattedReply.isLiked = likes.has(reply._id.toString());
+
+      return formattedReply;
+    });
+
+    return {
+      replies: formattedReplies,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   // Toggle comment like
   async toggleCommentLike(commentId, userId) {
-    // ✅ FIX: Check if comment is active
+    // Check if comment is active
     const comment = await Comment.findOne({ _id: commentId, isActive: true });
     if (!comment) {
       throw ApiError.notFound('Comment not found or has been deleted');
@@ -194,11 +226,11 @@ class CommentService {
     if (existingLike) {
       await CommentLike.findByIdAndDelete(existingLike._id);
       await Comment.findByIdAndUpdate(commentId, { $inc: { likesCount: -1 } });
-      return { liked: false };
+      return { liked: false, commentId: comment._id };
     } else {
       await CommentLike.create({ comment: commentId, user: userId });
       await Comment.findByIdAndUpdate(commentId, { $inc: { likesCount: 1 } });
-      return { liked: true };
+      return { liked: true, commentId: comment._id };
     }
   }
 
@@ -214,7 +246,7 @@ class CommentService {
       throw ApiError.forbidden('Cannot delete comment');
     }
 
-    // ✅ FIX: Soft delete all replies to this comment
+    // Soft delete all replies to this comment
     await Comment.updateMany({ parentComment: commentId, isActive: true }, { isActive: false });
 
     // Delete media
@@ -239,7 +271,7 @@ class CommentService {
     logger.info(`Comment ${commentId} and its replies deleted by user ${userId}`);
   }
 
-  // services/tweet.service.js
+  // Search Tweets
   async searchTweets(query, page, limit, sort = 'latest') {
     const skip = (page - 1) * limit;
 
@@ -315,6 +347,22 @@ class CommentService {
     }
 
     return [...new Set(hashtags)];
+  }
+
+  // Helper: Comment Interaction
+  async getCommentInteractionFlags(userId, comments) {
+    if (!comments || comments.length === 0) return { likes: new Set() };
+
+    const commentIds = comments.map((c) => c._id);
+
+    const userCommentLikes = await CommentLike.find({
+      user: userId,
+      comment: { $in: commentIds },
+    }).select('comment');
+
+    const likedCommentIds = new Set(userCommentLikes.map((like) => like.comment.toString()));
+
+    return { likes: likedCommentIds };
   }
 
   // Helper: Format comment response

@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://192.168.109.208:5000/api/v1';
+const API_BASE_URL = 'http://192.168.183.208:5000/api/v1';
 
 
 export const API_ENDPOINTS = {
@@ -52,10 +52,13 @@ export const API_ENDPOINTS = {
   LIKE_COMMENT : '/tweets/comments',
   DELETE_COMMENT : '/tweets/comments',
   CREATE_COMMENT : '/tweets/comments',
+  CREATE_COMMENT_REPLY : '/tweets/comments',
   GET_COMMENT_REPLY : '/tweets/comments',
+  LIKE_COMMENT_REPLY : '/tweets/replies',
+  DELETE_COMMENT_REPLY : '/tweets/replies',
   TRENDING : '/tweets/trending',
   DELETE_TWEET : '/tweets',
-
+HASHTAG_TWEETS : '/tweets/hashtag',
 
     // Health Check (1)
   HEALTH_STATUS: '/health',

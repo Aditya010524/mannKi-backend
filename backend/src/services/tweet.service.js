@@ -1,4 +1,4 @@
-import { Tweet, Media, Like, User, Follow } from '../models/index.js';
+import { Tweet, Comment, Media, Like, User, Follow } from '../models/index.js';
 import { cloudinary } from '../config/media-upload.config.js';
 import ApiError from '../utils/api-error.js';
 import logger from '../config/logger.config.js';
@@ -126,12 +126,11 @@ class TweetService {
   }
 
   // Single Tweet
-  async getTweetById(tweetId) {
+  async getTweetById(tweetId, currentUserId) {
     const tweet = await Tweet.findOne({ _id: tweetId, isActive: true })
       .populate('author', 'username displayName avatar isVerified')
       .populate('mentions', 'username displayName')
       .populate('mediaIds', 'type cloudinary.urls originalName altText size')
-      // ✅ FIX: Deep populate original tweet with ALL details
       .populate({
         path: 'originalTweet',
         populate: [
@@ -142,18 +141,42 @@ class TweetService {
       });
 
     if (!tweet) throw ApiError.notFound('Tweet not found');
-    return this.formatTweet(tweet);
+
+    // ✅ Get interaction flags for this single tweet
+    const { likes, retweets } = await this.getUserInteractionFlags(currentUserId, [tweet]);
+
+    const formattedTweet = this.formatTweet(tweet);
+
+    // ✅ Add interaction flags
+    const targetTweetId =
+      tweet.type === 'retweet' && tweet.originalTweet
+        ? tweet.originalTweet._id.toString()
+        : tweet._id.toString();
+
+    formattedTweet.isLiked = likes.has(targetTweetId);
+    formattedTweet.isRetweeted = retweets.has(targetTweetId);
+
+    return formattedTweet;
   }
 
   // Get Home timeline
-  // services/tweet.service.js
-  async getHomeTimeline(userId, page, limit) {
+  async getHomeTimeline(userId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
-    const following = await Follow.find({ follower: userId }).select('following');
-    const userIds = [...following.map((f) => f.following), userId];
 
+    // Get following list
+    const following = await Follow.find({ follower: userId }).select('following');
+    const followingIds = following.map((f) => f.following);
+    const userIds = [...followingIds, userId]; // Include own tweets
+
+    // Simple timeline query (following + own tweets only)
+    const timelineQuery = {
+      author: { $in: userIds },
+      isActive: true,
+    };
+
+    // Get tweets with population
     const [tweets, total] = await Promise.all([
-      Tweet.find({ author: { $in: userIds }, isActive: true })
+      Tweet.find(timelineQuery)
         .populate('author', 'username displayName avatar isVerified')
         .populate('mentions', 'username displayName')
         .populate('mediaIds', 'type cloudinary.urls originalName altText')
@@ -168,12 +191,39 @@ class TweetService {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
-      Tweet.countDocuments({ author: { $in: userIds }, isActive: true }),
+      Tweet.countDocuments(timelineQuery),
     ]);
 
+    // ✅ Get user interaction flags using helper method (consistent with other methods)
+    const { likes, retweets } = await this.getUserInteractionFlags(userId, tweets);
+
+    // Format tweets with interaction flags
+    const formattedTweets = tweets
+      .map((tweet) => {
+        try {
+          const formattedTweet = this.formatTweet(tweet);
+          if (!formattedTweet) return null;
+
+          // ✅ Add interaction flags
+          const tweetId =
+            tweet.type === 'retweet' && tweet.originalTweet
+              ? tweet.originalTweet._id.toString()
+              : tweet._id.toString();
+
+          formattedTweet.isLiked = likes.has(tweetId);
+          formattedTweet.isRetweeted = retweets.has(tweetId);
+
+          return formattedTweet;
+        } catch (error) {
+          console.error(`Error formatting tweet ${tweet._id}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean); // Remove null entries
+
     return {
-      tweets: tweets.map(this.formatTweet.bind(this)),
-      pagination: { page, limit, total },
+      tweets: formattedTweets,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     };
   }
 
@@ -203,14 +253,13 @@ class TweetService {
   }
 
   // User tweets
-  // services/tweet.service.js
-  async getUserTweets(userId, page, limit, includeReplies = false) {
+  async getUserTweets(targetUserId, currentUserId, page = 1, limit = 20, includeReplies = false) {
     const skip = (page - 1) * limit;
 
     try {
       const [tweets, total] = await Promise.all([
         Tweet.find({
-          author: userId,
+          author: targetUserId,
           isActive: true,
         })
           .populate('author', 'username displayName avatar isVerified')
@@ -227,20 +276,35 @@ class TweetService {
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit),
-        Tweet.countDocuments({ author: userId, isActive: true }),
+        Tweet.countDocuments({ author: targetUserId, isActive: true }),
       ]);
 
-      // ✅ Filter out null tweets and add error logging
+      // ✅ Get user interaction flags
+      const { likes, retweets } = await this.getUserInteractionFlags(currentUserId, tweets);
+
+      // Format tweets with interaction flags
       const formattedTweets = tweets
         .map((tweet) => {
           try {
-            return this.formatTweet(tweet);
+            const formattedTweet = this.formatTweet(tweet);
+            if (!formattedTweet) return null;
+
+            // ✅ Add interaction flags
+            const tweetId =
+              tweet.type === 'retweet' && tweet.originalTweet
+                ? tweet.originalTweet._id.toString()
+                : tweet._id.toString();
+
+            formattedTweet.isLiked = likes.has(tweetId);
+            formattedTweet.isRetweeted = retweets.has(tweetId);
+
+            return formattedTweet;
           } catch (error) {
             console.error(`Error formatting tweet ${tweet._id}:`, error.message);
             return null;
           }
         })
-        .filter(Boolean); // Remove null entries
+        .filter(Boolean);
 
       return {
         tweets: formattedTweets,
@@ -279,21 +343,80 @@ class TweetService {
   }
 
   // Get tweets by hashtag
-  async getTweetsByHashtag(hashtag, page, limit) {
+  async getTweetsByHashtag(hashtag, userId, page = 1, limit = 20, sort = 'latest') {
     const skip = (page - 1) * limit;
 
+    // Build hashtag query
+    const hashtagQuery = {
+      hashtags: { $in: [hashtag.toLowerCase()] },
+      isActive: true,
+      type: 'original', // Only original tweets, not retweets
+    };
+
+    // Define sort options
+    let sortQuery;
+    switch (sort) {
+      case 'popular':
+        sortQuery = { engagementScore: -1, createdAt: -1 };
+        break;
+      case 'latest':
+      default:
+        sortQuery = { createdAt: -1 };
+        break;
+    }
+
+    // Get tweets with population
     const [tweets, total] = await Promise.all([
-      Tweet.find({ hashtags: hashtag.toLowerCase(), isActive: true })
+      Tweet.find(hashtagQuery)
         .populate('author', 'username displayName avatar isVerified')
         .populate('mentions', 'username displayName')
         .populate('mediaIds', 'type cloudinary.urls originalName altText')
-        .sort({ createdAt: -1 })
+        .populate({
+          path: 'originalTweet',
+          populate: [
+            { path: 'author', select: 'username displayName avatar isVerified' },
+            { path: 'mentions', select: 'username displayName' },
+            { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
+          ],
+        })
+        .sort(sortQuery)
         .skip(skip)
         .limit(limit),
-      Tweet.countDocuments({ hashtags: hashtag.toLowerCase(), isActive: true }),
+      Tweet.countDocuments(hashtagQuery),
     ]);
 
-    return { tweets: tweets.map(this.formatTweet), pagination: { page, limit, total } };
+    // ✅ Get user interaction flags using helper method
+    const { likes, retweets } = await this.getUserInteractionFlags(userId, tweets);
+
+    // Format tweets with interaction flags
+    const formattedTweets = tweets
+      .map((tweet) => {
+        try {
+          const formattedTweet = this.formatTweet(tweet);
+          if (!formattedTweet) return null;
+
+          // ✅ Add interaction flags
+          const tweetId =
+            tweet.type === 'retweet' && tweet.originalTweet
+              ? tweet.originalTweet._id.toString()
+              : tweet._id.toString();
+
+          formattedTweet.isLiked = likes.has(tweetId);
+          formattedTweet.isRetweeted = retweets.has(tweetId);
+
+          return formattedTweet;
+        } catch (error) {
+          console.error(`Error formatting tweet ${tweet._id}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
+
+    return {
+      tweets: formattedTweets,
+      hashtag: hashtag,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   // Like/Unlike
@@ -308,11 +431,11 @@ class TweetService {
     if (existingLike) {
       await Like.findByIdAndDelete(existingLike._id);
       await Tweet.findByIdAndUpdate(tweetId, { $inc: { likesCount: -1 } });
-      return { liked: false };
+      return { liked: false, tweetId: tweet._id };
     } else {
       await Like.create({ tweet: tweetId, user: userId });
       await Tweet.findByIdAndUpdate(tweetId, { $inc: { likesCount: 1 } });
-      return { liked: true };
+      return { liked: true, tweetId: tweet._id };
     }
   }
 
@@ -421,6 +544,158 @@ class TweetService {
     return hashtags;
   }
 
+  // Media Tab - Get user tweets that contain media
+  async getUserMedia(targetUserId, currentUserId, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+
+    try {
+      const [tweets, total] = await Promise.all([
+        Tweet.find({
+          author: targetUserId,
+          isActive: true,
+          mediaIds: { $exists: true, $not: { $size: 0 } }, // ✅ Must have media
+        })
+          .populate('author', 'username displayName avatar isVerified')
+          .populate('mentions', 'username displayName')
+          .populate('mediaIds', 'type cloudinary.urls originalName altText')
+          .populate({
+            path: 'originalTweet',
+            populate: [
+              { path: 'author', select: 'username displayName avatar isVerified' },
+              { path: 'mentions', select: 'username displayName' },
+              { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
+            ],
+          })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
+        Tweet.countDocuments({
+          author: targetUserId,
+          isActive: true,
+          mediaIds: { $exists: true, $not: { $size: 0 } },
+        }),
+      ]);
+
+      // Get interaction flags
+      const { likes, retweets } = await this.getUserInteractionFlags(currentUserId, tweets);
+
+      const formattedTweets = tweets
+        .map((tweet) => {
+          try {
+            const formattedTweet = this.formatTweet(tweet);
+            if (!formattedTweet) return null;
+
+            const tweetId =
+              tweet.type === 'retweet' && tweet.originalTweet
+                ? tweet.originalTweet._id.toString()
+                : tweet._id.toString();
+
+            formattedTweet.isLiked = likes.has(tweetId);
+            formattedTweet.isRetweeted = retweets.has(tweetId);
+
+            return formattedTweet;
+          } catch (error) {
+            console.error(`Error formatting media tweet ${tweet._id}:`, error.message);
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      return {
+        tweets: formattedTweets,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      };
+    } catch (error) {
+      console.error('Error in getUserMedia:', error);
+      throw error;
+    }
+  }
+
+  // Likes Tab - Get tweets that user has liked
+  async getUserLikes(targetUserId, currentUserId, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+
+    try {
+      // Get user's likes with tweet details
+      const [likes, total] = await Promise.all([
+        Like.find({ user: targetUserId })
+          .populate({
+            path: 'tweet',
+            match: { isActive: true },
+            populate: [
+              { path: 'author', select: 'username displayName avatar isVerified' },
+              { path: 'mentions', select: 'username displayName' },
+              { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
+              {
+                path: 'originalTweet',
+                populate: [
+                  { path: 'author', select: 'username displayName avatar isVerified' },
+                  { path: 'mentions', select: 'username displayName' },
+                  { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
+                ],
+              },
+            ],
+          })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
+        Like.countDocuments({ user: targetUserId }),
+      ]);
+
+      // Filter out likes where tweet was deleted
+      const validLikes = likes.filter((like) => like.tweet && like.tweet.isActive);
+      const likedTweets = validLikes.map((like) => like.tweet);
+
+      // Get interaction flags for current user
+      const { likes: currentUserLikes, retweets } = await this.getUserInteractionFlags(
+        currentUserId,
+        likedTweets
+      );
+
+      const formattedTweets = likedTweets
+        .map((tweet, index) => {
+          try {
+            const formattedTweet = this.formatTweet(tweet);
+            if (!formattedTweet) return null;
+
+            const tweetId =
+              tweet.type === 'retweet' && tweet.originalTweet
+                ? tweet.originalTweet._id.toString()
+                : tweet._id.toString();
+
+            // For likes tab, check if current user also liked it
+            formattedTweet.isLiked = currentUserLikes.has(tweetId);
+            formattedTweet.isRetweeted = retweets.has(tweetId);
+
+            // ✅ Add info about who liked it and when
+            formattedTweet.likedBy = {
+              userId: targetUserId,
+              likedAt: validLikes[index]?.createdAt,
+            };
+
+            return formattedTweet;
+          } catch (error) {
+            console.error(`Error formatting liked tweet ${tweet._id}:`, error.message);
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      return {
+        tweets: formattedTweets,
+        pagination: {
+          page,
+          limit,
+          total: validLikes.length,
+          totalPages: Math.ceil(validLikes.length / limit),
+        },
+      };
+    } catch (error) {
+      console.error('Error in getUserLikes:', error);
+      throw error;
+    }
+  }
+
   // Extract mentions from content
   async extractMentions(content, authorId) {
     if (!content) return [];
@@ -445,7 +720,7 @@ class TweetService {
   }
 
   // Search Tweets
-  async searchTweets(query, page = 1, limit = 20, sort = 'latest') {
+  async searchTweets(query, userId, page = 1, limit = 20, sort = 'latest') {
     const skip = (page - 1) * limit;
 
     // Build search query
@@ -453,8 +728,8 @@ class TweetService {
       isActive: true,
       type: 'original',
       $or: [
-        { content: { $regex: query, $options: 'i' } }, // Search in content (case-insensitive)
-        { hashtags: { $in: [query.toLowerCase()] } }, // Search in hashtags (exact match)
+        { content: { $regex: query, $options: 'i' } },
+        { hashtags: { $in: [query.toLowerCase()] } },
       ],
     };
 
@@ -490,8 +765,36 @@ class TweetService {
       Tweet.countDocuments(searchQuery),
     ]);
 
+    // ✅ Get user interaction flags
+    const { likes, retweets } = await this.getUserInteractionFlags(userId, tweets);
+
+    // Format tweets with interaction flags
+    const formattedTweets = tweets
+      .map((tweet) => {
+        try {
+          const formattedTweet = this.formatTweet(tweet);
+          if (!formattedTweet) return null;
+
+          // ✅ Add interaction flags
+          const tweetId =
+            tweet.type === 'retweet' && tweet.originalTweet
+              ? tweet.originalTweet._id.toString()
+              : tweet._id.toString();
+
+          formattedTweet.isLiked = likes.has(tweetId);
+          formattedTweet.isRetweeted = retweets.has(tweetId);
+
+          return formattedTweet;
+        } catch (error) {
+          console.error(`Error formatting tweet ${tweet._id}:`, error.message);
+          return null;
+        }
+      })
+      .filter(Boolean);
+
     return {
-      tweets: tweets.map(this.formatTweet.bind(this)),
+      tweets: formattedTweets,
+      query: query,
       pagination: {
         page,
         limit,
@@ -518,19 +821,113 @@ class TweetService {
     return [...new Set(hashtags)]; // Remove duplicates
   }
 
+  // Helper Functio for flag
+  async getUserInteractionFlags(userId, tweets) {
+    if (!tweets || tweets.length === 0) return { likes: new Set(), retweets: new Set() };
+
+    // ✅ FIX: Handle both original tweets and retweets properly
+    const tweetIds = [];
+
+    tweets.forEach((tweet) => {
+      if (tweet.type === 'retweet' && tweet.originalTweet) {
+        // For retweets, we need to check interactions on the ORIGINAL tweet
+        tweetIds.push(tweet.originalTweet._id);
+      } else {
+        // For original tweets, use the tweet ID directly
+        tweetIds.push(tweet._id);
+      }
+    });
+
+    const [userLikes, userRetweets] = await Promise.all([
+      // Check likes on the correct tweet IDs
+      Like.find({ user: userId, tweet: { $in: tweetIds } }).select('tweet'),
+      // Check if user retweeted these tweets
+      Tweet.find({
+        author: userId,
+        type: 'retweet',
+        originalTweet: { $in: tweetIds },
+        isActive: true,
+      }).select('originalTweet'),
+    ]);
+
+    const likedTweetIds = new Set(userLikes.map((like) => like.tweet.toString()));
+    const retweetedTweetIds = new Set(userRetweets.map((rt) => rt.originalTweet.toString()));
+
+    return { likes: likedTweetIds, retweets: retweetedTweetIds };
+  }
+
   // Helper: Format tweet response
   formatTweet(tweet) {
-    // ✅ Add safety checks for undefined objects
+    // Safety checks
     if (!tweet) {
       throw new Error('Tweet object is undefined');
     }
 
     if (!tweet.author) {
       console.warn(`Tweet ${tweet._id} has no author`);
-      return null; // Skip this tweet
+      return null;
     }
 
-    const baseTweet = {
+    // ✅ Handle retweets with your proposed structure
+    if (tweet.type === 'retweet' && tweet.originalTweet) {
+      if (!tweet.originalTweet.author) {
+        console.warn(`Original tweet ${tweet.originalTweet._id} has no author`);
+        return null;
+      }
+
+      return {
+        id: tweet._id, // Retweet ID
+        type: 'retweet',
+        retweetInfo: {
+          retweetedBy: {
+            id: tweet.author._id,
+            username: tweet.author.username || '',
+            displayName: tweet.author.displayName || '',
+            avatar: tweet.author.avatar || '',
+            isVerified: tweet.author.isVerified || false,
+          },
+          retweetedAt: tweet.createdAt,
+        },
+        originalTweet: {
+          id: tweet.originalTweet._id,
+          content: tweet.originalTweet.content || '',
+          author: {
+            id: tweet.originalTweet.author._id,
+            username: tweet.originalTweet.author.username || '',
+            displayName: tweet.originalTweet.author.displayName || '',
+            avatar: tweet.originalTweet.author.avatar || '',
+            isVerified: tweet.originalTweet.author.isVerified || false,
+          },
+          mentions: tweet.originalTweet.mentions || [],
+          hashtags: tweet.originalTweet.hashtags || [],
+          media:
+            tweet.originalTweet.mediaIds
+              ?.map((media) => {
+                if (!media) return null;
+                return {
+                  id: media._id,
+                  type: media.type,
+                  url: media.cloudinary?.urls?.original || '',
+                  thumbnail: media.cloudinary?.urls?.thumbnail || '',
+                  originalName: media.originalName || '',
+                  altText: media.altText || '',
+                };
+              })
+              .filter(Boolean) || [],
+          stats: {
+            likes: tweet.originalTweet.likesCount || 0,
+            retweets: tweet.originalTweet.retweetsCount || 0,
+            comments: tweet.originalTweet.commentsCount || 0,
+            replies: tweet.originalTweet.repliesCount || 0,
+          },
+          createdAt: tweet.originalTweet.createdAt,
+          updatedAt: tweet.originalTweet.updatedAt,
+        },
+      };
+    }
+
+    // For original tweets, return normal structure
+    return {
       id: tweet._id,
       content: tweet.content || '',
       type: tweet.type || 'original',
@@ -546,9 +943,7 @@ class TweetService {
       media:
         tweet.mediaIds
           ?.map((media) => {
-            // Check if media exists before accessing properties
             if (!media) return null;
-
             return {
               id: media._id,
               type: media.type,
@@ -558,7 +953,7 @@ class TweetService {
               altText: media.altText || '',
             };
           })
-          .filter(Boolean) || [], // Remove null entries
+          .filter(Boolean) || [],
       stats: {
         likes: tweet.likesCount || 0,
         retweets: tweet.retweetsCount || 0,
@@ -568,62 +963,6 @@ class TweetService {
       createdAt: tweet.createdAt,
       updatedAt: tweet.updatedAt,
     };
-
-    // Handle retweets with safety checks
-    if ((tweet.type === 'retweet' || tweet.type === 'quote') && tweet.originalTweet) {
-      // Check if originalTweet has author
-      if (!tweet.originalTweet.author) {
-        console.warn(`Original tweet ${tweet.originalTweet._id} has no author`);
-        return baseTweet; // Return without originalTweet data
-      }
-
-      baseTweet.retweetedBy = baseTweet.author;
-      baseTweet.retweetedAt = tweet.createdAt;
-
-      baseTweet.originalTweet = {
-        id: tweet.originalTweet._id,
-        content: tweet.originalTweet.content || '',
-        type: tweet.originalTweet.type || 'original',
-        author: {
-          id: tweet.originalTweet.author._id,
-          username: tweet.originalTweet.author.username || '',
-          displayName: tweet.originalTweet.author.displayName || '',
-          avatar: tweet.originalTweet.author.avatar || '',
-          isVerified: tweet.originalTweet.author.isVerified || false,
-        },
-        mentions: tweet.originalTweet.mentions || [],
-        hashtags: tweet.originalTweet.hashtags || [],
-        media:
-          tweet.originalTweet.mediaIds
-            ?.map((media) => {
-              if (!media) return null;
-              return {
-                id: media._id,
-                type: media.type,
-                url: media.cloudinary?.urls?.original || '',
-                thumbnail: media.cloudinary?.urls?.thumbnail || '',
-              };
-            })
-            .filter(Boolean) || [],
-        stats: {
-          likes: tweet.originalTweet.likesCount || 0,
-          retweets: tweet.originalTweet.retweetsCount || 0,
-          comments: tweet.originalTweet.commentsCount || 0,
-          replies: tweet.originalTweet.repliesCount || 0,
-        },
-        createdAt: tweet.originalTweet.createdAt,
-      };
-
-      // For display: use original tweet's data
-      baseTweet.author = baseTweet.originalTweet.author;
-      baseTweet.content = baseTweet.originalTweet.content;
-      baseTweet.mentions = baseTweet.originalTweet.mentions;
-      baseTweet.hashtags = baseTweet.originalTweet.hashtags;
-      baseTweet.media = baseTweet.originalTweet.media;
-      baseTweet.stats = baseTweet.originalTweet.stats;
-    }
-
-    return baseTweet;
   }
 }
 

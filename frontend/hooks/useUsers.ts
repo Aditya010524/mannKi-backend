@@ -19,11 +19,10 @@ export const useUsers = () => {
         page,
         limit,
       });
-      console.log("search results",response)
+
       
       if (response.success && response.data) {
-        // console.log(response)
-        // console.log(response.data)        
+
 
         return response.data
       } else {
