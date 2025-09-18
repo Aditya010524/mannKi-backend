@@ -139,7 +139,28 @@ export const useTweets = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+ const fetchMentionedTab = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.MENTIONED_TWEETS}`);
+   console.log("Media Tab",response)
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        throw new Error(response.error || 'Failed to fetch mentioned tweets');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch mentioned tweets';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
 
   const fetchTweetById = async (tweetId: string) => {
@@ -532,6 +553,7 @@ export const useTweets = () => {
     fetchUserTweets,
     fetchUserTweetsMedia,
     fetchLikedTweetsByUser,
+    fetchMentionedTab,
     fetchTweetById,
     likeTweet,
     retweet,

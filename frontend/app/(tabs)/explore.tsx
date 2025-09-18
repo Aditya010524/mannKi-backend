@@ -28,13 +28,13 @@ export default function ExploreScreen() {
 
   // 🔑 Debounced search (now respects hashtags)
   useEffect(() => {
-    if (searchQuery.trim().length <= 2) {
+    if (searchQuery?.trim()?.length <= 2) {
       setSearchResults({ tweets: [], users: [] });
       return;
     }
 
     const delayDebounce = setTimeout(() => {
-      if (searchQuery.startsWith('#')) {
+      if (searchQuery?.startsWith('#')) {
         handleHashtagSearch(searchQuery.replace('#', '')); // ✅ handle hashtags
       } else {
         handleSearch(searchQuery); // ✅ normal search
@@ -46,7 +46,7 @@ export default function ExploreScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      if (searchQuery.trim().length > 2) {
+      if (searchQuery?.trim()?.length > 2) {
         if (searchQuery.startsWith('#')) {
           handleHashtagSearch(searchQuery.replace('#', ''));
         } else {
@@ -151,7 +151,7 @@ export default function ExploreScreen() {
   );
 
   const renderSearchResults = () => {
-    if (searchQuery.trim().length <= 2) {
+    if (searchQuery?.trim()?.length <= 2) {
       return renderTrendingHashtags();
     }
 
@@ -166,13 +166,13 @@ export default function ExploreScreen() {
     if (activeTab === 'top') {
       return (
         <ScrollView>
-          {searchResults.users.length > 0 && (
+          {searchResults?.users?.length > 0 && (
             <View className="py-3">
               <Text className="text-base font-bold text-text px-4 mb-2">People</Text>
               {searchResults.users.slice(0, 3).map((user) => (
                 <UserCard key={user._id} user={user} onFollowChange={handleFollowChange} />
               ))}
-              {searchResults.users.length > 3 && (
+              {searchResults?.users?.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('users')}>
                   <Text className='text-sm text-primary px-4 py-3'>Show more</Text>
                 </TouchableOpacity>
@@ -180,13 +180,13 @@ export default function ExploreScreen() {
             </View>
           )}
 
-          {searchResults.tweets.length > 0 && (
+          {searchResults?.tweets?.length > 0 && (
             <View className='p-4 border-t border-border'>
               <Text className='text-lg font-semibold text-text'>Tweets</Text>
               {searchResults.tweets.slice(0, 3).map((tweet) => (
                 <TweetComponent key={tweet.id} tweet={tweet} />
               ))}
-              {searchResults.tweets.length > 3 && (
+              {searchResults?.tweets?.length > 3 && (
                 <TouchableOpacity onPress={() => setActiveTab('tweets')}>
                   <Text className='text-md text-secondaryText'>Show more</Text>
                 </TouchableOpacity>
@@ -194,7 +194,7 @@ export default function ExploreScreen() {
             </View>
           )}
 
-          {searchResults.users.length === 0 && searchResults.tweets.length === 0 && (
+          {searchResults?.users?.length === 0 && searchResults?.tweets?.length === 0 && (
             <View className='p-6 items-center'>
               <Text className='text-base text-secondaryText text-center'>No results found for "{searchQuery}"</Text>
             </View>
@@ -249,7 +249,7 @@ export default function ExploreScreen() {
         </View>
       </View>
 
-      {searchQuery.trim().length > 2 && (
+      {searchQuery?.trim()?.length > 2 && (
         <View className='flex-row border-b border-border'>
           <TouchableOpacity
             className={`flex-1 items-center py-3 ${activeTab === 'top' ? 'border-b-2 border-primary' : ''}`}

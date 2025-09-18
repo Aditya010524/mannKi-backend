@@ -22,10 +22,12 @@ export default function ProfileScreen() {
     fetchUserTweets,
     fetchUserTweetsMedia,
     fetchLikedTweetsByUser,
+    fetchMentionedTab
   } = useTweets();
 
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [mediaTweets, setMediaTweets] = useState<Tweet[]>([]);
+  const [mentionedTweets, setMentionedTweets] = useState<Tweet[]>([]);
   const [likedTweets, setLikedTweets] = useState<Tweet[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<"tweets" | "media" | "likes">(
@@ -44,8 +46,11 @@ export default function ProfileScreen() {
     const userTweets = await fetchUserTweets(user.id);
     setTweets(userTweets);
 
-    const userMedia = await fetchUserTweetsMedia(user.id);
-    setMediaTweets(userMedia);
+    // const userMedia = await fetchUserTweetsMedia(user.id);
+    // setMediaTweets(userMedia);
+
+const userMentioned = await fetchMentionedTab();
+setMentionedTweets(userMentioned);
 
     const userLikedTweet = await fetchLikedTweetsByUser(user.id);
     setLikedTweets(userLikedTweet);
@@ -102,6 +107,14 @@ export default function ProfileScreen() {
             <TweetComponent tweet={item} onRefresh={loadTweets} />
           ),
           emptyText: "No likes yet",
+        };
+        case "mentions":
+        return {
+          data: mentionedTweets,
+          renderItem: ({ item }: { item: Tweet }) => (
+            <TweetComponent tweet={item} onRefresh={loadTweets} />
+          ),
+          emptyText: "No mentions yet",
         };
       default:
         return { data: [], renderItem: () => null, emptyText: "Nothing here" };
@@ -183,6 +196,22 @@ export default function ProfileScreen() {
                   }`}
                 >
                   Likes
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={`${inactiveTabStyle}  ${
+                  activeTab === "mentions" ? activeTabstyle : ""
+                }`}
+                onPress={() => setActiveTab("mentions")}
+              >
+                <Text
+                  className={`${inactiveTabTextStyle} ${
+                    activeTab === "mentions"
+                      ? activeTabTextStyle
+                      : "text-secondaryText"
+                  }`}
+                >
+                  Mentions
                 </Text>
               </TouchableOpacity>
             </View>

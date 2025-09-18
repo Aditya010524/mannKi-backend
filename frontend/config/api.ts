@@ -59,6 +59,7 @@ export const API_ENDPOINTS = {
   TRENDING : '/tweets/trending',
   DELETE_TWEET : '/tweets',
 HASHTAG_TWEETS : '/tweets/hashtag',
+MENTIONED_TWEETS : '/tweets/mentions',
 
     // Health Check (1)
   HEALTH_STATUS: '/health',
