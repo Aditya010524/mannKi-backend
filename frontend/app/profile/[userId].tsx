@@ -7,11 +7,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUsers } from '@/hooks/useUsers';
 import { useTweets } from '@/hooks/useTweets';
 import { Tweet, User } from '@/types';
+import MediaGrid from "@/components/UserMediaTab";
 
 export default function ProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
   const { user: currentUser } = useAuth();
-  const { fetchUserTweets, fetchLikedTweetsByUser } = useTweets();
+  const { fetchUserTweets, fetchUserTweetsMedia, fetchLikedTweetsByUser } = useTweets();
   const { getUserByUserId } = useUsers();
 
   const [user, setUser] = useState<User | null>(null);
@@ -21,6 +22,11 @@ export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tweets' | 'media' | 'likes'>('tweets');
+  const [loadedTabs, setLoadedTabs] = useState<{tweets: boolean, media: boolean, likes: boolean}>({
+    tweets: false,
+    media: false,
+    likes: false
+  });
 
   const activeTabstyle = "border-b-2 border-primary py-3";
   const inactiveTabStyle = "flex-1 items-center py-3 ";
@@ -35,14 +41,12 @@ export default function ProfileScreen() {
 
   const loadUserProfile = async () => {
     if (!userId) return;
-
     setLoading(true);
     try {
       const profileUser = await getUserByUserId(userId);
-
       if (profileUser) {
         setUser(profileUser);
-        await loadTweets(profileUser.id);
+        if (!loadedTabs.tweets) await loadTweets(profileUser.id);
       }
     } catch (error) {
       console.error('Failed to load user profile:', error);
@@ -55,57 +59,48 @@ export default function ProfileScreen() {
     try {
       const userTweets = await fetchUserTweets(id);
       setTweets(userTweets);
-
-      // TODO: implement fetchUserTweetsMedia(id) if needed
-      setMediaTweets([]);
-
-      const userLikedTweet = await fetchLikedTweetsByUser(id);
-      setLikedTweets(userLikedTweet);
+      setLoadedTabs(prev => ({ ...prev, tweets: true }));
     } catch (error) {
       console.error('Failed to load tweets:', error);
     }
   };
 
-  const handleRefresh = async () => {
-    if (!user) return;
-    setRefreshing(true);
-    await loadTweets(user.id);
-    setRefreshing(false);
-  };
-
-  // ✅ config per tab
-  const getTabConfig = () => {
-    switch (activeTab) {
-      case 'tweets':
-        return {
-          data: tweets,
-          renderItem: ({ item }: { item: Tweet }) => (
-            <TweetComponent tweet={item} onRefresh={() => loadTweets(user.id)} />
-          ),
-          emptyText: 'No tweets yet',
-        };
-      case 'media':
-        return {
-          data: mediaTweets,
-          renderItem: ({ item }: { item: Tweet }) => (
-            <TweetComponent tweet={item} onRefresh={() => loadTweets(user.id)} />
-          ),
-          emptyText: 'No media yet',
-        };
-      case 'likes':
-        return {
-          data: likedTweets,
-          renderItem: ({ item }: { item: Tweet }) => (
-            <TweetComponent tweet={item} onRefresh={() => loadTweets(user.id)} />
-          ),
-          emptyText: 'No likes yet',
-        };
-      default:
-        return { data: [], renderItem: () => null, emptyText: 'Nothing here' };
+  const loadMedia = async (id: string) => {
+    try {
+      const userMedia = await fetchUserTweetsMedia(id);
+      setMediaTweets(userMedia.media);
+      setLoadedTabs(prev => ({ ...prev, media: true }));
+    } catch (error) {
+      console.error('Failed to load media:', error);
     }
   };
 
-  const { data, renderItem, emptyText } = getTabConfig();
+  const loadLikes = async (id: string) => {
+    try {
+      const userLikedTweet = await fetchLikedTweetsByUser(id);
+      setLikedTweets(userLikedTweet);
+      setLoadedTabs(prev => ({ ...prev, likes: true }));
+    } catch (error) {
+      console.error('Failed to load likes:', error);
+    }
+  };
+
+  // Load tab data only when user switches tab
+  useEffect(() => {
+    if (!user) return;
+    if (activeTab === 'tweets' && !loadedTabs.tweets) loadTweets(user.id);
+    else if (activeTab === 'media' && !loadedTabs.media) loadMedia(user.id);
+    else if (activeTab === 'likes' && !loadedTabs.likes) loadLikes(user.id);
+  }, [activeTab, user]);
+
+  const handleRefresh = async () => {
+    if (!user) return;
+    setRefreshing(true);
+    if (activeTab === 'tweets') await loadTweets(user.id);
+    else if (activeTab === 'media') await loadMedia(user.id);
+    else if (activeTab === 'likes') await loadLikes(user.id);
+    setRefreshing(false);
+  };
 
   if (loading) {
     return (
@@ -127,64 +122,95 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => (item?.id ? item.id : String(index))}
-        renderItem={renderItem}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        ListHeaderComponent={
-          <>
-            <ProfileHeader user={user} isCurrentUser={isCurrentUser} />
-
-            <View className="flex-row border-b border-border">
-              <TouchableOpacity
-                className={`${inactiveTabStyle} ${activeTab === 'tweets' ? activeTabstyle : ''}`}
-                onPress={() => setActiveTab('tweets')}
-              >
-                <Text
-                  className={`${inactiveTabTextStyle} ${activeTab === 'tweets' ? activeTabTextStyle : ''}`}
+      {activeTab !== 'media' ? (
+        <FlatList
+          data={activeTab === 'tweets' ? tweets : likedTweets}
+          keyExtractor={(item, index) => item?.id || String(index)}
+          renderItem={({ item }) => <TweetComponent tweet={item} onRefresh={handleRefresh} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          ListHeaderComponent={
+            <>
+              <ProfileHeader user={user} isCurrentUser={isCurrentUser} />
+              <View className="flex-row border-b border-border">
+                <TouchableOpacity
+                  className={`${inactiveTabStyle} ${activeTab === 'tweets' ? activeTabstyle : ''}`}
+                  onPress={() => setActiveTab('tweets')}
                 >
-                  Tweets
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className={`${inactiveTabStyle} ${activeTab === 'media' ? activeTabstyle : ''}`}
-                onPress={() => setActiveTab('media')}
-              >
-                <Text
-                  className={`${inactiveTabTextStyle} ${activeTab === 'media' ? activeTabTextStyle : ''}`}
+                  <Text className={`${inactiveTabTextStyle} ${activeTab === 'tweets' ? activeTabTextStyle : ''}`}>Tweets</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`${inactiveTabStyle} ${activeTab === 'media' ? activeTabstyle : ''}`}
+                  onPress={() => setActiveTab('media')}
                 >
-                  Media
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                className={`${inactiveTabStyle} ${activeTab === 'likes' ? activeTabstyle : ''}`}
-                onPress={() => setActiveTab('likes')}
-              >
-                <Text
-                  className={`${inactiveTabTextStyle} ${activeTab === 'likes' ? activeTabTextStyle : ''}`}
+                  <Text className={`${inactiveTabTextStyle} ${activeTab === 'media' ? activeTabTextStyle : ''}`}>Media</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`${inactiveTabStyle} ${activeTab === 'likes' ? activeTabstyle : ''}`}
+                  onPress={() => setActiveTab('likes')}
                 >
-                  Likes
-                </Text>
-              </TouchableOpacity>
+                  <Text className={`${inactiveTabTextStyle} ${activeTab === 'likes' ? activeTabTextStyle : ''}`}>Likes</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          ListEmptyComponent={
+            <View className="p-6 items-center">
+              <Text className="text-lg font-semibold mb-2">
+                {activeTab === 'tweets' ? 'No tweets yet' : 'No likes yet'}
+              </Text>
+              <Text className="text-lg font-bold text-center">
+                {isCurrentUser
+                  ? `When you post ${activeTab}, they'll show up here.`
+                  : `When ${user.name} posts ${activeTab}, they'll show up here.`}
+              </Text>
             </View>
-          </>
-        }
-        ListEmptyComponent={
-          <View className="p-6 items-center">
-            <Text className="text-lg font-semibold mb-2">{emptyText}</Text>
-            <Text className="text-lg font-bold text-center">
-              {isCurrentUser
-                ? `When you post ${activeTab}, they'll show up here.`
-                : `When ${user.name} posts ${activeTab}, they'll show up here.`}
-            </Text>
-          </View>
-        }
-      />
+          }
+        />
+      ) : (
+        <FlatList
+          data={mediaTweets}
+           numColumns={3}
+          key={`media-${3}`}
+          keyExtractor={(item, index) => item?.id || String(index)}
+          renderItem={({ item }) => <MediaGrid item={item} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          ListHeaderComponent={
+            <>
+              <ProfileHeader user={user} isCurrentUser={isCurrentUser} />
+              <View className="flex-row border-b border-border">
+                <TouchableOpacity
+                  className={`${inactiveTabStyle} ${activeTab === 'tweets' ? activeTabstyle : ''}`}
+                  onPress={() => setActiveTab('tweets')}
+                >
+                  <Text className={`${inactiveTabTextStyle} ${activeTab === 'tweets' ? activeTabTextStyle : ''}`}>Tweets</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`${inactiveTabStyle} ${activeTab === 'media' ? activeTabstyle : ''}`}
+                  onPress={() => setActiveTab('media')}
+                >
+                  <Text className={`${inactiveTabTextStyle} ${activeTab === 'media' ? activeTabTextStyle : ''}`}>Media</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`${inactiveTabStyle} ${activeTab === 'likes' ? activeTabstyle : ''}`}
+                  onPress={() => setActiveTab('likes')}
+                >
+                  <Text className={`${inactiveTabTextStyle} ${activeTab === 'likes' ? activeTabTextStyle : ''}`}>Likes</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          }
+          ListEmptyComponent={
+            <View className="p-6 items-center">
+              <Text className="text-lg font-semibold mb-2">No media yet</Text>
+              <Text className="text-lg font-bold text-center">
+                {isCurrentUser
+                  ? `When you post media, they'll show up here.`
+                  : `When ${user.name} posts media, they'll show up here.`}
+              </Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 }

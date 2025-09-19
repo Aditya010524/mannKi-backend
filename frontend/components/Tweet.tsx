@@ -19,7 +19,7 @@ interface TweetProps {
 export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
     //If it's a retweet, render originalTweet instead 
   const displayTweet = tweet.type === 'retweet' ? tweet.originalTweet : tweet;
-  const { user } = useAuth();
+  const { user : currentUser } = useAuth();
   const { likeTweet, retweet, deleteTweet } = useTweets();
   const [isLiked, setIsLiked] = useState(tweet?.isLiked);
   const [likeCount, setLikeCount] = useState(displayTweet?.stats?.likes);
@@ -31,12 +31,13 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
     { title: 'Not interested', onPress: () => console.log('Not interested in:', tweet.id) },
     { title: 'Report Tweet', onPress: () => console.log('Reporting:', tweet.id) },
   ];
-  if (user?.id === tweet?.author?.id) {
+  if (currentUser?.id === tweet?.author?.id) {
     tweetOptions.push({ title: 'Delete Tweet', onPress: () => deleteTweet(tweet.id), isDestructive: true });
   }
 
 useEffect(() => {
   setIsLiked(tweet?.isLiked);
+  console.log(isLiked)
   setLikeCount(displayTweet?.stats?.likes);
   setIsRetweeted(tweet?.isRetweeted);
   setRetweetCount(displayTweet?.stats?.retweets);
@@ -58,12 +59,24 @@ useEffect(() => {
     }
     setIsRetweeted(!isRetweeted);
     setRetweetCount(isRetweeted ? retweetCount - 1 : retweetCount + 1);
-    await retweet(tweet.id);
+    if(tweet.type === 'retweet') {
+      await retweet(tweet.originalTweet.id);
+       console.log("retweet")
+    } else if(tweet.type === 'original') {
+      await retweet(tweet.id);
+      console.log("original")
+    }
+   
     if (onRefresh) onRefresh();
   };
 
   const handleComment = () => {
+  if(tweet.type === 'retweet') {
+  router.push(`/tweet/${tweet.originalTweet.id}`);
+}
+else if(tweet.type === 'original') {
     router.push(`/tweet/${tweet.id}`);
+}
   };
 
   const handleShare = () => {
@@ -72,9 +85,21 @@ useEffect(() => {
     }
   };
 
-  const navigateToProfile = (id: string) => {
+ const navigateToProfile = () => { 
+  const id = tweet?.author?.id;
+console.log(id)
+console.log(currentUser?.id)
+  if (id === currentUser?.id) {
+    // go to self profile
+    router.push('/(tabs)/profile');
+  } else if (id) {
+    // go to other user profile
     router.push(`/profile/${id}`);
-  };
+  } else {
+    console.warn("No author id found in tweet");
+  }
+};
+
 
   const navigateToTweet = () => {
 if(tweet.type === 'retweet') {
@@ -157,7 +182,7 @@ else if(tweet.type === 'original') {
                 )}
               </TouchableOpacity>
 
-              {displayTweet?.author?.id !== user?.id && (
+              {displayTweet?.author?.id !== currentUser?.id && (
                 <TouchableOpacity className="flex-row items-center" onPress={handleRetweet}>
                   <Repeat size={18} color={isRetweeted ? colors.success : colors.lightGray} />
                   {retweetCount > 0 && (

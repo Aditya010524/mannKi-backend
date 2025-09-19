@@ -544,69 +544,121 @@ class TweetService {
     return hashtags;
   }
 
-  // Media Tab - Get user tweets that contain media
-  async getUserMedia(targetUserId, currentUserId, page = 1, limit = 20) {
+  // // Media Tab - Get user tweets that contain media
+  // async getUserMedia(targetUserId, currentUserId, page = 1, limit = 20) {
+  //   const skip = (page - 1) * limit;
+
+  //   try {
+  //     const [tweets, total] = await Promise.all([
+  //       Tweet.find({
+  //         author: targetUserId,
+  //         isActive: true,
+  //         mediaIds: { $exists: true, $not: { $size: 0 } }, // ✅ Must have media
+  //       })
+  //         .populate('author', 'username displayName avatar isVerified')
+  //         .populate('mentions', 'username displayName')
+  //         .populate('mediaIds', 'type cloudinary.urls originalName altText')
+  //         .populate({
+  //           path: 'originalTweet',
+  //           populate: [
+  //             { path: 'author', select: 'username displayName avatar isVerified' },
+  //             { path: 'mentions', select: 'username displayName' },
+  //             { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
+  //           ],
+  //         })
+  //         .sort({ createdAt: -1 })
+  //         .skip(skip)
+  //         .limit(limit),
+  //       Tweet.countDocuments({
+  //         author: targetUserId,
+  //         isActive: true,
+  //         mediaIds: { $exists: true, $not: { $size: 0 } },
+  //       }),
+  //     ]);
+
+  //     // Get interaction flags
+  //     const { likes, retweets } = await this.getUserInteractionFlags(currentUserId, tweets);
+
+  //     const formattedTweets = tweets
+  //       .map((tweet) => {
+  //         try {
+  //           const formattedTweet = this.formatTweet(tweet);
+  //           if (!formattedTweet) return null;
+
+  //           const tweetId =
+  //             tweet.type === 'retweet' && tweet.originalTweet
+  //               ? tweet.originalTweet._id.toString()
+  //               : tweet._id.toString();
+
+  //           formattedTweet.isLiked = likes.has(tweetId);
+  //           formattedTweet.isRetweeted = retweets.has(tweetId);
+
+  //           return formattedTweet;
+  //         } catch (error) {
+  //           console.error(`Error formatting media tweet ${tweet._id}:`, error.message);
+  //           return null;
+  //         }
+  //       })
+  //       .filter(Boolean);
+
+  //     return {
+  //       tweets: formattedTweets,
+  //       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+  //     };
+  //   } catch (error) {
+  //     console.error('Error in getUserMedia:', error);
+  //     throw error;
+  //   }
+  // }
+
+  // Get User media only without tweets
+  async getUserMediaOnly(targetUserId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
 
     try {
-      const [tweets, total] = await Promise.all([
-        Tweet.find({
-          author: targetUserId,
-          isActive: true,
-          mediaIds: { $exists: true, $not: { $size: 0 } }, // ✅ Must have media
-        })
-          .populate('author', 'username displayName avatar isVerified')
-          .populate('mentions', 'username displayName')
-          .populate('mediaIds', 'type cloudinary.urls originalName altText')
-          .populate({
-            path: 'originalTweet',
-            populate: [
-              { path: 'author', select: 'username displayName avatar isVerified' },
-              { path: 'mentions', select: 'username displayName' },
-              { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
-            ],
-          })
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit),
-        Tweet.countDocuments({
-          author: targetUserId,
-          isActive: true,
-          mediaIds: { $exists: true, $not: { $size: 0 } },
-        }),
-      ]);
+      // Find tweets with media by this user
+      const tweets = await Tweet.find({
+        author: targetUserId,
+        isActive: true,
+        mediaIds: { $exists: true, $not: { $size: 0 } }, // Must have media
+      })
+        .populate('mediaIds', 'type cloudinary.urls originalName altText')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
 
-      // Get interaction flags
-      const { likes, retweets } = await this.getUserInteractionFlags(currentUserId, tweets);
+      // ✅ Extract only media items (flatten media from all tweets)
+      const mediaItems = [];
 
-      const formattedTweets = tweets
-        .map((tweet) => {
-          try {
-            const formattedTweet = this.formatTweet(tweet);
-            if (!formattedTweet) return null;
-
-            const tweetId =
-              tweet.type === 'retweet' && tweet.originalTweet
-                ? tweet.originalTweet._id.toString()
-                : tweet._id.toString();
-
-            formattedTweet.isLiked = likes.has(tweetId);
-            formattedTweet.isRetweeted = retweets.has(tweetId);
-
-            return formattedTweet;
-          } catch (error) {
-            console.error(`Error formatting media tweet ${tweet._id}:`, error.message);
-            return null;
+      for (const tweet of tweets) {
+        if (tweet.mediaIds && tweet.mediaIds.length > 0) {
+          for (const media of tweet.mediaIds) {
+            mediaItems.push({
+              id: media._id,
+              type: media.type,
+              url: media.cloudinary?.urls?.original || '',
+              thumbnail: media.cloudinary?.urls?.thumbnail || '',
+              originalName: media.originalName || '',
+              altText: media.altText || '',
+              postId: tweet._id, // Reference to original post
+              createdAt: tweet.createdAt, // When the post was created
+            });
           }
-        })
-        .filter(Boolean);
+        }
+      }
+
+      const total = await Tweet.countDocuments({
+        author: targetUserId,
+        isActive: true,
+        mediaIds: { $exists: true, $not: { $size: 0 } },
+      });
 
       return {
-        tweets: formattedTweets,
+        media: mediaItems, // ✅ Only media data, not full tweets
         pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
       };
     } catch (error) {
-      console.error('Error in getUserMedia:', error);
+      console.error('Error in getUserMediaOnly:', error);
       throw error;
     }
   }

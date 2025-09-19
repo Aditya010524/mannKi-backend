@@ -100,11 +100,12 @@ export const useTweets = () => {
     setError(null);
     
     try {
-      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.USER_TWEETS}/${userId}`, {
+      const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.USER_TWEETS}/${userId}/media`, {
         page,
         limit,
       });
       if (response.success && response.data) {
+        console.log("User media tab fetched", response.data);
         return response.data;
       } else {
         throw new Error(response.error || 'Failed to fetch user tweets');
@@ -147,7 +148,7 @@ export const useTweets = () => {
     
     try {
       const response = await apiService.get<Tweet[]>(`${API_ENDPOINTS.MENTIONED_TWEETS}`);
-   console.log("Media Tab",response)
+ 
       if (response.success && response.data) {
         return response.data;
       } else {

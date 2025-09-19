@@ -1,10 +1,9 @@
 import React from "react";
 import {
-  FlatList,
   Image,
   TouchableOpacity,
-  Dimensions,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { Tweet } from "@/types";
 
@@ -13,37 +12,23 @@ const screenWidth = Dimensions.get("window").width;
 const itemSize = screenWidth / numColumns;
 
 interface MediaGridProps {
-  data: Tweet[];
-  onPressMedia?: (tweet: Tweet) => void; // optional if you want click behavior
+  item: Tweet;
+  onPressMedia?: (tweet: Tweet) => void;
 }
 
-export default function MediaGrid({ data, onPressMedia }: MediaGridProps) {
-  const renderItem = ({ item }: { item: Tweet }) => {
-    if (!item.media?.length) return null;
-
-    return (
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => onPressMedia?.(item)}
-        activeOpacity={0.8}
-      >
-        <Image
-          source={{ uri: item.media[0].thumbnail || item.media[0].url }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
-    );
-  };
-
+export default function MediaGrid({ item, onPressMedia }: MediaGridProps) {
   return (
-    <FlatList
-      data={data}
-      keyExtractor={(item) => item.id}
-      renderItem={renderItem}
-      numColumns={numColumns}
-      showsVerticalScrollIndicator={false}
-    />
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => onPressMedia?.(item)}
+      activeOpacity={0.8}
+    >
+      <Image
+        source={{ uri: item.url || item.thumbnail }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+    </TouchableOpacity>
   );
 }
 

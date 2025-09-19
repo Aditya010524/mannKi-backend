@@ -6,14 +6,11 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-  Alert,
-
 } from "react-native";
-import { MapPin, Link, Calendar} from "lucide-react-native";
+import { MapPin, Link, Calendar } from "lucide-react-native";
 import { User } from "@/types";
 import { useUsers } from "@/hooks/useUsers";
 import { colors } from "@/constants/colors";
-import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
 
 interface ProfileHeaderProps {
@@ -27,27 +24,33 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   isCurrentUser,
   onEditProfile,
 }) => {
-  const { user: currentUser } = useAuth();
-  const {toggleFollow} = useUsers();
-const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing)
+  const { toggleFollow } = useUsers();
 
-
+  const [isFollowing, setIsFollowing] = useState(
+    user?.followStatus?.isFollowing
+  );
+  const [followersCount, setFollowersCount] = useState(user?.followersCount);
+  const [followingCount, setFollowingCount] = useState(user?.followingCount);
 
   const handleFollow = async () => {
+    try {
+      const response = await toggleFollow(user.id);
 
+      if (response?.data) {
+        const newIsFollowing = response.data.isFollowing;
+        setIsFollowing(newIsFollowing);
 
-   try{
-     const response = await toggleFollow(user.id);
-     if(response?.data){
-      setisFollowing(response?.data?.isFollowing)
-      console.log(response?.data)
-      console.log(isFollowing)
-     }
-   } catch (error) {
-      console.error('Failed to follow/unfollow:', error);
+        // ✅ update counts instantly
+        if (newIsFollowing) {
+          setFollowersCount((prev) => prev + 1);
+        } else {
+          setFollowersCount((prev) => Math.max(0, prev - 1));
+        }
+      }
+    } catch (error) {
+      console.error("Failed to follow/unfollow:", error);
     }
-  
-   }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -58,11 +61,14 @@ const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing)
   };
 
   return (
-    <View className="bg-background" >
+    <View className="bg-background">
       <Image source={{ uri: user?.coverPhoto }} className="w-full h-[150px]" />
 
       <View className="flex-row justify-between px-4 mt-[-40px]">
-        <Image source={{ uri: user?.avatar }} className="w-[80px] h-[80px] rounded-full border-1 border-background" />
+        <Image
+          source={{ uri: user?.avatar }}
+          className="w-[80px] h-[80px] rounded-full border-1 border-background"
+        />
 
         {isCurrentUser ? (
           <TouchableOpacity style={styles.editButton} onPress={onEditProfile}>
@@ -108,31 +114,42 @@ const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing)
             </View>
           )}
 
-          <View className="flex-row items-center mb-1" >
+          <View className="flex-row items-center mb-1">
             <Calendar size={16} color={colors.secondaryText} />
-            <Text className="text-secondaryText text-md">{formatDate(user?.createdAt)}</Text>
+            <Text className="text-secondaryText text-md">
+              {formatDate(user?.createdAt)}
+            </Text>
           </View>
         </View>
 
         <View className="flex-row border-t border-border pt-3">
           <TouchableOpacity
-           className="mr-5 flex-row"
-           onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
-        
+            className="mr-5 flex-row"
+            onPress={() =>
+              router.push({
+                pathname: "/Connections",
+                params: { type: "userId", UserId: user.id },
+              })
+            }
           >
-            <Text className="text-text font-bold mr-1">{user?.followingCount}</Text>
+            <Text className="text-text font-bold mr-1">{followingCount}</Text>
             <Text className="text-secondaryText">Following</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity     onPress={()=> router.push({pathname: '/Connections', params: {type: 'userId', UserId: user.id}})}
-          className="flex-row">
-            <Text className="text-text font-bold mr-1">{user?.followersCount}</Text>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/Connections",
+                params: { type: "userId", UserId: user.id },
+              })
+            }
+            className="flex-row"
+          >
+            <Text className="text-text font-bold mr-1">{followersCount}</Text>
             <Text className="text-secondaryText">Followers</Text>
-            
           </TouchableOpacity>
         </View>
       </View>
-
     </View>
   );
 };
@@ -140,7 +157,6 @@ const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing)
 const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
-
   editButton: {
     borderWidth: 1,
     borderColor: colors.border,
@@ -149,10 +165,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignSelf: "flex-end",
     marginBottom: 8,
-  },
-  editButtonText: {
-    fontWeight: "700" as const,
-    color: colors.text,
   },
   followButton: {
     backgroundColor: colors.text,
@@ -173,9 +185,6 @@ const styles = StyleSheet.create({
   },
   followingButtonText: {
     color: colors.text,
-  },
-  details: {
-    marginBottom: 12,
   },
   detailItem: {
     flexDirection: "row",

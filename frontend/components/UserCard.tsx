@@ -24,13 +24,10 @@ export const UserCard: React.FC<UserCardProps> = ({
   
   const [isFollowing, setisFollowing] = useState(user?.followStatus?.isFollowing); // Added this line
  
-
- 
  const handleFollow = async () => {
  
    try{
      const response = await toggleFollow(user._id);
-     console.log(response)
      if(response?.data){
       setisFollowing(response.data.isFollowing)
       console.log(response.data)
@@ -45,7 +42,12 @@ export const UserCard: React.FC<UserCardProps> = ({
   const navigateToProfile = () => {
     if (onPress) {
       onPress();
-    } else {
+    } else if(user._id === currentUser?.id) {
+      router.push('/(tabs)/profile');
+    }
+    else {
+      console.log("user._id",user._id)
+        console.log("currentUser?.id",currentUser?.id)
       router.push(`/profile/${user._id}`);
     }
   };

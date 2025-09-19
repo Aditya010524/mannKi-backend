@@ -360,19 +360,33 @@ class TweetController {
   });
 
   // Media Tab Controller
+  // getUserMedia = asyncHandler(async (req, res) => {
+  //   const { userId: targetUserId } = req.params;
+  //   const { page = 1, limit = 20 } = req.query;
+  //   const currentUserId = req.user._id;
+
+  //   const result = await tweetService.getUserMedia(
+  //     targetUserId,
+  //     currentUserId,
+  //     parseInt(page),
+  //     parseInt(limit)
+  //   );
+
+  //   return ApiResponse.success(res, result, 'User media tweets retrieved successfully');
+  // });
+
+  // Media Tab only media no tweets
   getUserMedia = asyncHandler(async (req, res) => {
     const { userId: targetUserId } = req.params;
     const { page = 1, limit = 20 } = req.query;
-    const currentUserId = req.user._id;
 
-    const result = await tweetService.getUserMedia(
+    const result = await tweetService.getUserMediaOnly(
       targetUserId,
-      currentUserId,
       parseInt(page),
       parseInt(limit)
     );
 
-    return ApiResponse.success(res, result, 'User media tweets retrieved successfully');
+    return ApiResponse.success(res, result, 'User media retrieved successfully');
   });
 
   // Likes Tab Controller

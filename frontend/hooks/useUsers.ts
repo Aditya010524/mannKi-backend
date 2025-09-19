@@ -43,8 +43,6 @@ export const useUsers = () => {
     
     try {
       const response = await apiService.get<User>(`${API_ENDPOINTS.GET_USER_BY_ID}/${userId}`);
-      console.log('user by id',response.data)
-      console.log('user by id',userId)
       if (response.success && response.data) {
          
         return response.data;

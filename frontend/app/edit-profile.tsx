@@ -20,9 +20,8 @@ import * as ImagePicker from 'expo-image-picker';
 export default function EditProfileScreen() {
   const { user, updateUser } = useAuth();
 
-  // 3. CRITICAL FIX: Your backend uses `displayName`. The state must match.
+
   const [displayName, setDisplayName] = useState('');
-  const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [location, setLocation] = useState('');
   const [website, setWebsite] = useState('');
@@ -34,7 +33,6 @@ export default function EditProfileScreen() {
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName || '');
-      setUsername(user.username || '');
       setBio(user.bio || '');
       setLocation(user.location || '');
       setWebsite(user.website || '');
@@ -51,7 +49,7 @@ export default function EditProfileScreen() {
 
     // Check each text field to see if it has changed
     if (displayName !== user.displayName) formData.append('displayName', displayName);
-    if (username !== user.username) formData.append('username', username);
+   
     if (bio !== user.bio) formData.append('bio', bio);
     if (location !== user.location) formData.append('location', location);
     if (website !== user.website) formData.append('website', website);
@@ -184,12 +182,7 @@ export default function EditProfileScreen() {
             value={displayName}
             onChangeText={setDisplayName}
           />
-          <Input
-            label="Username"
-            placeholder="Add your username"
-            value={username}
-            onChangeText={setUsername}
-          />
+         
           <View className="mb-4">
             <Text className="mb-2 text-md font-semibold text-text">Bio</Text>
             <TextInput
