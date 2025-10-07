@@ -17,20 +17,23 @@ export const useMessages = () => {
     if (socketService.connected) {
       socketService.onNewMessage((message) => {
         setMessages(prev => [...prev, message]);
+    // console.log('New message received via socket:', message);
         
         // Update conversations list
         setConversations(prev => 
           prev.map(conv => {
-            if (conv.id === message.sender.id || conv.id === message.recipient.id) {
+            if (conv.user._id === message.senderId?._id || conv.id === message.rec?.id) {
+              console.log("conversation is latest",conv)
               return {
                 ...conv,
-                lastMessage: message,
+                text : message.text,
                 unreadCount: conv.unreadCount + 1,
               };
             }
             return conv;
           })
         );
+         console.log("conversation is latest for now",conversations.lastMessage)
       });
 
       socketService.onMessageRead((data) => {
@@ -53,7 +56,7 @@ export const useMessages = () => {
     }
 
     return () => {
-      socketService.off('new_message');
+      socketService.off('newMessage');
       socketService.off('message_read');
       socketService.off('user_online');
       socketService.off('user_offline');
@@ -70,8 +73,9 @@ export const useMessages = () => {
       const response = await apiService.get<Conversation[]>(API_ENDPOINTS.CONVERSATIONS);
       
       if (response.success && response.data) {
-        setConversations(response.data);
-        return response.data;
+
+        setConversations(response.data.conversations);
+        return response.data.conversations;
       } else {
         throw new Error(response.error || 'Failed to fetch conversations');
       }
@@ -84,27 +88,28 @@ export const useMessages = () => {
     }
   };
 
-  const fetchMessages = async (conversationId: string, page = 1, limit = 50) => {
+  const fetchMessages = async (receiverId: string, page = 1, limit = 50) => {
     if (!user) return [];
     
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiService.get<Message[]>(`${API_ENDPOINTS.MESSAGES}/${conversationId}`, {
+      const response = await apiService.get<Message[]>(`${API_ENDPOINTS.MESSAGES}/${receiverId}`, {
         page,
         limit,
       });
       
       if (response.success && response.data) {
-        setMessages(response.data);
+        setMessages(response.data.messages);
+ 
         
         // Mark conversation as read
-        await apiService.post(`${API_ENDPOINTS.MARK_CONVERSATION_READ}/${conversationId}`);
+        // await apiService.post(`${API_ENDPOINTS.MARK_CONVERSATION_READ}/${conversationId}`);
         
-        // Join the conversation room for real-time updates
-        socketService.joinRoom(conversationId);
+        // // Join the conversation room for real-time updates
+        // socketService.joinRoom(conversationId);
         
-        return response.data;
+        return response.data.messages;
       } else {
         throw new Error(response.error || 'Failed to fetch messages');
       }
@@ -117,24 +122,24 @@ export const useMessages = () => {
     }
   };
 
-  const sendMessage = async (receiverId: string, content: string): Promise<Message | null> => {
+  const sendMessage = async (receiverId: string, text: string): Promise<Message | null> => {
     if (!user) return null;
     
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await apiService.post<Message>(API_ENDPOINTS.SEND_MESSAGE, {
+      const response = await apiService.post<Message>(`${API_ENDPOINTS.SEND_MESSAGE}/${receiverId}`, {
         recipientId :receiverId,
-        content,
+        text,
       });
-      
+    
       if (response.success && response.data) {
         const newMessage = response.data;
         setMessages(prev => [...prev, newMessage]);
         
         // Also emit via socket for real-time delivery
-        socketService.sendMessage({ recipientId, content });
+        // socketService.sendMessage({ recipientId, content });
         
         return newMessage;
       } else {

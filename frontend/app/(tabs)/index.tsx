@@ -6,6 +6,7 @@ import { useTweets } from '@/hooks/useTweets';
 import { colors } from '@/constants/colors';
 import { Tweet } from '@/types';
 import { router } from 'expo-router';
+import socketService from '@/services/socket';
 
 export default function HomeScreen() {
   const { fetchHomeTweets, isLoading } = useTweets();
@@ -16,10 +17,13 @@ export default function HomeScreen() {
     const homeTweets = await fetchHomeTweets();
     setTweets(homeTweets);
 
+    
+
   };
   
   useEffect(() => {
-    loadTweets();
+    loadTweets ();
+
   
   }, []);
   

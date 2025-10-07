@@ -94,18 +94,26 @@ class FollowController {
     );
   });
 
+  // controllers/follow.controller.js
+
   // Get user's followers
   getFollowers = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 20, 100); // Cap at 100
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const currentUserId = req.user._id; // ✅ Get current user ID
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw ApiError.badRequest('Invalid user ID format');
     }
 
-    const result = await followService.getFollowers(userId, page, limit);
+    const result = await followService.getFollowers(
+      userId,
+      currentUserId, // ✅ Pass current user ID
+      page,
+      limit
+    );
 
     return ApiResponse.paginated(
       res,
@@ -119,14 +127,20 @@ class FollowController {
   getFollowing = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const page = parseInt(req.query.page) || 1;
-    const limit = Math.min(parseInt(req.query.limit) || 20, 100); // Cap at 100
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const currentUserId = req.user._id; // ✅ Get current user ID
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       throw ApiError.badRequest('Invalid user ID format');
     }
 
-    const result = await followService.getFollowing(userId, page, limit);
+    const result = await followService.getFollowing(
+      userId,
+      currentUserId, // ✅ Pass current user ID
+      page,
+      limit
+    );
 
     return ApiResponse.paginated(
       res,

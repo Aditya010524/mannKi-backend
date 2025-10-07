@@ -15,16 +15,14 @@ const Connections = () => {
  
      const loadFollowers = async (UserId: any) => {
         const response = await getFollowers(UserId);
-     
-       
-        console.log("followers",response)
+    
         setfollowers(response)
      
       };
       
       const loadFollowing = async (UserId:any) => {
      try { const response = await getFollowing(UserId);
-      console.log("following",response)
+    
       setfollowing(response)
   
      } catch (error) {

@@ -14,41 +14,41 @@ export const MessageThread: React.FC<MessageThreadProps> = ({ conversation }) =>
   const { user } = useAuth();
 
   if (!user) return null;
-
-  const otherUser = conversation.participants.find(p => p.id !== user.id)!;
+  // Identify the other participant in the conversation
+  const otherUser = conversation?.user
 
   const navigateToChat = () => {
     // ✅ Use conversation.id instead of otherUser.id
-    router.push(`/messages/${conversation.id}`);
+    router.push(`/messages/${otherUser.id}`);
   };
 
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToChat}>
-      <Image source={{ uri: otherUser.profilePic }} style={styles.avatar} />
+      <Image source={{ uri: otherUser.avatar }} style={styles.avatar} />
 
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.name}>{otherUser.name}</Text>
-          <Text style={styles.username}>@{otherUser.username}</Text>
-          <Text style={styles.time}>{formatMessageDate(conversation.lastMessage.createdAt)}</Text>
+          <Text style={styles.name}>{otherUser?.displayName}</Text>
+          <Text style={styles.username}>@{otherUser?.username}</Text>
+          <Text style={styles.time}>{formatMessageDate(conversation?.lastMessage?.createdAt)}</Text>
         </View>
 
         <View style={styles.messageRow}>
           <Text
             style={[
               styles.message,
-              !conversation.lastMessage.read &&
-                conversation.lastMessage.recipient.id === user.id &&
+              !conversation?.lastMessage?.read &&
+                // conversation.lastMessage.recipient.id === user.id &&
                 styles.unreadMessage,
             ]}
             numberOfLines={2}
           >
-            {conversation.lastMessage.content}
+            {conversation?.lastMessage?.text}
           </Text>
 
-          {conversation.unreadCount > 0 && (
+          {conversation?.unreadCount > 0 && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>{conversation.unreadCount}</Text>
+              <Text style={styles.badgeText}>{conversation?.unreadCount}</Text>
             </View>
           )}
         </View>
@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
   badgeText: {
     color: colors.background,
     fontSize: 12,
+    textAlign: 'center',
     fontWeight: '700' as const,
     paddingHorizontal: 6,
   },

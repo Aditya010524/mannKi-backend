@@ -56,7 +56,7 @@ export default function LoginScreen() {
         <View className='space-y-4 mb-6' >
           <Input
             label="Email"
-            placeholder="Enter your email"
+            placeholder="Enter your email or Username"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"

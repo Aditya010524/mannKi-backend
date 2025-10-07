@@ -71,24 +71,25 @@ export const UserCard: React.FC<UserCardProps> = ({
         )}
       </View>
      
-      {showFollowButton && currentUser && (
-        <TouchableOpacity
-          style={[
-            styles.followButton,
-            isFollowing && styles.followingButton
-          ]}
-          onPress={handleFollow}
-        >
-         { currentUser._id === user._id ? null :  <Text
-            style={[
-              styles.followButtonText,
-              isFollowing && styles.followingButtonText
-            ]}
-          >
-            {isFollowing ? 'Following' : 'Follow'}
-          </Text>}
-        </TouchableOpacity>
-      )}
+     {showFollowButton && currentUser && currentUser.id !== user._id && (
+  <TouchableOpacity
+    style={[
+      styles.followButton,
+      isFollowing && styles.followingButton
+    ]}
+    onPress={handleFollow}
+  >
+    <Text
+      style={[
+        styles.followButtonText,
+        isFollowing && styles.followingButtonText
+      ]}
+    >
+      {isFollowing ? 'Following' : 'Follow'}
+    </Text>
+  </TouchableOpacity>
+)}
+
     </TouchableOpacity>
   );
 };

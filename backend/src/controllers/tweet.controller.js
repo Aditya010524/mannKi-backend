@@ -138,12 +138,17 @@ class TweetController {
 
   // Get user mentions (Notifications tab)
   getUserMentions = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const { page = 1, limit = 20 } = req.query;
+    const currentUserId = req.user._id; // ✅ Get current user ID from auth
 
-    const result = await tweetService.getUserMentions(userId, page, limit);
-    return ApiResponse.paginated(res, result.tweets, result.pagination, 'Mentions retrieved');
+    const result = await tweetService.getUserMentions(
+      currentUserId, // ✅ Target user is the current user
+      currentUserId, // ✅ Current user is the same (for isLiked flags)
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    return ApiResponse.success(res, result, 'User mentions retrieved successfully');
   });
 
   //  Get tweets by hashtag (Discovery tab)
@@ -359,7 +364,7 @@ class TweetController {
     return ApiResponse.success(res, hashtags, `Trending hashtags (${timeframe})`);
   });
 
-  // Media Tab Controller
+  // Media Tab Controller - with post
   // getUserMedia = asyncHandler(async (req, res) => {
   //   const { userId: targetUserId } = req.params;
   //   const { page = 1, limit = 20 } = req.query;

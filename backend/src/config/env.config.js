@@ -71,6 +71,7 @@ const envSchema = Joi.object({
 
   // Default profile image
   DEFAULT_PROFILE_URL: Joi.string().uri().optional(),
+  DEFAULT_COVER_URL: Joi.string().uri().optional(),
 }).unknown(true);
 
 // ------------------------------
@@ -159,6 +160,7 @@ const configEnv = {
   },
 
   DEFAULT_PROFILE_URL: env.DEFAULT_PROFILE_URL,
+  DEFAULT_COVER_URL: env.DEFAULT_COVER_URL,
   REDIS_URL: env.REDIS_URL,
 };
 

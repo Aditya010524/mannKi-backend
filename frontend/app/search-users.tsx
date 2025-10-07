@@ -36,7 +36,8 @@ export default function SearchUsersScreen() {
   };
   
   const handleSelectUser = (user: User) => {
-    router.push(`/messages/${user.id}`);
+    console.log('Selected user:', user._id);
+    router.push(`/messages/${user._id}`);
   };
   
   return (

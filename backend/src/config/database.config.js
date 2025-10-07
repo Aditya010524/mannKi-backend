@@ -1,3 +1,4 @@
+// config/database.config.js
 import mongoose from 'mongoose';
 import configEnv from './env.config.js';
 import logger from './logger.config.js';
@@ -32,13 +33,9 @@ mongoose.connection.on('error', (err) => {
   logger.error('❌ Database error:', err);
 });
 
-// Graceful shutdown
-// Signal sent when you press Ctrl+C in the terminal.
-process.on('SIGINT', async () => {
-  await mongoose.connection.close();
-  logger.info('📊 Database closed due to app termination');
-  process.exit(0);
+// ✅ Enhanced graceful shutdown (remove the old SIGINT handler since server.js handles it)
+mongoose.connection.on('disconnected', () => {
+  logger.info('📊 Database disconnected');
 });
 
 export { connectDB, disconnectDB };
-// export default connectDB;

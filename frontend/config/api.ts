@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://192.168.183.208:5000/api/v1';
+const API_BASE_URL = 'http://10.122.165.208:5000/api/v1';
 
 
 export const API_ENDPOINTS = {
@@ -60,6 +60,11 @@ export const API_ENDPOINTS = {
   DELETE_TWEET : '/tweets',
 HASHTAG_TWEETS : '/tweets/hashtag',
 MENTIONED_TWEETS : '/tweets/mentions',
+
+// Messages (6)
+SEND_MESSAGE: '/messages/send',
+CONVERSATIONS: '/messages/chats',
+MESSAGES:'/messages', // Append /:conversationId
 
     // Health Check (1)
   HEALTH_STATUS: '/health',

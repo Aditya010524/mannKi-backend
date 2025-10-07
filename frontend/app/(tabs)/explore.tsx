@@ -133,6 +133,7 @@ export default function ExploreScreen() {
         <TrendingUp size={20} color={colors.text} />
         <Text className='ml-2 text-2xl font-semibold text-text'>Trending</Text>
       </View>
+      <Text className='ml-0 text-m font-semibold text-secondaryText'>This week</Text>
 
       {trendingHashtags.map((item) => (
         <TouchableOpacity

@@ -37,7 +37,6 @@ export const Tweet: React.FC<TweetProps> = ({ tweet, onRefresh }) => {
 
 useEffect(() => {
   setIsLiked(tweet?.isLiked);
-  console.log(isLiked)
   setLikeCount(displayTweet?.stats?.likes);
   setIsRetweeted(tweet?.isRetweeted);
   setRetweetCount(displayTweet?.stats?.retweets);
@@ -85,19 +84,13 @@ else if(tweet.type === 'original') {
     }
   };
 
- const navigateToProfile = () => { 
-  const id = tweet?.author?.id;
-console.log(id)
-console.log(currentUser?.id)
-  if (id === currentUser?.id) {
-    // go to self profile
+ const navigateToProfile = (id:string) => {
+  if(id === currentUser?.id) {
     router.push('/(tabs)/profile');
-  } else if (id) {
-    // go to other user profile
-    router.push(`/profile/${id}`);
   } else {
-    console.warn("No author id found in tweet");
+    router.push(`/profile/${id}`);
   }
+
 };
 
 

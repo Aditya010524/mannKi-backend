@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { User } from '@/types';
 import { router } from 'expo-router';
 import { apiService } from '@/services/api'
-// import { socketService } from '@/services/socket';
+import { socketService } from '@/services/socket';
 import { API_ENDPOINTS } from '@/config/api';
 
 
@@ -18,7 +18,7 @@ interface AuthState {
   updateUser: (formData: FormData) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
-  changePassword: (currentPassword: string, newPassword: string , confirmPassword: string) => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
   activeSessions: () => Promise<void>;
 }
 
@@ -41,12 +41,12 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         if (token) {
           await fetchUser();
           router.replace('/(tabs)');
-         
+
         }
         else {
           router.replace('/(auth)/login');
         }
-        
+
       } catch (error) {
         console.error('Error loading user:', error);
         await AsyncStorage.multiRemove(['authToken', 'user']);
@@ -87,23 +87,17 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const fetchUser = async () => {
     try {
       const response = await apiService.get<any>(API_ENDPOINTS.CURRENT_USER);
-      
+
       if (response.success && response.data) {
         // Handle different response structures
         const userData = response.data.user || response.data;
         const transformedUser = transformUserData(userData);
 
-        
-        setUser(transformedUser);
- 
-     
 
-        
-        // Update AsyncStorage with latest user data
+        setUser(transformedUser);
+
         await AsyncStorage.setItem('user', JSON.stringify(transformedUser));
-        
-        // console.log('User fetched', transformedUser);
-       
+
         return transformedUser;
 
       } else {
@@ -142,7 +136,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
         await fetchUser();
 
         // connect socket and navigate
-        // await socketService.connect();
+
         router.replace('/(tabs)');
 
         console.log('User logged in successfully');
@@ -199,18 +193,18 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
       // Call logout endpoint
       await apiService.post(API_ENDPOINTS.LOGOUT_CURRENT);
 
-      // socketService.disconnect();
-      await AsyncStorage.multiRemove(['authToken','user']);
+      socketService.disconnect();
+      await AsyncStorage.multiRemove(['authToken', 'user']);
       setUser(null);
-     
+
       router.replace('/(auth)/login');
     } catch (error) {
       console.error('Logout error:', error);
       // Still clear local data even if API call fails
-      // socketService.disconnect();
-      await AsyncStorage.multiRemove(['authToken','user']);
+      socketService.disconnect();
+      await AsyncStorage.multiRemove(['authToken', 'user']);
       setUser(null);
-    
+
       router.replace('/(auth)/login');
     } finally {
       setIsLoading(false);
@@ -220,16 +214,16 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const updateUser = async (formData: FormData) => {
     if (!user) return;
 
-  
+
     try {
       const response = await apiService.putForm<any>(API_ENDPOINTS.UPDATE_PROFILE, formData);
-  
+
 
       if (response.success && response.data) {
         // Instead of manually transforming, fetch fresh data from server
         // This ensures we get the most up-to-date user data
         await fetchUser();
-        
+
         console.log('User profile updated successfully');
       } else {
         throw new Error(response.message || 'Update failed');
@@ -266,7 +260,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
     }
   };
 
-  const changePassword = async (currentPassword: string, newPassword: string , confirmPassword: string) => {
+  const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
     try {
       const response = await apiService.post(API_ENDPOINTS.CHANGE_PASSWORD, {
         currentPassword,
@@ -299,7 +293,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
       // If successful, remove stored auth info
       await AsyncStorage.multiRemove(['authToken', 'user']);
       setUser(null);
-      
+
       console.log('Account deletion initiated successfully');
       return true;
     } catch (error: any) {
@@ -311,7 +305,7 @@ const [AuthProvider, useAuth] = createContextHook<AuthState>(() => {
   const activeSessions = async () => {
     try {
       const response = await apiService.get(API_ENDPOINTS.ACTIVE_SESSIONS);
-     
+
       if (response.success && response.data) {
         console.log('Active sessions:', response);
         return response;

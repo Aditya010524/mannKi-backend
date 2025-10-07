@@ -105,7 +105,7 @@ export const useTweets = () => {
         limit,
       });
       if (response.success && response.data) {
-        console.log("User media tab fetched", response.data);
+        console.log("User media tab fetched")
         return response.data;
       } else {
         throw new Error(response.error || 'Failed to fetch user tweets');
@@ -488,7 +488,10 @@ export const useTweets = () => {
     setError(null);
     
     try {
-      const response = await apiService.get<{ tag: string; count: number }[]>(API_ENDPOINTS.TRENDING);
+      const response = await apiService.get<{ tag: string; count: number }[]>(API_ENDPOINTS.TRENDING,{
+          timeframe : "7d",
+          limit : 20  
+      });
       
       if (response.success && response.data) {
         return response.data;

@@ -6,20 +6,21 @@ import { useMessages } from '@/hooks/useMessages';
 import { colors } from '@/constants/colors';
 import { Conversation } from '@/types';
 import { router } from 'expo-router';
-
+import socketService from '@/services/socket';
 export default function MessagesScreen() {
-  const { fetchConversations, isLoading } = useMessages();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const { fetchConversations, isLoading , conversations  } = useMessages();
   const [refreshing, setRefreshing] = useState(false);
   
   const loadConversations = async () => {
-    const userConversations = await fetchConversations();
-    console.log('Fetched Conversations:', userConversations);
-    setConversations(userConversations);
+  await fetchConversations();
   };
   
   useEffect(() => {
     loadConversations();
+    if(!socketService.isConnected) {
+      socketService.connect();
+      console.log('Socket connected from MessagesScreen', socketService.Socket?.id);
+    }
   }, []);
   
   const handleRefresh = async () => {

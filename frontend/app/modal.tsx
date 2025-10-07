@@ -14,12 +14,9 @@ import {
 import { ArrowLeft } from "lucide-react-native";
 import { ThumbsUp,  Share2 ,Heart } from "lucide-react-native";
 
-
 const { width, height } = Dimensions.get("window");
-
 export default function ModalScreen({ photos, showModal, setshowModal ,isLiked, onLike , likeCount}: any) {
   const [CurrentIndex, setCurrentIndex] = useState(0);
-
 
   return (
     <Modal transparent={true} visible={showModal} animationType="slide" onRequestClose={() => setshowModal(false)}>

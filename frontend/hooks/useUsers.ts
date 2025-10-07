@@ -163,7 +163,7 @@ const followUser = async (userId: string) => {
         page,
         limit,
       });
-      console.log("followers",response)
+      console.log("fetched followers list ")
       if (response.success && response.data) {
         return response.data;
       } else {

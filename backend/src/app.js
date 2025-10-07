@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import followRoutes from './routes/follow.routes.js';
 import tweetRoutes from './routes/tweet.routes.js';
+import messageRoutes from './routes/message.routes.js';
 
 // Middleware
 import limiter from './middleware/rate-limiter.middleware.js';
@@ -30,6 +31,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: configEnv.SECURITY.CORS_ORIGIN,
+    // origin: configEnv.SECURITY.FRONTEND_URL,
     credentials: true,
   })
 );
@@ -65,6 +67,7 @@ apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/follows', followRoutes);
 apiRouter.use('/tweets', tweetRoutes);
+apiRouter.use('/messages', messageRoutes);
 
 // 404 handler
 app.use(notFound);

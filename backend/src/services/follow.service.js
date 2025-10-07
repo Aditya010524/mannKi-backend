@@ -117,25 +117,77 @@ class FollowService {
   }
 
   // Get user's followers
-  async getFollowers(userId, page = 1, limit = 20) {
+  async getFollowers(userId, currentUserId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
 
+    // Validate user exists
     const user = await User.findById(userId);
     if (!user) throw ApiError.notFound('User not found');
 
     try {
       const [followers, total] = await Promise.all([
         Follow.find({ following: userId })
-          .populate('follower', 'username displayName avatar isVerified')
+          .populate(
+            'follower',
+            'username displayName avatar bio isVerified followersCount followingCount tweetsCount'
+          ) // ✅ Include more fields
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .lean(), // Use lean for better performance
+          .lean(),
         Follow.countDocuments({ following: userId }),
       ]);
 
+      // ✅ Extract follower user objects
+      const followerUsers = followers.map((f) => f.follower).filter(Boolean);
+      const followerIds = followerUsers.map((user) => user._id);
+
+      // ✅ Get follow status for current user with each follower
+      const [currentUserFollowing, currentUserFollowers] = await Promise.all([
+        Follow.find({
+          follower: currentUserId,
+          following: { $in: followerIds },
+        })
+          .select('following')
+          .lean(),
+        Follow.find({
+          follower: { $in: followerIds },
+          following: currentUserId,
+        })
+          .select('follower')
+          .lean(),
+      ]);
+
+      const isFollowingSet = new Set(currentUserFollowing.map((f) => f.following.toString()));
+      const isFollowedBySet = new Set(currentUserFollowers.map((f) => f.follower.toString()));
+
+      // ✅ Format followers with follow status
+      const enrichedFollowers = followerUsers.map((follower) => {
+        const followerId = follower._id.toString();
+        const isFollowing = isFollowingSet.has(followerId);
+        const isFollowedBy = isFollowedBySet.has(followerId);
+
+        return {
+          _id: follower._id,
+          username: follower.username,
+          displayName: follower.displayName,
+          avatar: follower.avatar,
+          bio: follower.bio || '',
+          isVerified: follower.isVerified || false,
+          followersCount: follower.followersCount || 0,
+          followingCount: follower.followingCount || 0,
+          tweetsCount: follower.tweetsCount || 0,
+          followStatus: {
+            isFollowing: isFollowing,
+            isFollowedBy: isFollowedBy,
+            isMutual: isFollowing && isFollowedBy,
+            isSelf: followerId === currentUserId.toString(),
+          },
+        };
+      });
+
       return {
-        followers: followers.map((f) => f.follower),
+        followers: enrichedFollowers,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
@@ -150,16 +202,20 @@ class FollowService {
   }
 
   // Get user's following list
-  async getFollowing(userId, page = 1, limit = 20) {
+  async getFollowing(userId, currentUserId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
 
+    // Validate user exists
     const user = await User.findById(userId);
     if (!user) throw ApiError.notFound('User not found');
 
     try {
       const [following, total] = await Promise.all([
         Follow.find({ follower: userId })
-          .populate('following', 'username displayName avatar isVerified')
+          .populate(
+            'following',
+            'username displayName avatar bio isVerified followersCount followingCount tweetsCount'
+          ) // ✅ Include more fields
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -167,8 +223,56 @@ class FollowService {
         Follow.countDocuments({ follower: userId }),
       ]);
 
+      // ✅ Extract following user objects
+      const followingUsers = following.map((f) => f.following).filter(Boolean);
+      const followingIds = followingUsers.map((user) => user._id);
+
+      // ✅ Get follow status for current user with each following user
+      const [currentUserFollowing, currentUserFollowers] = await Promise.all([
+        Follow.find({
+          follower: currentUserId,
+          following: { $in: followingIds },
+        })
+          .select('following')
+          .lean(),
+        Follow.find({
+          follower: { $in: followingIds },
+          following: currentUserId,
+        })
+          .select('follower')
+          .lean(),
+      ]);
+
+      const isFollowingSet = new Set(currentUserFollowing.map((f) => f.following.toString()));
+      const isFollowedBySet = new Set(currentUserFollowers.map((f) => f.follower.toString()));
+
+      // ✅ Format following with follow status
+      const enrichedFollowing = followingUsers.map((followingUser) => {
+        const followingId = followingUser._id.toString();
+        const isFollowing = isFollowingSet.has(followingId);
+        const isFollowedBy = isFollowedBySet.has(followingId);
+
+        return {
+          _id: followingUser._id,
+          username: followingUser.username,
+          displayName: followingUser.displayName,
+          avatar: followingUser.avatar,
+          bio: followingUser.bio || '',
+          isVerified: followingUser.isVerified || false,
+          followersCount: followingUser.followersCount || 0,
+          followingCount: followingUser.followingCount || 0,
+          tweetsCount: followingUser.tweetsCount || 0,
+          followStatus: {
+            isFollowing: isFollowing,
+            isFollowedBy: isFollowedBy,
+            isMutual: isFollowing && isFollowedBy,
+            isSelf: followingId === currentUserId.toString(),
+          },
+        };
+      });
+
       return {
-        following: following.map((f) => f.following),
+        following: enrichedFollowing,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),

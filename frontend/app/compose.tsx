@@ -60,12 +60,7 @@ export default function ComposeScreen() {
         }
         router.replace("/(tabs)");
       }
-      // const response = await createTweet({ content: tweetText });
-      //       router.replace("/(tabs)");
-      // if (response.success && response.data) {
-      //   console.log("✅ Tweet created successfully:", response.data);
-       
-      
+
     } catch (error) {
       console.error("Failed to create tweet:", error);
     } finally {

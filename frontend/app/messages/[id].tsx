@@ -34,37 +34,44 @@ export default function ChatScreen() {
 
   const [messageText, setMessageText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [receiverId, setReceiverId] = useState<string | null>(null);
+  const [receiverId, setReceiverId] = useState(id);
   const [isReceiverTyping, setIsReceiverTyping] = useState(false);
   const typingTimeoutRef = useRef<number | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
+  if (id) setReceiverId(id);
+}, [id]);
+
+  useEffect(() => {
     if (user && id) {
+
       fetchMessages(id).then((fetchedMessages: Message[]) => {
+        // console.log('Fetched messages for conversation:', id, fetchedMessages);
         const firstMessage = fetchedMessages[0];
         if (!firstMessage) return;
 
-        const { sender, recipient } = firstMessage;
-        const receiver = sender.id === user.id ? recipient : sender;
+        const { senderId, recipient } = firstMessage;
+        const receiver = senderId._id === user.id ? recipient : senderId;
 
         setReceiverId(receiver.id);
+      
       });
     }
   }, [user, id]);
 
   useEffect(() => {
-    socketService.onUserTyping(({ userId }) => {
-      if (userId === receiverId) {
-        setIsReceiverTyping(true);
-      }
-    });
+    // socketService.onUserTyping(({ userId }) => {
+    //   if (userId === receiverId) {
+    //     setIsReceiverTyping(true);
+    //   }
+    // });
 
-    socketService.onUserStopTyping(({ userId }) => {
-      if (userId === receiverId) {
-        setIsReceiverTyping(false);
-      }
-    });
+    // socketService.onUserStopTyping(({ userId }) => {
+    //   if (userId === receiverId) {
+    //     setIsReceiverTyping(false);
+    //   }
+    // });
 
     return () => {
       socketService.off('user_typing');
@@ -84,6 +91,7 @@ export default function ChatScreen() {
   }, []);
 
 const handleSendMessage = async () => {
+
   if (!user || !id || !messageText.trim() || !receiverId) return;
 
   setIsSubmitting(true);
@@ -93,12 +101,13 @@ const handleSendMessage = async () => {
 
   try {
     const newMessage = await sendMessage(receiverId, textToSend);
-    if (newMessage) {
-      socketService.stopTyping(id);
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
+    // if (newMessage) {
+    //   socketService.stopTyping(id);
+    //   setTimeout(() => {
+    //     flatListRef.current?.scrollToEnd({ animated: true });
+    //   }, 100);
+    // }
+ 
   } catch (error) {
     console.error('Failed to send message:', error);
     setMessageText(textToSend); // Rollback in case of error
@@ -111,21 +120,21 @@ const handleSendMessage = async () => {
   const handleTyping = (text: string) => {
     setMessageText(text);
 
-    if (user && id) {
-      socketService.startTyping(id);
+    // if (user && id) {
+    //   socketService.startTyping(id);
 
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
+    //   if (typingTimeoutRef.current) {
+    //     clearTimeout(typingTimeoutRef.current);
+    //   }
 
-      typingTimeoutRef.current = setTimeout(() => {
-        socketService.stopTyping(id);
-      }, 1500);
-    }
+    //   typingTimeoutRef.current = setTimeout(() => {
+    //     socketService.stopTyping(id);
+    //   }, 1500);
+    // }
   };
 
   const renderMessage = ({ item }: { item: Message }) => {
-    const isCurrentUser = item.sender.id === user?.id;
+    const isCurrentUser = item.senderId?.id === user?.id;
 
     return (
       <View style={[
@@ -133,7 +142,7 @@ const handleSendMessage = async () => {
         isCurrentUser ? styles.sentMessage : styles.receivedMessage
       ]}>
         {!isCurrentUser && (
-          <Image source={{ uri: item.sender.profilePic }} style={styles.avatar} />
+          <Image source={{ uri: item.senderId?.avatar }} style={styles.avatar} />
         )}
 
         <View style={[
@@ -144,7 +153,7 @@ const handleSendMessage = async () => {
             styles.messageText,
             isCurrentUser ? styles.sentMessageText : styles.receivedMessageText
           ]}>
-            {item.content}
+            {item.text}
           </Text>
           <Text style={[
             styles.messageTime,
@@ -176,7 +185,7 @@ const handleSendMessage = async () => {
           <FlatList
             ref={flatListRef}
             data={messages}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item?.id}
             renderItem={renderMessage}
             contentContainerStyle={[styles.messagesList, { paddingBottom: 120 }]}
             onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
@@ -226,6 +235,7 @@ const handleSendMessage = async () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    marginBottom: Platform.OS === 'android' ? 50 : 0,
     backgroundColor: colors.background,
   },
   container: {

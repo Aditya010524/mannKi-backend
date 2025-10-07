@@ -34,9 +34,13 @@ class AuthController {
       displayName,
       bio: `Hi, I'm ${displayName.split(' ')[0]}!`,
       avatar: configEnv.DEFAULT_PROFILE_URL,
+      coverPhoto: configEnv.DEFAULT_COVER_URL,
     });
 
     await user.save();
+
+    console.log(user.avatar);
+    console.log(user.coverPhoto);
 
     // Generate email verification token
     const verificationToken = await authService.createEmailVerificationToken(user._id);

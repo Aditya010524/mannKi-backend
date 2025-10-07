@@ -317,29 +317,76 @@ class TweetService {
   }
 
   // Get user mentions
-  async getUserMentions(userId, page, limit) {
+  async getUserMentions(targetUserId, currentUserId, page = 1, limit = 20) {
     const skip = (page - 1) * limit;
 
-    const [tweets, total] = await Promise.all([
-      Tweet.find({
-        mentions: userId,
-        author: { $ne: userId }, // ✅ FIX: Exclude tweets by the user themselves
-        isActive: true,
-      })
-        .populate('author', 'username displayName avatar isVerified')
-        .populate('mentions', 'username displayName')
-        .populate('mediaIds', 'type cloudinary.urls originalName altText')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      Tweet.countDocuments({
-        mentions: userId,
-        author: { $ne: userId }, // ✅ FIX: Exclude self-mentions from count
-        isActive: true,
-      }),
-    ]);
+    try {
+      // Find tweets where the target user is mentioned
+      const [tweets, total] = await Promise.all([
+        Tweet.find({
+          mentions: targetUserId, // ✅ User was mentioned in these tweets
+          isActive: true,
+        })
+          .populate('author', 'username displayName avatar isVerified')
+          .populate('mentions', 'username displayName')
+          .populate('mediaIds', 'type cloudinary.urls originalName altText')
+          .populate({
+            path: 'originalTweet',
+            populate: [
+              { path: 'author', select: 'username displayName avatar isVerified' },
+              { path: 'mentions', select: 'username displayName' },
+              { path: 'mediaIds', select: 'type cloudinary.urls originalName altText' },
+            ],
+          })
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
+        Tweet.countDocuments({
+          mentions: targetUserId,
+          isActive: true,
+        }),
+      ]);
 
-    return { tweets: tweets.map(this.formatTweet), pagination: { page, limit, total } };
+      // ✅ Get user interaction flags (isLiked, isRetweeted)
+      const { likes, retweets } = await this.getUserInteractionFlags(currentUserId, tweets);
+
+      const formattedTweets = tweets
+        .map((tweet) => {
+          try {
+            const formattedTweet = this.formatTweet(tweet);
+            if (!formattedTweet) return null;
+
+            // ✅ Add interaction flags
+            const tweetId =
+              tweet.type === 'retweet' && tweet.originalTweet
+                ? tweet.originalTweet._id.toString()
+                : tweet._id.toString();
+
+            formattedTweet.isLiked = likes.has(tweetId);
+            formattedTweet.isRetweeted = retweets.has(tweetId);
+
+            // ✅ Add mention context
+            formattedTweet.mentionContext = {
+              mentionedUser: targetUserId,
+              mentionType: 'mentioned_in_tweet',
+            };
+
+            return formattedTweet;
+          } catch (error) {
+            console.error(`Error formatting mention ${tweet._id}:`, error.message);
+            return null;
+          }
+        })
+        .filter(Boolean);
+
+      return {
+        tweets: formattedTweets,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+      };
+    } catch (error) {
+      console.error('Error in getUserMentions:', error);
+      throw error;
+    }
   }
 
   // Get tweets by hashtag
