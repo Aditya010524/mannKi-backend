@@ -12,7 +12,7 @@ import userRoutes from './routes/user.routes.js';
 import followRoutes from './routes/follow.routes.js';
 import tweetRoutes from './routes/tweet.routes.js';
 import messageRoutes from './routes/message.routes.js';
-
+import notificationsRoutes from './routes/notifications.routes.js';
 // Middleware
 import limiter from './middleware/rate-limiter.middleware.js';
 import errorHandler from './middleware/error.middleware.js';
@@ -66,8 +66,9 @@ app.use(configEnv.API_PREFIX || '/api/v1', apiRouter);
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/follows', followRoutes);
-apiRouter.use('/tweets', tweetRoutes);
+apiRouter.use('/tweets', tweetRoutes); 
 apiRouter.use('/messages', messageRoutes);
+apiRouter.use('/notifications', notificationsRoutes);
 
 // 404 handler
 app.use(notFound);

@@ -28,7 +28,7 @@ const consoleFormat = winston.format.printf(({ level, message, stack }) => {
     case 'warn':
       return chalk.yellow(`[WARN]: ${stack || message}`);
     case 'debug':
-      return chalk.blue(`[DEBUG]: ${stack || message}`);
+      return chalk.blue(`[DEBUG]: ${stack || message}`); 
     case 'info':
     default:
       // Special green for "Server started"

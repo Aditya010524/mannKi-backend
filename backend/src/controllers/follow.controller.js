@@ -3,6 +3,7 @@ import asyncHandler from '../utils/async-handler.js';
 import ApiResponse from '../utils/api-response.js';
 import ApiError from '../utils/api-error.js';
 import mongoose from 'mongoose';
+import notifService from '../services/notification.service.js';
 
 class FollowController {
   // Follow a user
@@ -16,6 +17,21 @@ class FollowController {
     }
 
     const follow = await followService.followUser(followerId, followingId);
+
+    // Create follow notification for the followed user
+    try {
+      await notifService.createOrUpdateSimpleNotification({
+        recipientId: followingId,
+        actorId: followerId,
+        type: 'follow',
+        targetType: 'user',
+        targetId: followingId,
+        extra: { followerId: followerId.toString() },
+      });
+    } catch (err) {
+      // Log but don't fail the main flow
+      console.warn('Failed to create follow notification', err);
+    }
 
     return ApiResponse.created(
       res,
@@ -39,6 +55,19 @@ class FollowController {
     }
 
     const unfollow = await followService.unfollowUser(followerId, followingId);
+
+    // Remove follow notification (if present)
+    try {
+      await notifService.removeSimpleNotification({
+        recipientId: followingId,
+        actorId: followerId,
+        type: 'follow',
+        targetType: 'user',
+        targetId: followingId,
+      });
+    } catch (err) {
+      console.warn('Failed to remove follow notification', err);
+    }
 
     return ApiResponse.success(
       res,
@@ -73,11 +102,38 @@ class FollowController {
       result = await followService.unfollowUser(followerId, followingId);
       action = 'unfollowed';
       isFollowing = false;
+
+      // Remove follow notification
+      try {
+        await notifService.removeSimpleNotification({
+          recipientId: followingId,
+          actorId: followerId,
+          type: 'follow',
+          targetType: 'user',
+          targetId: followingId,
+        });
+      } catch (err) {
+        console.warn('Failed to remove follow notification', err);
+      }
     } else if (currentStatus.status === 'not_following' || currentStatus.status === 'followed_by') {
       // Not following, so follow
       result = await followService.followUser(followerId, followingId);
       action = 'followed';
       isFollowing = true;
+
+      // Create follow notification
+      try {
+        await notifService.createOrUpdateSimpleNotification({
+          recipientId: followingId,
+          actorId: followerId,
+          type: 'follow',
+          targetType: 'user',
+          targetId: followingId,
+          extra: { followerId: followerId.toString() },
+        });
+      } catch (err) {
+        console.warn('Failed to create follow notification', err);
+      }
     } else {
       throw ApiError.badRequest('Cannot toggle follow status for this user');
     }

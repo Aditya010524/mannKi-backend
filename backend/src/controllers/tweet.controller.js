@@ -5,6 +5,8 @@ import asyncHandler from '../utils/async-handler.js';
 import ApiResponse from '../utils/api-response.js';
 import ApiError from '../utils/api-error.js';
 import { Comment, Tweet } from '../models/index.js';
+import notifService from '../services/notification.service.js';
+import mongoose from 'mongoose';
 
 class TweetController {
   // Create tweet (handles content, media, mentions, hashtags)
@@ -37,6 +39,20 @@ class TweetController {
       content: content || '',
       mediaIds,
     });
+
+    // If tweet has mentions (tweetService may populate them), notify mentioned users
+    try {
+      if (tweet?.mentions && Array.isArray(tweet.mentions) && tweet.mentions.length > 0) {
+        await notifService.createMentionNotifications({
+          mentions: tweet.mentions,
+          actorId: userId,
+          tweetId: tweet._id,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to create mention notifications for tweet', err);
+    }
+
     return ApiResponse.created(res, tweet, 'Tweet created successfully');
   });
 
@@ -102,7 +118,26 @@ class TweetController {
   // Like/Unlike
   toggleLike = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
+    const userId = req.user._id;
+
     const result = await tweetService.toggleLike(tweetId, req.user._id);
+
+    // Try to infer whether like was created or removed
+    const liked = !!(
+      result &&
+      (result.liked === true || result.isLiked === true || result.action === 'liked')
+    );
+
+    try {
+      if (liked) {
+        await notifService.createLikeNotification({ tweetId, actorId: userId });
+      } else {
+        await notifService.removeLikeNotification({ tweetId, actorId: userId });
+      }
+    } catch (err) {
+      console.warn('Failed to sync like notification', err);
+    }
+
     return ApiResponse.success(res, result, 'Like updated');
   });
 
@@ -112,6 +147,31 @@ class TweetController {
     const userId = req.user._id;
 
     const result = await tweetService.toggleRetweet(tweetId, userId);
+
+    const isRetweeted = !!(
+      result &&
+      (result.isRetweeted === true ||
+        result.retweeted === true ||
+        result.action === 'retweeted')
+    );
+
+    // Create or remove retweet notification
+    try {
+      if (isRetweeted) {
+        await notifService.createRetweetNotification({ tweetId, actorId: userId });
+      } else {
+        // remove simple retweet notification
+        await notifService.removeSimpleNotification({
+          recipientId: (await Tweet.findById(tweetId).select('author').lean())?.author,
+          actorId: userId,
+          type: 'retweet',
+          targetType: 'tweet',
+          targetId: tweetId,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to sync retweet notification', err);
+    }
 
     const message = result.isRetweeted
       ? 'Tweet retweeted successfully'
@@ -219,6 +279,28 @@ class TweetController {
       mediaIds,
     });
 
+    // Create notifications: reply/comment to tweet owner + parent comment author (handled inside service)
+    try {
+      await notifService.createCommentNotifications({
+        tweetId,
+        commentId: comment.id, // ✅ use formatted id
+        actorId: userId,
+        parentCommentId: comment.parentComment || null,
+      });
+
+      // Mentions in comment
+      if (comment?.mentions && Array.isArray(comment.mentions) && comment.mentions.length > 0) {
+        await notifService.createMentionNotifications({
+          mentions: comment.mentions,
+          actorId: userId,
+          tweetId,
+          commentId: comment.id, // ✅ use formatted id
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to create comment-related notifications', err);
+    }
+
     return ApiResponse.created(res, comment, 'Comment created successfully');
   });
 
@@ -255,15 +337,62 @@ class TweetController {
       mediaIds,
     });
 
+    // Create notifications for reply (parent comment author & tweet owner),
+    // and mention notifications if any.
+    try {
+      await notifService.createCommentNotifications({
+        tweetId: reply.postId, // ✅ this is the tweet id from formatComment
+        commentId: reply.id,   // ✅ formatted id
+        actorId: userId,
+        parentCommentId: reply.parentComment || null,
+      });
+
+      if (reply?.mentions && Array.isArray(reply.mentions) && reply.mentions.length > 0) {
+        await notifService.createMentionNotifications({
+          mentions: reply.mentions,
+          actorId: userId,
+          tweetId: reply.postId, // ✅
+          commentId: reply.id,   // ✅
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to create reply-related notifications', err);
+    }
+
     return ApiResponse.created(res, reply, 'Reply created successfully');
   });
 
-  // Toggle comment like
+  // Toggle comment like (aggregated for comments + replies)
   toggleCommentLike = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
     const userId = req.user._id;
 
     const result = await commentService.toggleCommentLike(commentId, userId);
+
+    // determine liked state
+    const liked = !!(
+      result &&
+      (result.liked === true || result.isLiked === true || result.action === 'liked')
+    );
+
+    try {
+      if (liked) {
+        // ✅ aggregated like notification for this comment
+        await notifService.createCommentLikeNotification({
+          commentId,
+          actorId: userId,
+        });
+      } else {
+        // ✅ remove from aggregated like notification
+        await notifService.removeCommentLikeNotification({
+          commentId,
+          actorId: userId,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to sync comment-like notification', err);
+    }
+
     return ApiResponse.success(res, result, 'Comment like updated');
   });
 
@@ -292,7 +421,7 @@ class TweetController {
     return ApiResponse.success(res, result, 'Replies retrieved successfully');
   });
 
-  // Toggle reply like (replies are also comments in DB)
+  // Toggle reply like (replies are also comments in DB) - aggregated too
   toggleReplyLike = asyncHandler(async (req, res) => {
     const { replyId } = req.params;
     const userId = req.user._id;
@@ -309,6 +438,28 @@ class TweetController {
     }
 
     const result = await commentService.toggleCommentLike(replyId, userId);
+
+    const liked = !!(
+      result &&
+      (result.liked === true || result.isLiked === true || result.action === 'liked')
+    );
+
+    try {
+      if (liked) {
+        // ✅ aggregated like notification for reply (still targetType: 'comment')
+        await notifService.createCommentLikeNotification({
+          commentId: replyId,
+          actorId: userId,
+        });
+      } else {
+        await notifService.removeCommentLikeNotification({
+          commentId: replyId,
+          actorId: userId,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to sync reply-like notification', err);
+    }
 
     const message = result.liked ? 'Reply liked successfully' : 'Reply unliked successfully';
 
@@ -363,22 +514,6 @@ class TweetController {
 
     return ApiResponse.success(res, hashtags, `Trending hashtags (${timeframe})`);
   });
-
-  // Media Tab Controller - with post
-  // getUserMedia = asyncHandler(async (req, res) => {
-  //   const { userId: targetUserId } = req.params;
-  //   const { page = 1, limit = 20 } = req.query;
-  //   const currentUserId = req.user._id;
-
-  //   const result = await tweetService.getUserMedia(
-  //     targetUserId,
-  //     currentUserId,
-  //     parseInt(page),
-  //     parseInt(limit)
-  //   );
-
-  //   return ApiResponse.success(res, result, 'User media tweets retrieved successfully');
-  // });
 
   // Media Tab only media no tweets
   getUserMedia = asyncHandler(async (req, res) => {
