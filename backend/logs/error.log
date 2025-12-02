@@ -1609,3 +1609,822 @@
     at ApiError.forbidden (file:///C:/Users/Abhishek/Desktop/LaunchMyTech/Twitter-Clone-1/backend/src/utils/api-error.js:28:12)
     at file:///C:/Users/Abhishek/Desktop/LaunchMyTech/Twitter-Clone-1/backend/src/controllers/message.controller.js:107:22
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-11-28 19:36:26 [ERROR]: ❌ Database connection failed:
+2025-11-28 19:38:26 [ERROR]: ❌ Database connection failed:
+2025-11-28 19:40:38 [ERROR]: ❌ Database connection failed:
+2025-11-28 20:07:11 [ERROR]: Error: Invalid credentials
+    at ApiError.unauthorized (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:24:12)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/controllers/auth.controller.js:125:22
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+2025-11-28 20:07:11 [ERROR]: Error: Refresh token is required
+    at ApiError.unauthorized (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:24:12)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/controllers/auth.controller.js:195:22
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/async-handler.js:6:19
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:149:13)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/validation.middleware.js:28:5
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+2025-11-28 20:26:58 [ERROR]: Error: Route /api/v1undefined?q=adi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-28 20:26:58 [ERROR]: Error: Route /api/v1undefined?q=adit&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-28 20:26:58 [ERROR]: Error: Route /api/v1undefined?q=adity&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-28 20:26:59 [ERROR]: Error: Route /api/v1undefined?q=aditya&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-28 20:27:50 [ERROR]: Error: Validation failed
+    at ApiError.validation (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:40:19)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/validation.middleware.js:24:22
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/auth.middleware.js:60:3
+2025-11-30 14:57:36 [ERROR]: Error: Route / not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 14:57:41 [ERROR]: Error: Route /favicon.ico not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 14:58:12 [ERROR]: Error: Route /api/v1 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:265:14)
+    at Function.handle (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:175:3)
+2025-11-30 14:58:44 [ERROR]: Error: Access token is required
+    at ApiError.unauthorized (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:24:12)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/auth.middleware.js:16:20
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/async-handler.js:6:19
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:175:3)
+    at router (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:47:12)
+2025-11-30 15:18:43 [ERROR]: Error: Your session has expired
+    at ApiError.unauthorized (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:24:12)
+    at AuthService.validateToken (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/services/auth.service.js:40:24)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/auth.middleware.js:26:29
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/async-handler.js:6:19
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Function.handle (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:175:3)
+2025-11-30 15:45:45 [ERROR]: Error: Route /api/v1undefined?page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 16:16:29 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bc93575379cc3b71651e not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:57 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:57 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:58 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:58 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:58 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:58 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:18:58 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bcc574308f1d788c6cdf not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 16:19:53 [ERROR]: Error: Route /api/v1/notifications/mark-read/6929bc93575379cc3b71651e not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at Immediate.next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at Immediate._onImmediate (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:646:15)
+    at process.processImmediate (node:internal/timers:487:21)
+2025-11-30 18:26:32 [ERROR]: Error: Route /api/v1undefined?q=abh&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:26:32 [ERROR]: Error: Route /api/v1undefined?q=abhi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:26:32 [ERROR]: Error: Route /api/v1undefined?q=abhis&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:26:35 [ERROR]: Error: Route /api/v1undefined?q=abhish&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:26:36 [ERROR]: Error: Route /api/v1undefined?q=abhishe&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:26:36 [ERROR]: Error: Route /api/v1undefined?q=abhishek&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:28:54 [ERROR]: Error: Route /api/v1undefined?q=adi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:28:56 [ERROR]: Error: Route /api/v1undefined?q=adit&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:28:56 [ERROR]: Error: Route /api/v1undefined?q=adity&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:28:56 [ERROR]: Error: Route /api/v1undefined?q=aditya&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:29:00 [ERROR]: Error: Route /api/v1undefined?q=aBH&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:29:00 [ERROR]: Error: Route /api/v1undefined?q=aBHI&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:29:12 [ERROR]: Error: Route /api/v1undefined?q=aDI&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:29:12 [ERROR]: Error: Route /api/v1undefined?q=aDIT&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:29:12 [ERROR]: Error: Route /api/v1undefined?q=aDITY&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:29:12 [ERROR]: Error: Route /api/v1undefined?q=aDITYA&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:04 [ERROR]: Error: Route /api/v1undefined?q=aad&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:04 [ERROR]: Error: Route /api/v1undefined?q=aadi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:12 [ERROR]: Error: Route /api/v1undefined?q=%40aadi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:17 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%C3%B0&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:18 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%C3%B0%C3%AD&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:21 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%C3%A1&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:21 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%C3%A1%C3%A1&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:21 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%C3%A1%C3%A1%C3%A1&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:22 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%C3%A1%C3%A1%C3%A1%C3%A1&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:47 [ERROR]: Error: Route /api/v1undefined?q=%3C%5D%3B&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:47 [ERROR]: Error: Route /api/v1undefined?q=%3C%5D%3B%5D&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:47 [ERROR]: Error: Route /api/v1undefined?q=%3C%5D%3B%5D%C3%BC&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:48 [ERROR]: Error: Route /api/v1undefined?q=%3C%5D%3B%5D%C3%BC%C3%BC&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:33:56 [ERROR]: Error: Route /api/v1undefined?q=%3E%3E%3E&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:01 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%5B&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:01 [ERROR]: MongoServerError: Regular expression is invalid: missing terminating ] for character class
+    at Connection.sendCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:333:26)
+    at async Server.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\sdam\server.js:171:29)
+    at async AggregateOperation.executeCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\command.js:76:16)
+    at async AggregateOperation.execute (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\aggregate.js:86:16)
+    at async tryOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async AggregationCursor._initialize (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\abstract_cursor.js:632:27)
+2025-11-30 18:34:01 [ERROR]: Database connection error
+2025-11-30 18:34:02 [ERROR]: Error: Route /api/v1undefined?q=%C3%A1%C3%A1%5B%C3%AD&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:02 [ERROR]: MongoServerError: Regular expression is invalid: missing terminating ] for character class
+    at Connection.sendCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:333:26)
+    at async Server.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\sdam\server.js:171:29)
+    at async AggregateOperation.executeCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\command.js:76:16)
+    at async AggregateOperation.execute (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\aggregate.js:86:16)
+    at async tryOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async AggregationCursor._initialize (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\abstract_cursor.js:632:27)
+2025-11-30 18:34:02 [ERROR]: Database connection error
+2025-11-30 18:34:10 [ERROR]: Error: Route /api/v1undefined?q=Aad&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:11 [ERROR]: Error: Route /api/v1undefined?q=Aad%C3%AD&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:15 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:16 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D%C3%8D&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:16 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D%C3%8D%C3%8D&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:18 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D%C3%8D%C3%8D%C3%96&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:18 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D%C3%8D%C3%8D%C3%96%C3%96&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:18 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D%C3%8D%C3%8D%C3%96%C3%96%C3%96&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:19 [ERROR]: Error: Route /api/v1undefined?q=%C3%8D%C3%8D%C3%8D%C3%8D%C3%8D%C3%96%C3%96%C3%96%C3%96&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:21 [ERROR]: Error: Route /api/v1undefined?q=%C3%93%C3%93%C3%93&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:21 [ERROR]: Error: Route /api/v1undefined?q=%C3%93%C3%93%C3%93%C3%96&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 18:34:21 [ERROR]: Error: Route /api/v1undefined?q=%C3%93%C3%93%C3%93%C3%96%C3%96&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 19:05:46 [ERROR]: Error: Invalid credentials
+    at ApiError.unauthorized (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:24:12)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/controllers/auth.controller.js:131:22
+2025-11-30 19:05:46 [ERROR]: Error: Refresh token is required
+    at ApiError.unauthorized (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:24:12)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/controllers/auth.controller.js:195:22
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/async-handler.js:6:19
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:149:13)
+    at file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/validation.middleware.js:28:5
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+2025-11-30 19:20:53 [ERROR]: Error: Route /api/v1undefined?q=abh&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 19:20:53 [ERROR]: Error: Route /api/v1undefined?q=abhi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 19:24:51 [ERROR]: Error: Route /api/v1undefined?q=abh&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 19:24:52 [ERROR]: Error: Route /api/v1undefined?q=abhi&page=1&limit=20 not found
+    at ApiError.notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/utils/api-error.js:32:12)
+    at notFound (file:///C:/Users/Abhishek/Desktop/Backend/Twitter-Clone-1/backend/src/middleware/not-Found.middleware.js:15:17)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+    at C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:286:9
+    at Function.process_params (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:280:10)
+    at logger (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\express\lib\router\index.js:328:13)
+2025-11-30 20:06:11 [ERROR]: MongoServerError: Regular expression is invalid: \ at end of pattern
+    at Connection.sendCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:333:26)
+    at async Server.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\sdam\server.js:171:29)
+    at async AggregateOperation.executeCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\command.js:76:16)
+    at async AggregateOperation.execute (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\aggregate.js:86:16)
+    at async tryOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async AggregationCursor._initialize (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\abstract_cursor.js:632:27)
+2025-11-30 20:06:11 [ERROR]: Database connection error
+2025-11-30 20:06:11 [ERROR]: MongoServerError: Regular expression is invalid: \ at end of pattern
+    at Connection.sendCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cmap\connection.js:333:26)
+    at async Server.command (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\sdam\server.js:171:29)
+    at async AggregateOperation.executeCommand (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\command.js:76:16)
+    at async AggregateOperation.execute (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\aggregate.js:86:16)
+    at async tryOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:207:20)
+    at async executeOperation (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\operations\execute_operation.js:75:16)
+    at async AggregationCursor._initialize (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (C:\Users\Abhishek\Desktop\Backend\Twitter-Clone-1\backend\node_modules\mongodb\lib\cursor\abstract_cursor.js:632:27)
+2025-11-30 20:06:11 [ERROR]: Database connection error
