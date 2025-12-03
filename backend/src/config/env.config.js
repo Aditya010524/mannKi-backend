@@ -6,12 +6,13 @@ import path from 'path';
 // ------------------------------
 // Load .env.* file
 // ------------------------------
-const nodeEnv = process.env.NODE_ENV || 'development';
-
-// We only load `.env.{NODE_ENV}`
-const envFile = `.env.${nodeEnv}`;
-
-config({ path: path.resolve(process.cwd(), envFile) });
+// Load .env only in development
+if (process.env.NODE_ENV !== 'production') {
+  console.log("🟡 Loading local .env file for development");
+  config();
+} else {
+  console.log("🟢 Production environment variables loaded from Render");
+}
 
 // ------------------------------
 // Joi Schema Validation
@@ -165,3 +166,4 @@ const configEnv = {
 };
 
 export default configEnv;
+
