@@ -45,11 +45,17 @@ const authValidation = {
     }),
   }),
 
-  // Email Verification
+  // Email Verification – ✅ now uses OTP
   verifyEmail: Joi.object({
-    token: Joi.string().required().messages({
-      'any.required': 'Verification token is required',
-    }),
+    otp: Joi.string()
+      .length(6)
+      .pattern(/^[0-9]+$/)
+      .required()
+      .messages({
+        'string.length': 'Verification code must be 6 digits',
+        'string.pattern.base': 'Verification code must contain only digits',
+        'any.required': 'Verification code is required',
+      }),
   }),
 
   // Refresh Token
