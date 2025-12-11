@@ -1,90 +1,87 @@
+import nodemailer from 'nodemailer';
 import logger from '../config/logger.config.js';
 import configEnv from '../config/env.config.js';
 
 class EmailService {
-  // Send email verification email
-  async sendVerificationEmail(email, verificationToken, displayName) {
+  constructor() {
+    // Create Gmail SMTP transporter
+    this.transporter = nodemailer.createTransport({
+      host: configEnv.EMAIL.HOST,
+      port: configEnv.EMAIL.PORT,
+      secure: configEnv.EMAIL.PORT === 465, // true for 465, false for 587
+      auth: {
+        user: configEnv.EMAIL.USER,
+        pass: configEnv.EMAIL.PASS,
+      },
+    });
+  }
+
+  async sendMail({ to, subject, text, html }) {
     try {
-      // For now, just log - you can implement with SendGrid, Nodemailer, etc.
-      const verificationLink = `${configEnv.SECURITY.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+      const info = await this.transporter.sendMail({
+        from: configEnv.EMAIL.FROM || configEnv.EMAIL.USER,
+        to,
+        subject,
+        text,
+        html,
+      });
 
-      logger.info(`Email Verification Link for ${email}:`);
-      logger.info(verificationLink);
-
-      // TODO: Implement actual email sending
-      // await this.sendEmail({
-      //   to: email,
-      //   subject: 'Verify Your Email Address',
-      //   template: 'email-verification',
-      //   data: {
-      //     displayName,
-      //     verificationLink
-      //   }
-      // });
-
-      console.log(`
-          📧 EMAIL VERIFICATION
-        To: ${email}
-        Subject: Verify Your Email Address
-
-        Hi ${displayName},
-
-        Please click the link below to verify your email address:
-        ${verificationLink}
-
-        This link will expire in 24 hours.
-
-        Thanks!
-      `);
-
+      logger.info(`📧 Email sent successfully → ${info.messageId}`);
       return true;
     } catch (error) {
-      logger.error('Failed to send verification email:', error);
-      throw new Error('Could not send verification email');
+      logger.error('❌ Email sending failed:', error);
+      throw new Error('Email sending failed');
     }
   }
 
-  // Send password reset email
+  // ✅ OTP verification email
+  async sendVerificationEmail(email, otp, displayName) {
+    const subject = 'Verify Your Email';
+
+    const text = `
+Hi ${displayName},
+
+Your email verification code is: ${otp}
+
+This code is valid for 10 minutes.
+
+If you did not create this account, ignore this email.
+    `;
+
+    const html = `
+      <p>Hi <strong>${displayName}</strong>,</p>
+      <p>Your email verification code is:</p>
+      <h2>${otp}</h2>
+      <p>This code is valid for <strong>10 minutes</strong>.</p>
+      <p>If you did not create this account, ignore this email.</p>
+    `;
+
+    return this.sendMail({ to: email, subject, text, html });
+  }
+
+  // ✅ Password reset email
   async sendPasswordResetEmail(email, resetToken, displayName) {
-    try {
-      // For now, just log - you can implement with SendGrid, Nodemailer, etc.
-      const resetLink = `${configEnv.SECURITY.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const resetLink = `${configEnv.SECURITY.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
-      logger.info(`Password Reset Link for ${email}:`);
-      logger.info(resetLink);
+    const subject = 'Reset Your Password';
 
-      // TODO: Implement actual email sending
-      // await this.sendEmail({
-      //   to: email,
-      //   subject: 'Reset Your Password',
-      //   template: 'password-reset',
-      //   data: {
-      //     displayName,
-      //     resetLink
-      //   }
-      // });
+    const text = `
+Hi ${displayName},
 
-      console.log(`
-        📧 PASSWORD RESET
-        To: ${email}
-        Subject: Reset Your Password
+Click the link below to reset your password:
+${resetLink}
 
-        Hi ${displayName},
+This link expires in 10 minutes.
+    `;
 
-        You requested a password reset. Click the link below to set a new password: ${resetLink}
+    const html = `
+      <p>Hi <strong>${displayName}</strong>,</p>
+      <p>Click the link below to reset your password:</p>
+      <a href="${resetLink}" target="_blank">${resetLink}</a>
+      <p>This link expires in 10 minutes.</p>
+    `;
 
-        This link will expire in 10 minutes.
-
-        If you didn't request this, please ignore this email.
-
-        Thanks!
-      `);
-
-      return true;
-    } catch (error) {
-      logger.error('Failed to send password reset email:', error);
-      throw new Error('Could not send password reset email');
-    }
+    return this.sendMail({ to: email, subject, text, html });
   }
 }
 
