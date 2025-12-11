@@ -42,37 +42,37 @@ class AuthController {
     console.log(user.avatar);
     console.log(user.coverPhoto);
 
-    // Generate email verification token
-    const verificationToken = await authService.createEmailVerificationToken(user._id);
+    // Generate email verification OTP
+    const verificationOtp = await authService.createEmailVerificationToken(user._id);
 
-    // Send verification email
-    await emailService.sendVerificationEmail(user.email, verificationToken, user.displayName);
+    // Send verification email with OTP
+    await emailService.sendVerificationEmail(user.email, verificationOtp, user.displayName);
     logger.info(`New user registered: ${user.email}`);
 
     return ApiResponse.created(res, {
-      message: 'Account created successfully. Please check your email to verify your account.',
+      message: 'Account created successfully. Please check your email for the verification code.',
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
         displayName: user.displayName,
         isVerified: user.isVerified,
-        // Remove the emial verification in Prod.
-        emailVerificationToken: verificationToken,
+        // ⚠️ Dev only: remove this in production
+        emailVerificationToken: verificationOtp,
       },
     });
   });
 
-  // Verify email with token
+  // Verify email with OTP
   verifyEmail = asyncHandler(async (req, res) => {
-    const { token } = req.body;
+    const { otp } = req.body;
 
-    if (!token) {
-      throw ApiError.badRequest('Verification token is required');
+    if (!otp) {
+      throw ApiError.badRequest('Verification code is required');
     }
 
-    // Verify the email verification token
-    const userId = await authService.verifyEmailVerificationToken(token);
+    // Verify the email verification OTP
+    const userId = await authService.verifyEmailVerificationToken(otp);
 
     // Find the user
     const user = await User.findById(userId);
@@ -160,14 +160,6 @@ class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // In Production
-    // res.cookie('refreshToken', refreshToken, {
-    //   httpOnly: process.env.NODE_ENV === 'production', // ⬅️ false in dev
-    //   secure: process.env.NODE_ENV === 'production', // only HTTPS in prod
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    // });
-
     logger.info(`User logged in: ${user.email}`);
 
     return ApiResponse.success(res, {
@@ -186,28 +178,25 @@ class AuthController {
     });
   });
 
-  // Refresh access token - Implement properly
+  // Refresh access token
   refresh = asyncHandler(async (req, res) => {
-    // Get refresh token from body or cookie
     const refreshToken = req.body.refreshToken || req.cookies.refreshToken;
 
     if (!refreshToken) {
       throw ApiError.unauthorized('Refresh token is required');
     }
 
-    // Get new tokens (with rotation by default)
     const {
       accessToken,
       refreshToken: newRefreshToken,
       tokenId,
     } = await authService.getNewAccessToken(refreshToken, true);
 
-    // 👉 Update cookie with the new refresh token
     res.cookie('refreshToken', newRefreshToken, {
-      httpOnly: false, // ✅ dev mode: JS can access
-      secure: false, // ✅ allow http://localhost
+      httpOnly: false,
+      secure: false,
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     logger.info('Access token refreshed');
@@ -224,11 +213,9 @@ class AuthController {
   forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
-    // Find user
     const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
-      // Don't reveal if email exists - security best practice
       return ApiResponse.success(res, {
         message: 'If this email is registered, you will receive a password reset link.',
       });
@@ -238,10 +225,8 @@ class AuthController {
       throw ApiError.unauthorized('Account has been deactivated');
     }
 
-    // Generate password reset token
     const resetToken = await authService.createPasswordResetToken(user._id);
 
-    // Send password reset email
     await emailService.sendPasswordResetEmail(user.email, resetToken, user.displayName);
 
     logger.info(`Password reset requested for: ${user.email}`);
@@ -257,10 +242,8 @@ class AuthController {
   resetPassword = asyncHandler(async (req, res) => {
     const { token, password } = req.body;
 
-    // Verify reset token
     const userId = await authService.verifyPasswordResetToken(token);
 
-    // Update user password
     const user = await User.findById(userId);
     if (!user) {
       throw ApiError.notFound('User not found');
@@ -269,7 +252,6 @@ class AuthController {
     user.password = password;
     await user.save();
 
-    // Revoke all refresh tokens (force re-login on all devices)
     await authService.removeAllUserTokens(userId);
 
     logger.info(`Password reset completed for: ${user.email}`);
@@ -279,7 +261,7 @@ class AuthController {
     });
   });
 
-  // Resend verification email
+  // Resend verification email (OTP)
   resendEmailVerification = asyncHandler(async (req, res) => {
     const { email } = req.body;
 
@@ -297,21 +279,21 @@ class AuthController {
       throw ApiError.unauthorized('Account has been deactivated');
     }
 
-    // Generate new verification token
-    const verificationToken = await authService.createEmailVerificationToken(user._id);
+    // Generate new verification OTP
+    const verificationOtp = await authService.createEmailVerificationToken(user._id);
 
-    // Send verification email
     try {
-      await emailService.sendVerificationEmail(user.email, verificationToken, user.displayName);
-      logger.info(`Verification email resent to: ${user.email}`);
+      await emailService.sendVerificationEmail(user.email, verificationOtp, user.displayName);
+      logger.info(`Verification OTP resent to: ${user.email}`);
     } catch (emailError) {
       logger.error('Failed to resend verification email:', emailError);
       throw ApiError.internal('Failed to send verification email');
     }
 
     return ApiResponse.success(res, {
-      message: 'Verification email sent successfully',
-      emailVerificationToken: verificationToken,
+      message: 'Verification code sent successfully',
+      // ⚠️ Dev only: remove this in production
+      emailVerificationToken: verificationOtp,
     });
   });
 
