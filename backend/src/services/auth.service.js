@@ -61,7 +61,7 @@ class AuthService {
         expiresAt: new Date(decoded.exp * 1000), // Convert JWT timestamp to Date
         deviceInfo: {
           userAgent: request.get('User-Agent'),
-          ip: request.ip || request.connection.remoteAddress,
+          ip: request.ip || request.connection?.remoteAddress,
           deviceName: this.getDeviceType(request.get('User-Agent')),
         },
       });
@@ -121,7 +121,6 @@ class AuthService {
         return { accessToken, refreshToken: newRefreshToken, tokenId };
       } else {
         // STRATEGY B: Reuse Refresh Token (Simpler)
-        // Generate only new access token - FIXED: Only generate access token
         const accessToken = jwt.sign(
           { userId: decoded.userId, type: 'access' },
           configEnv.JWT.ACCESS_SECRET,
@@ -180,38 +179,44 @@ class AuthService {
     }
   }
 
-  // Create email verification token
+  // ✅ Create email verification OTP instead of link token
   async createEmailVerificationToken(userId) {
     try {
-      // Generate random token
-      const verificationToken = crypto.randomBytes(32).toString('hex');
+      // Invalidate any existing active email verification tokens
+      await AuthToken.updateMany(
+        { userId, type: 'email_verification', isActive: true },
+        { $set: { isActive: false, revokedAt: new Date() } }
+      );
+
+      // Generate 6-digit numeric OTP
+      const otp = crypto.randomInt(100000, 1000000).toString(); // 100000–999999
 
       // Hash it for database storage
-      const hashedToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+      const hashedToken = crypto.createHash('sha256').update(otp).digest('hex');
 
-      // Save to database
+      // Save to database with short expiry (e.g., 10 minutes)
       const tokenRecord = new AuthToken({
         userId,
         token: hashedToken,
         type: 'email_verification',
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
       });
 
       await tokenRecord.save();
 
-      // Return the unhashed token (to send via email)
-      return verificationToken;
+      // Return the raw OTP (to send via email)
+      return otp;
     } catch (error) {
-      logger.error('Failed to create email verification token:', error);
-      throw ApiError.internal('Could not create email verification token');
+      logger.error('Failed to create email verification OTP:', error);
+      throw ApiError.internal('Could not create email verification code');
     }
   }
 
-  // Verify email verification token
-  async verifyEmailVerificationToken(verificationToken) {
+  // ✅ Verify email verification OTP
+  async verifyEmailVerificationToken(verificationCode) {
     try {
-      // Hash the provided token
-      const hashedToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
+      // Hash the provided OTP
+      const hashedToken = crypto.createHash('sha256').update(verificationCode).digest('hex');
 
       // Find matching token in database
       const tokenRecord = await AuthToken.findOne({
@@ -222,7 +227,7 @@ class AuthService {
       });
 
       if (!tokenRecord) {
-        throw ApiError.badRequest('Invalid or expired verification token');
+        throw ApiError.badRequest('Invalid or expired verification code');
       }
 
       // Mark token as used
@@ -235,8 +240,8 @@ class AuthService {
       if (error instanceof ApiError) {
         throw error;
       }
-      logger.error('Email verification token verification failed:', error);
-      throw ApiError.internal('Could not verify email verification token');
+      logger.error('Email verification code verification failed:', error);
+      throw ApiError.internal('Could not verify email verification code');
     }
   }
 
@@ -375,43 +380,6 @@ class AuthService {
     }
     return 'Desktop Computer';
   }
-
-  // Helper: Clean up expired tokens (run this periodically)
-  // async cleanupExpiredTokens() {
-  //   try {
-  //     const result = await AuthToken.deleteMany({
-  //       expiresAt: { $lt: new Date() },
-  //       isActive: false,
-  //     });
-
-  //     logger.info(`Cleaned up ${result.deletedCount} expired tokens`);
-  //     return result.deletedCount;
-  //   } catch (error) {
-  //     logger.error('Failed to cleanup expired tokens:', error);
-  //     throw ApiError.internal('Could not cleanup expired tokens');
-  //   }
-  // }
-
-  // Clean up old/expired tokens (run periodically)
-  // async cleanupOldTokens() {
-  //   try {
-  //     const result = await AuthToken.deleteMany({
-  //       $or: [
-  //         { expiresAt: { $lt: new Date() } },
-  //         {
-  //           isActive: false,
-  //           revokedAt: { $lt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-  //         },
-  //       ],
-  //     });
-
-  //     logger.info(`Cleaned up ${result.deletedCount} old tokens`);
-  //     return result.deletedCount;
-  //   } catch (error) {
-  //     logger.error('Token cleanup failed:', error);
-  //     return 0;
-  //   }
-  // }
 }
 
 export const authService = new AuthService();
